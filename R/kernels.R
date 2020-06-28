@@ -1,5 +1,3 @@
-
-
 rectangular <- function(x, y, h){
   u <- (x-y)/h
   return(1/2*(abs(u) <= 1))
@@ -20,14 +18,15 @@ biweight <- function(x, y, h){
   return(15/16 * (1 - u^2)^2 * (abs(u) <= 1))
 }
 
+# triweight returns values larger than one!
 triweight <- function(x, y, h){
   u <- (x-y)/h
-  return(35/32 (1 - u^2)^3 * (abs(u) <= 1))
+  return((35/32 * (1 - u^2)^3) * (abs(u) <= 1))
 }
 
 tricube <- function(x, y, h){
   u <- (x-y)/h
-  return(70/81 (1 - abs(u^3))^3 * (abs(u) <= 1))
+  return(70/81 * (1 - abs(u^3))^3 * (abs(u) <= 1))
 }
 
 gaussian <- function(x, y, h){
@@ -49,7 +48,6 @@ sigmoid_fu <- function(x,y,h){
   u <- (x-y)/h
   return(1/pi * (1/(exp(u) + exp(-u)) ) )
 }
-
 
 silverman <- function(x,y,h){
   u <- (x-y)/h
