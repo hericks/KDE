@@ -9,7 +9,7 @@ kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
   # samples check
   stopifnot(is.numeric(samples))
   stopifnot(length(samples) > 0)
-  # bandwidth
+  # bandwidth check
   stopifnot(is.numeric(bandwidth))
   stopifnot(length(bandwidth) == 1)
   stopifnot(bandwidth > 0)
