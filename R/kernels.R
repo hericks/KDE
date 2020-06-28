@@ -40,4 +40,21 @@ cosine <- function(x, y, h){
   return(pi/4 * cos(pi/2 * u) * (abs(u) <= 1))
 }
 
+logistic <- function(x,y,h){
+  u <- (x-y)/h
+  return(1/(exp(u) + 2 + exp(-u)) )
+}
+
+sigmoid_fu <- function(x,y,h){
+  u <- (x-y)/h
+  return(1/pi * (1/(exp(u) + exp(-u)) ) )
+}
+
+
+silverman <- function(x,y,h){
+  u <- (x-y)/h
+  return(0.5 * exp(-abs(u)/sqrt(2)) * sin(abs(u)/sqrt(2) + pi/4))
+}
+
+
 
