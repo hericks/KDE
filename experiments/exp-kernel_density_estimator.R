@@ -1,3 +1,7 @@
+# Settings
+num_samples <- 25
+bandwidth <- 0.05
+kernel <- gaussian
 
 # Custom density
 f_den <- function(x) {
@@ -9,20 +13,20 @@ f_den <- function(x) {
 # Create sampler from custom density
 custom_sampler <- rejection_sampling(f_den, dunif, runif, 2)
 
-num_samples <- 100
+# Sample from custom sampler
 samples <- custom_sampler(num_samples)
-bandwidth <- 0.1
 
-# p_hat <- kernelDensityEstimator(function(x) as.integer(-1 <= x & x <= 1)/2, samples, bandwidth)
-p_hat <- kernelDensityEstimator(function(x) as.integer(-1 <= x & x <= 1)*(1-abs(x)), samples, bandwidth)
-#p_hat <- kernelDensityEstimator(dnorm, samples, bandwidth)
+# Create KDE
+p_hat <- kernelDensityEstimator(kernel, samples, bandwidth)
 
+# Plot the density in red
 x <- seq(-3, 3, by=0.005)
 y <- p_hat(x)
-
-
 plot(x, f_den(x), col="red", type="l", ylim=c(0,2.5), xlim=c(-0.5,1.5))
+
+# Plot the samples in blue
 points(samples, integer(length(samples)), pch=".", col="blue")
+
+# Plot the estimator in black
 lines(x, y)
-# lines(x, abs(f_den(x) - y))
-# integrate(function(x) abs(f_den(x) - p_hat(x)), -0.5, 1.5)
+
