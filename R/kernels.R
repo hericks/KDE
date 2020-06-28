@@ -1,56 +1,47 @@
-rectangular <- function(x, y, h){
-  u <- (x-y)/h
+# TODO: condition checking for arguments
+
+rectangular <- function(u){
   return(1/2*(abs(u) <= 1))
 }
 
-triangular <- function(x, y, h){
-  u <- (x-y)/h
+triangular <- function(u){
   return((1 - abs(u)) * (abs(u) <= 1))
 }
 
-epanechnikov <- function(x, y, h){
-  u <- (x-y)/h
+epanechnikov <- function(u){
   return(3/4 * (1 - u^2) * (abs(u) <= 1))
 }
 
-biweight <- function(x, y, h){
-  u <- (x-y)/h
+biweight <- function(u){
   return(15/16 * (1 - u^2)^2 * (abs(u) <= 1))
 }
 
 # triweight returns values larger than one!
-triweight <- function(x, y, h){
-  u <- (x-y)/h
+triweight <- function(u){
   return((35/32 * (1 - u^2)^3) * (abs(u) <= 1))
 }
 
-tricube <- function(x, y, h){
-  u <- (x-y)/h
+tricube <- function(u){
   return(70/81 * (1 - abs(u^3))^3 * (abs(u) <= 1))
 }
 
-gaussian <- function(x, y, h){
-  u <- (x-y)/h
+gaussian <- function(u){
   return(1/sqrt(2 * pi) * exp(-1/2 * u^2))
 }
 
-cosine <- function(x, y, h){
-  u <- (x-y)/h
+cosine <- function(u){
   return(pi/4 * cos(pi/2 * u) * (abs(u) <= 1))
 }
 
-logistic <- function(x,y,h){
-  u <- (x-y)/h
+logistic <- function(u){
   return(1/(exp(u) + 2 + exp(-u)) )
 }
 
-sigmoid_fu <- function(x,y,h){
-  u <- (x-y)/h
+sigmoid_fu <- function(u){
   return(1/pi * (1/(exp(u) + exp(-u)) ) )
 }
 
-silverman <- function(x,y,h){
-  u <- (x-y)/h
+silverman <- function(u){
   return(0.5 * exp(-abs(u)/sqrt(2)) * sin(abs(u)/sqrt(2) + pi/4))
 }
 
