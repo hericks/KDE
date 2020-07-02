@@ -14,8 +14,8 @@ rejection_sampling <- function(f_den, g_den, g, M) {
     accepted <- NULL
 
     while(length(accepted) < n) {
-      u <- runif(2*n)
-      samples <- g(2*n)
+      u <- runif(M*n)
+      samples <- g(M*n)
 
       accepted <- samples[u*M*g_den(samples) < f_den(samples)]
     }
