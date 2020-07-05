@@ -1,9 +1,26 @@
 #' Kernel functions.
 #'
 #' @description
-#' Listing of the built-in kernel functions. A kernel is a real valued function \eqn{K: \mathbb{R} \rightarrow \mathbb{R}}, integrable and such that \eqn{\int\limits_{-\infty}^{\infty} K(u) du = 1}.
-#' The built-in kernel functions are vectorised.
+#' Built-in kernel functions.
 #'
+#' @details{
+#' A kernel is a real valued, integrable function, such that its integral over the real numbers equals one.
+#' The built-in kernel functions are vectorised.
+#' \describe{
+#' \strong{List of built-in kernels:}
+#'   \item{\code{rectangular}}
+#'   \item{\code{triangular}}
+#'   \item{\code{epanechnikov}}
+#'   \item{\code{biweight}}
+#'   \item{\code{triweight}}
+#'   \item{\code{tricube}}
+#'   \item{\code{gaussian}}
+#'   \item{\code{cosine}}
+#'   \item{\code{logistic}}
+#'   \item{\code{sigmoidFunction}}
+#'   \item{\code{silverman}}
+#'   }
+#' }
 #' @param u vector containing numerical values.
 #'
 #' @return returning evaluation of the kernel function in u.
@@ -20,7 +37,11 @@
 #'        legend=c("gaussian", "triangular","rectangular"),
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
+#' @name kernels
 #' @export
+NULL
+
+
 checkKernelConditions <- function(u){
   stopifnot("the argument of a kernel has to be numeric"=is.numeric(u))
 }
