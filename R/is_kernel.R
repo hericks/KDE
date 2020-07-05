@@ -4,6 +4,10 @@
 #'
 #' @return Boolean. Returns True if kernel is a kernel function, FALSE if not. Is not supossed to return an error.
 #'
+#' @section Issue:
+#' Because of the use of the Base-R function integrate, functions that are almost everywhere zero can be kernels, but will not be detected.
+#' For example: kernels that are shifted with a very small bandwidth.
+#'
 #' @example
 #' is_kernel(gaussian)
 #' no_kernel <- function(x) 1
@@ -17,19 +21,20 @@ is_kernel <- function(kernel) {
   neg_kernel <- Vectorize(function(x) max(0, -kernel(x)))
 
   # is_kernel returns a boolean and is not supposed to throw an error
-  if(identical(FALSE,tryCatch(integrate(pos_kernel, -Inf, Inf), error=function(e) FALSE))){
+  if(isFALSE(tryCatch(integrate(pos_kernel, -Inf, Inf), error=function(e) FALSE))){
     return(FALSE)
   }
-  if(identical(FALSE, tryCatch(integrate(neg_kernel, -Inf, Inf), error=function(e) FALSE))){
+  if(isFALSE(tryCatch(integrate(neg_kernel, -Inf, Inf), error=function(e) FALSE))){
     return(FALSE)
   }
   pos_integral <- integrate(pos_kernel, -Inf, Inf)[[1]]
   neg_integral <- integrate(neg_kernel, -Inf, Inf)[[1]]
 
-  if (is.infinite(pos_integral) && is.infinite(pos_integral)) return(FALSE)
+  if(is.infinite(pos_integral) && is.infinite(pos_integral)) return(FALSE)
 
-  isTRUE(all.equal(pos_integral - neg_integral, 1))
+  isTRUE(abs(integrate(kernel, -Inf, Inf)[[1]] - 1) < integrate(kernel, -Inf, Inf)[[2]])
 }
+
 
 
 

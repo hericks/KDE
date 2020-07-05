@@ -15,3 +15,9 @@ Boolean. Returns True if kernel is a kernel function, FALSE if not. Is not supos
 \description{
 Validation if kernel is a kernel function.
 }
+\section{Issue}{
+
+Because of the use of the Base-R function integrate, functions that are almost everywhere zero can be kernels, but will not be detected.
+For example: kernels that are shifted with a very small bandwidth.
+}
+
