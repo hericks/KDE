@@ -1,4 +1,38 @@
-# tidyverse style guide: all comments are awnsering "why" not "what" or "how"
+#'Rejection Sampling (I.e., Accept-reject Method)
+#'
+#'\code{rejection_sampling} returns a function that draws samples from a
+#'difficult probability density function.
+#'
+#'@param f_den normalized probability density function, from which the desired
+#'  samples should be drawn.
+#'@param g_den normalized probability density function that is used as a
+#'  help-function to draw samples from, instead of drawing samples from
+#'  \code{f_den}.
+#'@param g random number generator function that draws samples from the densitiy
+#'  function \code{g_den}.
+#'@param M real number, which satisfies the condition that \code{f(x)} is less
+#'  or equal than \code{M*g(x)} for all real numbers x.
+#'@details the algorithm first draws samples from the more "well-behaved"
+#'  density function \code{g_den} and then accepts/rejects these draws,
+#'  according to whether they are likely within the proposed denisty function
+#'  \code{f_den} or not. It is the most efficient if \code{M} is chosen as small
+#'  as possible. That means that the shape of g_den is very close to f_den and
+#'  as a result it is more likely that the samples drawn from \code{g_den} get
+#'  accepted.
+#' @examples f_den <- function(x) {
+#' ret <- 1 + sin(2*pi*x)
+#' ret[x < 0 | 1 < x] <- 0
+#' ret}
+#'custom_sampler <- rejection_sampling(f_den, dunif, runif, 2)
+#'x <- seq(-0.5, 1.5, by=0.01)
+#'y <- f_den(x)
+#'plot(x, y, type="l", main="Custom density: 1 + sin(2*pi*x)", ylab="density")
+#'n <- 65
+#'points(custom_sampler(65), rep(1, n), col="red", cex=0.5)
+#'
+#'@return returning a function with argument \code{n} that draws \code{n}
+#'  samples from the density function \code{f_den}.
+
 
 rejection_sampling <- function(f_den, g_den, g, M) {
   force(f_den)

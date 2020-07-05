@@ -1,3 +1,19 @@
+#' Construct a kernel density estimator
+#'
+#' @description
+#' The kernelDensityEstimator function factory takes observations, returning
+#' the corresponding kernel density estimator.
+#'
+#' @param kernel The (vectorised) kernel function to use for the construction of the estimator satisfying [is_kernel].
+#' @param samples A numerical vector to base the construction of the estimator on.
+#' @param bandwidth A non-negative numeric value to use as the bandwidth for the kernels.
+#'
+#' @return The constructed kernel density estimator. Therefore a function vectorised its evaluation point returning the estimator at these points.
+#'
+#' @examples
+#' TODO
+#'
+#' @export
 kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
   # Kernel conditions
   stopifnot("kernel has to satisfy is_kernel() conditions"=is_kernel(kernel))
