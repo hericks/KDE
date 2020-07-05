@@ -10,7 +10,7 @@ biweight(u)
 \item{u}{vector of numerical values}
 }
 \description{
-Biweight Function
+The biweight function is used as a \link[KDE:kernels]{kernel}.
 }
 \seealso{
 \code{\link[KDE:kernels]{kernels}} for more information about kernels.

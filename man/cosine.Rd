@@ -10,7 +10,7 @@ cosine(u)
 \item{u}{vector of numerical values}
 }
 \description{
-Cosine Function
+The cosine function is used as a \link[KDE:kernels]{kernel}.
 }
 \seealso{
 \code{\link[KDE:kernels]{kernels}} for more information about kernels.

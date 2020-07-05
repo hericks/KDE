@@ -13,7 +13,8 @@ is_kernel(kernel)
 Boolean. Returns True if kernel is a kernel function, FALSE if not. Is not supossed to return an error.
 }
 \description{
-Validation if kernel is a kernel function.
+The \code{is_kernel()} function is used for validating a \link[KDE:kernels]{kernel function}.
+It has to be a integrable, numerical function with integral over R equal to one.
 }
 \section{Issue}{
 
@@ -26,5 +27,4 @@ is_kernel(gaussian)
 no_kernel <- function(x) 1
 is_kernel(no_kernel)
 
- @export
 }

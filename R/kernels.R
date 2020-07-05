@@ -37,6 +37,9 @@
 #'        legend=c("gaussian", "triangular","rectangular"),
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
+#' @seealso
+#' \code{\link[KDE:is_kernel]{is_kernel}
+#'
 #' @name kernels
 NULL
 
@@ -46,7 +49,7 @@ checkKernelConditions <- function(u){
 
 #' Rectangular Function
 #' @description
-#' The rectangular function.
+#' The rectangular function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -59,6 +62,8 @@ rectangular <- function(u){
 }
 
 #' Triangular Function
+#' @description
+#' The triangular function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -71,6 +76,8 @@ triangular <- function(u){
 }
 
 #' Epanechnikov Function
+#' @description
+#' The epanechnikov function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -83,6 +90,8 @@ epanechnikov <- function(u){
 }
 
 #' Biweight Function
+#' @description
+#' The biweight function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -95,6 +104,8 @@ biweight <- function(u){
 }
 
 #' Triweight Function
+#' @description
+#' The triweight function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -107,6 +118,8 @@ triweight <- function(u){
 }
 
 #' Tricube Function
+#' @description
+#' The tricube function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -119,6 +132,8 @@ tricube <- function(u){
 }
 
 #' Gaussian Function
+#' @description
+#' The gaussian function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -131,6 +146,8 @@ gaussian <- function(u){
 }
 
 #' Cosine Function
+#' @description
+#' The cosine function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -143,6 +160,8 @@ cosine <- function(u){
 }
 
 #' Logistic Function
+#' @description
+#' The logistic function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -155,6 +174,8 @@ logistic <- function(u){
 }
 
 #' Sigmoid Function
+#' @description
+#' The sigmoid function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels
@@ -167,7 +188,8 @@ sigmoidFunction <- function(u){
 }
 
 #' Silverman Function
-#'
+#' @description
+#' The silverman function is used as a \link[KDE:kernels]{kernel}.
 #' @param u vector of numerical values
 #'
 #' @family kernels

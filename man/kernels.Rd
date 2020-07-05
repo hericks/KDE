@@ -45,3 +45,6 @@ legend("topright",
        col=c("black","red", "blue"), lty=1, cex=0.8)
 
 }
+\seealso{
+\code{\link[KDE:is_kernel]{is_kernel}
+}

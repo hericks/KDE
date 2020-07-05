@@ -10,7 +10,7 @@ gaussian(u)
 \item{u}{vector of numerical values}
 }
 \description{
-Gaussian Function
+The gaussian function is used as a \link[KDE:]{kernel}.
 }
 \seealso{
 \code{\link[KDE:kernels]{kernels}} for more information about kernels.

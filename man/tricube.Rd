@@ -10,7 +10,7 @@ tricube(u)
 \item{u}{vector of numerical values}
 }
 \description{
-Tricube Function
+The tricube function is used as a \link[KDE:kernels]{kernel}.
 }
 \seealso{
 \code{\link[KDE:kernels]{kernels}} for more information about kernels.
