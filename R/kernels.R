@@ -43,7 +43,6 @@ NULL
 checkKernelConditions <- function(u){
   stopifnot("the argument of a kernel has to be numeric"=is.numeric(u))
 }
-?rectangular
 
 #' Rectangular Function
 #' @description
