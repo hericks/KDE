@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernels.R
 \name{kernels}
 \alias{kernels}
-\title{Kernel functions.}
+\title{Kernel functions}
 \arguments{
 \item{u}{vector containing numerical values.}
 }
@@ -18,17 +18,17 @@ A kernel is a real valued, integrable function, such that its integral over the 
 The built-in kernel functions are vectorised.
 \describe{
 \strong{List of built-in kernels:}
-\item{\code{rectangular}}
-\item{\code{triangular}}
-\item{\code{epanechnikov}}
-\item{\code{biweight}}
-\item{\code{triweight}}
-\item{\code{tricube}}
-\item{\code{gaussian}}
-\item{\code{cosine}}
-\item{\code{logistic}}
-\item{\code{sigmoidFunction}}
-\item{\code{silverman}}
+\item{\code{\link[KDE:rectangular]{rectangular}}}
+\item{\code{\link[KDE:triangular]{triangular}}}
+\item{\code{\link[KDE:epanechnikov]{epanechnikov}}}
+\item{\code{\link[KDE:biweight]{biweight}}}
+\item{\code{\link[KDE:triweight]{triweight}}}
+\item{\code{\link[KDE:tricube]{tricube}}}
+\item{\code{\link[KDE:gaussian]{gaussian}}}
+\item{\code{\link[KDE:cosine]{cosine}}}
+\item{\code{\link[KDE:logistic]{logistic}}}
+\item{\code{\link[KDE:sigmoidFunction]{sigmoidFunction}}}
+\item{\code{\link[KDE:silverman]{silverman}}}
 }
 }
 }

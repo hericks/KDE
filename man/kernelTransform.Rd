@@ -4,14 +4,14 @@
 \alias{kernelTransform}
 \title{Shifting kernels to a coefficient and applying a bandwidth.}
 \usage{
-kernelTransform(kernel, x0, h)
+kernelTransform(kernel, sample, h)
 }
 \arguments{
-\item{kernel}{the kernel function.}
+\item{kernel}{a kernel function.}
 
-\item{x0}{the observation/coefficient.}
+\item{sample}{the observation/coefficient as a numerical scalar.}
 
-\item{h}{the bandwidth.}
+\item{h}{the bandwidth as a numerical scalar.}
 }
 \value{
 The shifted and scaled kernel function.

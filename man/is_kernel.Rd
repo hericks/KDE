@@ -21,3 +21,10 @@ Because of the use of the Base-R function integrate, functions that are almost e
 For example: kernels that are shifted with a very small bandwidth.
 }
 
+\examples{
+is_kernel(gaussian)
+no_kernel <- function(x) 1
+is_kernel(no_kernel)
+
+ @export
+}
