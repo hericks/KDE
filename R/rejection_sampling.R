@@ -1,7 +1,6 @@
 # tidyverse style guide: all comments are awnsering "why" not "what" or "how"
 
 rejection_sampling <- function(f_den, g_den, g, M) {
-  # TODO: Check sufficient conditions on arguments
   force(f_den)
   force(g_den)
   force(g)
@@ -31,8 +30,18 @@ rejection_sampling <- function(f_den, g_den, g, M) {
   pos_integral_g <- integrate(pos_g, -Inf, Inf)[[1]]
   stopifnot(pos_integral_g == 1)
 
+  # relation between f_den,M and g_den that has to be satisfied
+  temp <- runif(1e6, -1e12, 1e12)
+  for (v in temp) {
+    if (f_den(v) > M*g_den(v)) {
+      return(FALSE)
+    }
+  }
+
   function(n) {
-    # TODO: Check sufficient conditions on arguments
+    # n should be a nonnegative integer
+    stopifnot(n%%1 == 0)
+    stopifnot(n >= 0)
 
     u <- numeric(M*n)
     samples <- numeric(M*n)
