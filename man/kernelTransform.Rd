@@ -7,7 +7,7 @@
 kernelTransform(kernel, x0, h)
 }
 \arguments{
-\item{kernel}{The kernel function.}
+\item{kernel}{the kernel function.}
 
 \item{x0}{the observation/coefficient.}
 
