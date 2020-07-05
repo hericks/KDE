@@ -16,7 +16,6 @@ test_that("a transformed kernel is still a kernel",{
 }
 )
 
-
 test_that("the integral of a kernel over the real numbers equals one",{
   div_integral_fun <- function(x) 1
   finite_integral_fun <- function(x) (x <= 10)

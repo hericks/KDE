@@ -8,7 +8,7 @@
 #' Because of the use of the Base-R function integrate, functions that are almost everywhere zero can be kernels, but will not be detected.
 #' For example: kernels that are shifted with a very small bandwidth.
 #'
-#' @example
+#' @examples
 #' is_kernel(gaussian)
 #' no_kernel <- function(x) 1
 #' is_kernel(no_kernel)

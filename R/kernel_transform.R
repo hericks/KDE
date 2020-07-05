@@ -1,8 +1,8 @@
 #' Shifting kernels to a coefficient and applying a bandwidth.
 #'
-#' @param kernel the kernel function.
-#' @param x0 the observation/coefficient.
-#' @param h the bandwidth.
+#' @param kernel a kernel function.
+#' @param sample the observation/coefficient as a numerical scalar.
+#' @param h the bandwidth as a numerical scalar.
 #' @return The shifted and scaled kernel function.
 #'
 #' @examples
@@ -23,14 +23,13 @@
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
 #' @export
-
-kernelTransform <- function(kernel, x0, h) {
+kernelTransform <- function(kernel, sample, h) {
   # Kernel conditions
   stopifnot("kernel has to satisfy is_kernel() conditions"=is_kernel(kernel))
 
   # x_i conditions
-  stopifnot(is.numeric(x0))
-  stopifnot(length(x0) == 1)
+  stopifnot(is.numeric(sample))
+  stopifnot(length(sample) == 1)
 
   # Bandwidth conditions
   stopifnot(is.numeric(h))
@@ -38,11 +37,11 @@ kernelTransform <- function(kernel, x0, h) {
   stopifnot(h > 0)
 
   force(kernel)
-  force(x0)
+  force(sample)
   force(h)
 
   function(x) {
-    kernel((x-x0)/h)/h
+    kernel((x-sample)/h)/h
   }
 }
 
