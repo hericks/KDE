@@ -13,15 +13,9 @@ test_that("a transformed kernel is still a kernel",{
   expect_true(is_kernel(transformed_kernel))
   expect_true(is_kernel(transformed_kernel2))
   expect_true(is_kernel(a_e_zero))
-  }
+}
 )
 
-<<<<<<< HEAD
-div_integral_fun <- function(x) 1
-finite_integral_fun <- function(x) (x <= 10)
-non_integrable_fun <- function(x) 1/x
-
-=======
 
 test_that("the integral of a kernel over the real numbers equals one",{
   div_integral_fun <- function(x) 1
@@ -31,8 +25,7 @@ test_that("the integral of a kernel over the real numbers equals one",{
   expect_false(is_kernel(div_integral_fun))
   expect_false(is_kernel(finite_integral_fun))
   expect_false(is_kernel(non_integrable_fun))
-  }
->>>>>>> fbd75170d2b68eb484455f563d3a7055e7c82f73
+}
 )
 
 test_that("kernel is a numeric function",{
@@ -40,5 +33,5 @@ test_that("kernel is a numeric function",{
 
   expect_false(is_kernel("x"))
   expect_false(is_kernel(non_numeric_fun))
-  }
+}
 )
