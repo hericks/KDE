@@ -15,7 +15,7 @@ lines(x, tricube((x-y)/h), col=pal[6])
 lines(x, gaussian((x-y)/h), col=pal[7])
 lines(x, cosine((x-y)/h), col=pal[8])
 lines(x, logistic((x-y)/h), col=pal[9])
-lines(x, sigmoid_fu((x-y)/h), col=pal[10])
+lines(x, sigmoidFunction((x-y)/h), col=pal[10])
 lines(x, silverman((x-y)/h), col=pal[11])
 leg_txt <- c("rectangular", "triangular", "epanechnikov",
              "biweight","triweight", "tricube", "gaussian", "cosine", "logistic",

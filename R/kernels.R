@@ -47,7 +47,7 @@ logistic <- function(u){
   return(1/(exp(u) + 2 + exp(-u)) )
 }
 
-sigmoid_fu <- function(u){
+sigmoidFunction <- function(u){
   checkKernelConditions(u)
   return(2/pi * (1/(exp(u) + exp(-u)) ) )
 }
