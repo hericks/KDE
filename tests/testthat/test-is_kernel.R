@@ -8,9 +8,9 @@ test_that("a transformed kernel is still a kernel",{
   # integrate does not integrate perfectly -> deviation from 1 < integration error
   transformed_kernel2 <- kernelTransform(rectangular, 0, 0.01)
   # function with a. e. zero will crash
-  a_e_zero <- kernelTransform(rectangular, 0, 0.001)
+  a_e_zero <- kernelTransform(rectangular, 0, 0.00001)
 
-  expect_true(is_kernel(transformed_kernel))
+  expect_true(is_kernel(transformed_kernel,center=2))
   expect_true(is_kernel(transformed_kernel2))
   expect_true(is_kernel(a_e_zero))
 }
@@ -18,7 +18,7 @@ test_that("a transformed kernel is still a kernel",{
 
 test_that("the integral of a kernel over the real numbers equals one",{
   div_integral_fun <- function(x) 1
-  finite_integral_fun <- function(x) (x <= 10)
+  finite_integral_fun <- function(x) 1*(x <= 100)
   non_integrable_fun <- function(x) 1/x
 
   expect_false(is_kernel(div_integral_fun))
