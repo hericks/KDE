@@ -23,7 +23,7 @@ IntegrableFunction <- function(fun, support){
 
 newDensity <- function(fun, support, ..., subclass=NULL){
 
-  newintegrableFunction(fun,support, subclass=c(subclass,"Density"))
+  newIntegrableFunction(fun,support, subclass=c(subclass,"Density"))
 }
 
 Density <- function(fun, support){
@@ -39,7 +39,7 @@ newKernel <- function(fun, support, ..., subclass=NULL){
 
 Kernel <- function(fun, support){
   kern <- newKernel(fun, support)
-  validateKernel(kernel)
+  validateKernel(kern)
   kern
 }
 
@@ -86,12 +86,12 @@ validateIntegrableFunction <- function(obj){
 
 validateDensity <- function(obj){
   if(!validateIntegrableFunction(obj)) return(FALSE)
-  object <- obj[[1]]
-  lower <- obj[[2]][1]
-  upper <- obj[[2]][2]
+  object <- obj$fun
+  lower <- obj$support[1]
+  upper <- obj$support[2]
 
-  neg_obj <- Vectorize(function(x) max(0, -obj(x)))
-  if(!isTRUE(all.equal(integrate(neg_ob, lower = lower, upper = upper)[[1]], 0))) return(FALSE)
+  neg_obj <- Vectorize(function(x) max(0, -object(x)))
+  if(!isTRUE(all.equal(integrate(neg_obj, lower = lower, upper = upper)[[1]], 0))) return(FALSE)
 
   isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
          < integrate(object, lower = lower, upper = upper)[[2]])
@@ -99,9 +99,9 @@ validateDensity <- function(obj){
 
 validateKernel <- function(obj){
   if(!validateIntegrableFunction(obj)) return(FALSE)
-  object <- obj[[1]]
-  lower <- obj[[2]][1]
-  upper <- obj[[2]][2]
+  object <- obj$fun
+  lower <- obj$support[1]
+  upper <- obj$support[2]
   isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
          < integrate(object, lower = lower, upper = upper)[[2]])
 }
