@@ -1,3 +1,4 @@
+#' @export
 evaluate <- function(fun, x) {
   UseMethod("evaluate")
 }
@@ -17,6 +18,7 @@ evaluate.Density <- function(obj, x) {
 }
 
 # get "safe" function out of object
+#' @export
 evaluate_safe <- function(fun, x) {
   UseMethod("evaluate_safe")
 }

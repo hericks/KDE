@@ -49,5 +49,5 @@ legend("topright",
 
 }
 \seealso{
-\code{\link[KDE:validate_Kernel]{validate_Kernel}
+\code{\link[KDE:validate_Kernel]{validate_Kernel}}
 }

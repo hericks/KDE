@@ -1,8 +1,3 @@
-new_Kernel <- function(fun, support, ..., subclass=NULL){
-
-  new_IntegrableFunction(fun,support, subclass=c(subclass,"Kernel"))
-}
-
 #' Kernel
 #'
 #' @description
@@ -43,10 +38,10 @@ new_Kernel <- function(fun, support, ..., subclass=NULL){
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
 #' @seealso
-#' \code{\link[KDE:validate_Kernel]{validate_Kernel}
+#' \code{\link[KDE:validate_Kernel]{validate_Kernel}}
 #'
 #' @export
-Kernel <- function(fun, support){
+Kernel <- function(fun, support) {
   kern <- new_Kernel(fun, support)
   validate_Kernel(kern)
   kern
@@ -76,6 +71,8 @@ Kernel <- function(fun, support){
 #' no_kernel <- function(x) 1
 #' is_kernel(no_kernel)
 #'
+#' @include integrable_function.R
+#' @include evaluate.R
 #' @export
 validate_Kernel <- function(obj){
   if(!inherits(obj, "Kernel")) return(FALSE)
@@ -85,4 +82,9 @@ validate_Kernel <- function(obj){
   upper <- obj$support[2]
   isTRUE(abs(integrate(evaluate_safe(obj), lower = lower, upper = upper)[[1]] - 1)
          < integrate(evaluate_safe(obj), lower = lower, upper = upper)[[2]])
+}
+
+new_Kernel <- function(fun, support, ..., subclass=NULL){
+
+  new_IntegrableFunction(fun,support, subclass=c(subclass,"Kernel"))
 }

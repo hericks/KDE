@@ -1,12 +1,17 @@
 new_IntegrableFunction <- function(fun, support, ..., subclass=NULL){
   stopifnot("class of fun has to be function" = (class(fun) == "function"))
+
   if(missing(support)){
-    if(isFALSE(tryCatch({find_borders(object,center)}, error=function(e) FALSE))){
+    if(isFALSE(tryCatch({
+      support <- find_support(fun)
+      }, error=function(e) FALSE))){
       stop("cannot find a support")
     }
-    support <- find_support(fun)
   }
-  stopifnot("not a valid support" = is.numeric(support) && identical(length(support), 2L))
+
+  stopifnot("support has to be numeric"=is.numeric(support))
+  stopifnot("support has to be of length 2"=identical(length(support), 2L))
+  stopifnot("support has to consist of lower- and upperbound in increasing order"=(support[1] < support[2]))
 
   structure(
     list("fun" = fun, "support" = support),
@@ -46,6 +51,7 @@ find_support <- function(fun) {
 #'@export
 validate_IntegrableFunction <- function(obj){
   if(!inherits(obj, "IntegrableFunction")) return(FALSE)
+
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
