@@ -4,7 +4,7 @@
 \alias{validate_IntegrableFunction}
 \title{TODO: documentation}
 \usage{
-validate_IntegrableFunction(obj)
+validate_IntegrableFunction(x)
 }
 \description{
 TODO: documentation

@@ -1,27 +1,63 @@
-new_IntegrableFunction <- function(fun, support, ..., subclass=NULL){
-  stopifnot("class of fun has to be function" = (class(fun) == "function"))
-
-  if(missing(support)){
-      support <- find_support(fun)
-  }
-
-  stopifnot("support has to be numeric"=is.numeric(support))
-  stopifnot("support has to be of length 2"=identical(length(support), 2L))
-  stopifnot("support has to consist of lower- and upperbound in increasing order"=(support[1] < support[2]))
-
-  structure(
-    list("fun"=fun, "support"=support),
-    ...,
-    class=c(subclass, "IntegrableFunction")
-    )
-}
-
-#' TODO: documentation
+#' Integrable-Function Classes
+#'
+#' @description
+#' The S3 class \code{IntegrableFunction} serves as superclass for the S3 classes \code{Density} and \code{Kernel}.
+#'
 #' @export
 IntegrableFunction <- function(fun, support){
   func <- new_IntegrableFunction(fun, support)
   validate_IntegrableFunction(func)
   func
+}
+
+
+#' TODO: documentation
+#'
+#'@export
+validate_IntegrableFunction <- function(x){
+  # to test the basic structure
+  stopifnot("Object must inherit 'IntegrableFunction'"=inherits(x, "IntegrableFunction"))
+  stopifnot("Object must be a list"=is.list(x))
+  stopifnot("Object must contain entry 'fun'"="fun" %in% names(x))
+  stopifnot("Object must contain entry 'support'"="support" %in% names(x))
+
+  # to test the structure of 'fun' entry
+  fun <- x$fun
+  stopifnot("Entry 'fun' must be a function"=is.function(fun))
+
+  # to test the structure of 'support' entry
+  support <- x$support
+  stopifnot("Entry 'support' must be numeric"=is.numeric(support))
+  stopifnot("Entry 'support' must be of length 2"=identical(length(support), 2L))
+  stopifnot("Entry 'support' must contain lower- before upperbound"=support[1] < support[2])
+
+  # TODO: test that fun is equal to zero outside of support
+
+  # to test the the integrability on the given support
+  tryCatch({
+    integration_value <- integrate(function(x) abs(fun(x)), support[1], support[2])[[1]]
+  }, error=function(cond) {
+    stop(paste("Failed to integrate the function:", cond))
+  })
+
+  stopifnot("The integral of the absolute function must integrate to a finite value"=is.finite(integration_value))
+  invisible(x)
+}
+
+# This function is only called by the public IntegrableFunction constructor followed by a call of validate_IntegrableFunction.
+# Further checking is done by validate_IntegrableFunction.
+new_IntegrableFunction <- function(fun, support=NULL, ..., subclass=NULL){
+  stopifnot("class of fun has to be function"=is.function(fun))
+
+  if(is.null(support)){
+    support <- find_support(fun)
+  }
+
+  structure(
+    list("fun"=fun, "support"=support),
+    ...,
+    class=c(subclass, "IntegrableFunction")
+  )
 }
 
 find_support <- function(fun) {
@@ -44,31 +80,3 @@ find_support <- function(fun) {
 
   c(lower_bound, upper_bound)
 }
-
-#' TODO: documentation
-#'
-#'@export
-validate_IntegrableFunction <- function(obj){
-  if(!inherits(obj, "IntegrableFunction")) return(FALSE)
-
-  object <- obj$fun
-  lower <- obj$support[1]
-  upper <- obj$support[2]
-
-  # neg/pos part of the kernel function to be tested
-  pos_object <- Vectorize(function(x) max(0, object(x)))
-  neg_object <- Vectorize(function(x) max(0, -object(x)))
-
-  # is_kernel returns a boolean and is not supposed to throw an error
-  if(isFALSE(tryCatch({
-    pos_integral <- integrate(pos_object, lower=lower, upper=upper)[[1]]
-    neg_integral <- integrate(neg_object, lower=lower, upper=upper)[[1]]
-  }, error=function(e) FALSE))) {
-    return(FALSE)
-  }
-
-  if(is.infinite(pos_integral) && is.infinite(pos_integral)){ return(FALSE)}
-
-  return(TRUE)
-}
-

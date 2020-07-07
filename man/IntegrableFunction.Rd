@@ -2,10 +2,10 @@
 % Please edit documentation in R/integrable_function.R
 \name{IntegrableFunction}
 \alias{IntegrableFunction}
-\title{TODO: documentation}
+\title{Integrable-Function Classes}
 \usage{
 IntegrableFunction(fun, support)
 }
 \description{
-TODO: documentation
+The S3 class \code{'IntegrableFunction'} serves as superclass for the S3 classes \code{'Density'} and \code{'Kernel'}.
 }
