@@ -76,7 +76,7 @@ Kernel <- function(fun, support) {
 #' @export
 validate_Kernel <- function(obj){
   if(!inherits(obj, "Kernel")) return(FALSE)
-  if(!validate_IntegrableFunction(obj)) return(FALSE)
+  validate_IntegrableFunction(obj)
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
