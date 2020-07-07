@@ -11,16 +11,20 @@ kernelDensityEstimator(kernel, samples, bandwidth = 1)
 
 \item{samples}{A numerical vector to base the construction of the estimator on.}
 
-\item{bandwidth}{A non-negative numeric value to use as the bandwidth for the kernels.}
+\item{bandwidth}{A non-negative numeric value to use as the bandwidth for the kernel.}
 }
 \value{
-The constructed kernel density estimator. Therefore a function vectorised its evaluation point returning the estimator at these points.
+The constructed kernel density estimator. Therefore a function vectorised in its evaluation point returning the estimator at these points.
+
+TODO
 }
 \description{
 The kernelDensityEstimator function factory takes observations, returning
 the corresponding kernel density estimator.
 }
-\examples{
-TODO
-
+\seealso{
+\itemize{
+\item \code{\link[=kernels]{kernels()}} for a list of already implemented kernels.
+\item \code{\link[=is_kernel]{is_kernel()}} to validate cusotm kernel functions.
+}
 }

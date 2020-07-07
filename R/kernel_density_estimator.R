@@ -6,12 +6,15 @@
 #'
 #' @param kernel The (vectorised) kernel function to use for the construction of the estimator satisfying [is_kernel].
 #' @param samples A numerical vector to base the construction of the estimator on.
-#' @param bandwidth A non-negative numeric value to use as the bandwidth for the kernels.
+#' @param bandwidth A non-negative numeric value to use as the bandwidth for the kernel.
 #'
-#' @return The constructed kernel density estimator. Therefore a function vectorised its evaluation point returning the estimator at these points.
+#' @return The constructed kernel density estimator. Therefore a function vectorised in its evaluation point returning the estimator at these points.
 #'
-#' @examples
 #' TODO
+#'
+#' @seealso
+#' * [kernels()] for a list of already implemented kernels.
+#' * [is_kernel()] to validate cusotm kernel functions.
 #'
 #' @export
 kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
