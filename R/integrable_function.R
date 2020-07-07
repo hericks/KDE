@@ -1,12 +1,15 @@
 newIntegrableFunction <- function(fun, support, ..., subclass=NULL){
-  stopifnot("class of fun has to be function" = class(fun) != "function")
+  stopifnot("class of fun has to be function" = (class(fun) == "function"))
   if(missing(support)){
+    if(isFALSE(tryCatch({find_borders(object,center)}, error=function(e) FALSE))){
+      stop("cannot find a support")
+    }
     support <- find_support(fun)
   }
   stopifnot("not a valid support" = is.numeric(support) && identical(length(support), 2L))
 
   structure(
-    list(fun, support),
+    list("fun" = fun, "support" = support),
     ...,
     class = c(subclass, "Integrable_function")
     )
@@ -14,7 +17,7 @@ newIntegrableFunction <- function(fun, support, ..., subclass=NULL){
 
 IntegrableFunction <- function(fun, support){
   func <- newIntegrableFunction(fun, support)
-  validatyIntegrableFunction(func)
+  validateIntegrableFunction(func)
   func
 }
 
@@ -24,7 +27,7 @@ newDensity <- function(fun, support, ..., subclass=NULL){
 }
 
 Density <- function(fun, support){
-  den <- new_density(fun, support)
+  den <- newDensity(fun, support)
   validateDensity(den)
   den
 }
@@ -35,7 +38,7 @@ newKernel <- function(fun, support, ..., subclass=NULL){
 }
 
 Kernel <- function(fun, support){
-  kern <- new_density(fun, support)
+  kern <- newKernel(fun, support)
   validateKernel(kernel)
   kern
 }
@@ -63,3 +66,50 @@ find_support <- function(fun){
     return(c(-Inf,Inf))
   }
 }
+
+validateIntegrableFunction <- function(obj){
+  object <- obj$fun
+  lower <- obj$support[1]
+  upper <- obj$support[2]
+
+  # neg/pos part of the kernel function to be tested
+  pos_object <- Vectorize(function(x) max(0, object(x)))
+  neg_object <- Vectorize(function(x) max(0, -object(x)))
+
+  # is_kernel returns a boolean and is not supposed to throw an error
+  if(isFALSE(tryCatch({
+    pos_int <- integrate(pos_object, lower=lower, upper=upper)
+    neg_int <- integrate(neg_object, lower=lower, upper=upper)
+  }, error=function(e) FALSE))) {
+    return(FALSE)
+  }
+  pos_integral <- integrate(pos_object, lower, upper)[[1]]
+  neg_integral <- integrate(neg_object, lower, upper)[[1]]
+  if(is.infinite(pos_integral) && is.infinite(pos_integral)){ return(FALSE)}
+
+  return(TRUE)
+}
+
+validateDensity <- function(obj){
+  if(!validateIntegrableFunction(obj)) return(FALSE)
+  object <- obj[[1]]
+  lower <- obj[[2]][1]
+  upper <- obj[[2]][2]
+
+  neg_obj <- Vectorize(function(x) max(0, -obj(x)))
+  if(!isTRUE(all.equal(integrate(neg_ob, lower = lower, upper = upper)[[1]], 0))) return(FALSE)
+
+  isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
+         < integrate(object, lower = lower, upper = upper)[[2]])
+}
+
+validateKernel <- function(obj){
+  if(!validateIntegrableFunction(obj)) return(FALSE)
+  object <- obj[[1]]
+  lower <- obj[[2]][1]
+  upper <- obj[[2]][2]
+  isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
+         < integrate(object, lower = lower, upper = upper)[[2]])
+}
+
+ker <- Kernel(rectangular, c(-Inf,Inf))
