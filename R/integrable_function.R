@@ -2,11 +2,7 @@ new_IntegrableFunction <- function(fun, support, ..., subclass=NULL){
   stopifnot("class of fun has to be function" = (class(fun) == "function"))
 
   if(missing(support)){
-    if(isFALSE(tryCatch({
       support <- find_support(fun)
-      }, error=function(e) FALSE))){
-      stop("cannot find a support")
-    }
   }
 
   stopifnot("support has to be numeric"=is.numeric(support))
@@ -14,9 +10,9 @@ new_IntegrableFunction <- function(fun, support, ..., subclass=NULL){
   stopifnot("support has to consist of lower- and upperbound in increasing order"=(support[1] < support[2]))
 
   structure(
-    list("fun" = fun, "support" = support),
+    list("fun"=fun, "support"=support),
     ...,
-    class = c(subclass, "IntegrableFunction")
+    class=c(subclass, "IntegrableFunction")
     )
 }
 
@@ -31,9 +27,12 @@ IntegrableFunction <- function(fun, support){
 find_support <- function(fun) {
   testing_points <- c(-10**(10:-10), 10**(-10:10))
   testing_values <- fun(testing_points)
-  testing_values[!is.numeric(testing_values)] <- 0
 
-  non_zero_indices <- which(testing_values != 0)
+  stopifnot("fun has to return numerical values"=is.numeric(testing_values))
+  stopifnot("fun hat to be vectorised"=identical(length(testing_values), length(testing_points)))
+
+  # can't use isFALSE, since all.equal return value is TRUE or a vector of mode "character"
+  non_zero_indices <- which(sapply(testing_values, function(x) !isTRUE(all.equal(x, 0))))
 
   if (length(non_zero_indices) == 0L) return(c(-Inf, Inf))
 
