@@ -18,7 +18,22 @@
 #' is_kernel(no_kernel)
 #'
 #' @export
-is_kernel <- function(object) {
+is_kernel <- function(object, center=0) {
+  #TODO Argchecks
+  if(class(object) != "function") return(FALSE)
+  if(!is.numeric(object(center))) return(FALSE)
+
+  force(object)
+  force(center)
+
+  borders <- find_borders(object, center)
+  if(!(is_integrable(object, borders[1], borders[2]))) return(FALSE)
+
+  isTRUE(abs(integrate(object, borders[1], borders[2])[[1]] - 1) < integrate(object, borders[1], borders[2])[[2]])
+}
+
+
+is_integrable <- function(object, lower=-Inf, upper=Inf){
   if (class(object) != "function") return(FALSE)
 
   # neg/pos part of the kernel function to be tested
@@ -26,20 +41,39 @@ is_kernel <- function(object) {
   neg_object <- Vectorize(function(x) max(0, -object(x)))
 
   # is_kernel returns a boolean and is not supposed to throw an error
-  if(isFALSE(tryCatch(integrate(pos_object, -Inf, Inf), error=function(e) FALSE))){
+  if(isFALSE(tryCatch({
+    pos_int <- integrate(pos_object, lower=lower, upper=upper)
+    neg_int <- integrate(neg_object, lower=lower, upper=upper)
+  }, error=function(e) FALSE))) {
     return(FALSE)
   }
-  if(isFALSE(tryCatch(integrate(neg_object, -Inf, Inf), error=function(e) FALSE))){
-    return(FALSE)
-  }
-  pos_integral <- integrate(pos_object, -Inf, Inf)[[1]]
-  neg_integral <- integrate(neg_object, -Inf, Inf)[[1]]
+  pos_integral <- integrate(pos_object, lower, upper)[[1]]
+  neg_integral <- integrate(neg_object, lower, upper)[[1]]
+  if(is.infinite(pos_integral) && is.infinite(pos_integral)){ return(FALSE)}
 
-  if(is.infinite(pos_integral) && is.infinite(pos_integral)) return(FALSE)
-
-  isTRUE(abs(integrate(object, -Inf, Inf)[[1]] - 1) < integrate(object, -Inf, Inf)[[2]])
+  return(TRUE)
 }
 
+find_borders <- function(fun, center=0){
+  force(fun)
+  if (class(fun) != "function") return(FALSE)
 
+  x <- c(1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6)
+  y <- -x
+  x <- x + center
+  y <- y + center
+  stopifnot("function has to be numeric" = is.numeric(fun(x)) && is.numeric(fun(y)))
+
+  check_x <- fun(x) != 0
+  check_y <- fun(y) != 0
+  stopifnot("no non-zero point could be found" = (any(check_x) && any(check_y)))
+  non_zero <- min(c(which(check_x==TRUE), which(check_y==TRUE)))
+  if(non_zero != 1){
+    return(c(y[non_zero-1], x[non_zero-1]))
+  }
+  else{
+    return(c(-Inf,Inf))
+  }
+}
 
 

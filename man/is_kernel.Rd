@@ -2,15 +2,15 @@
 % Please edit documentation in R/is_kernel.R
 \name{is_kernel}
 \alias{is_kernel}
-\title{Validation if kernel is a kernel function.}
+\title{Validation if object is a kernel function.}
 \usage{
-is_kernel(kernel)
+is_kernel(object, center = 0)
 }
 \arguments{
-\item{kernel}{the fuction to be tested.}
+\item{object}{the fuction to be tested.}
 }
 \value{
-Boolean. Returns True if kernel is a kernel function, FALSE if not. Is not supossed to return an error.
+Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
 }
 \description{
 The \code{is_kernel()} function is used for validating a \link[KDE:kernels]{kernel function}.
