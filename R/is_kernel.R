@@ -4,7 +4,11 @@
 #' The \code{is_kernel()} function is used for validating a \link[KDE:kernels]{kernel function}.
 #' It has to be a integrable, numerical function with integral over R equal to one.
 #'
-#' @param object the fuction to be tested.
+#' @details
+#' The is_kernel function works with centered kernels, searching a non-zero interval around the center, checking integrability over that interval.
+#'
+#' @param object the object to be tested.
+#' @param center the center of the function object. Default value is zero.
 #'
 #' @return Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
 #'
@@ -75,5 +79,4 @@ find_borders <- function(fun, center=0){
     return(c(-Inf,Inf))
   }
 }
-
 

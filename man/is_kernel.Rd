@@ -7,7 +7,9 @@
 is_kernel(object, center = 0)
 }
 \arguments{
-\item{object}{the fuction to be tested.}
+\item{object}{the object to be tested.}
+
+\item{center}{the center of the function object. Default value is zero.}
 }
 \value{
 Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
@@ -15,6 +17,9 @@ Boolean. Returns True if object is a kernel function, FALSE if not. Is not supos
 \description{
 The \code{is_kernel()} function is used for validating a \link[KDE:kernels]{kernel function}.
 It has to be a integrable, numerical function with integral over R equal to one.
+}
+\details{
+The is_kernel function works with centered kernels, searching a non-zero interval around the center, checking integrability over that interval.
 }
 \section{Issue}{
 
