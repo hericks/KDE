@@ -1,4 +1,4 @@
-newIntegrableFunction <- function(fun, support, ..., subclass=NULL){
+new_IntegrableFunction <- function(fun, support, ..., subclass=NULL){
   stopifnot("class of fun has to be function" = (class(fun) == "function"))
   if(missing(support)){
     if(isFALSE(tryCatch({find_borders(object,center)}, error=function(e) FALSE))){
@@ -11,36 +11,14 @@ newIntegrableFunction <- function(fun, support, ..., subclass=NULL){
   structure(
     list("fun" = fun, "support" = support),
     ...,
-    class = c(subclass, "Integrable_function")
+    class = c(subclass, "IntegrableFunction")
     )
 }
 
 IntegrableFunction <- function(fun, support){
-  func <- newIntegrableFunction(fun, support)
-  validateIntegrableFunction(func)
+  func <- new_IntegrableFunction(fun, support)
+  validate_IntegrableFunction(func)
   func
-}
-
-newDensity <- function(fun, support, ..., subclass=NULL){
-
-  newIntegrableFunction(fun,support, subclass=c(subclass,"Density"))
-}
-
-Density <- function(fun, support){
-  den <- newDensity(fun, support)
-  validateDensity(den)
-  den
-}
-
-newKernel <- function(fun, support, ..., subclass=NULL){
-
-  newIntegrableFunction(fun,support, subclass=c(subclass,"Kernel"))
-}
-
-Kernel <- function(fun, support){
-  kern <- newKernel(fun, support)
-  validateKernel(kern)
-  kern
 }
 
 find_support <- function(fun) {
@@ -61,7 +39,7 @@ find_support <- function(fun) {
   c(lower_bound, upper_bound)
 }
 
-validateIntegrableFunction <- function(obj){
+validate_IntegrableFunction <- function(obj){
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
@@ -84,26 +62,3 @@ validateIntegrableFunction <- function(obj){
   return(TRUE)
 }
 
-validateDensity <- function(obj){
-  if(!validateIntegrableFunction(obj)) return(FALSE)
-  object <- obj$fun
-  lower <- obj$support[1]
-  upper <- obj$support[2]
-
-  neg_obj <- Vectorize(function(x) max(0, -object(x)))
-  if(!isTRUE(all.equal(integrate(neg_obj, lower = lower, upper = upper)[[1]], 0))) return(FALSE)
-
-  isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
-         < integrate(object, lower = lower, upper = upper)[[2]])
-}
-
-validateKernel <- function(obj){
-  if(!validateIntegrableFunction(obj)) return(FALSE)
-  object <- obj$fun
-  lower <- obj$support[1]
-  upper <- obj$support[2]
-  isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
-         < integrate(object, lower = lower, upper = upper)[[2]])
-}
-
-ker <- Kernel(rectangular, c(-Inf,Inf))
