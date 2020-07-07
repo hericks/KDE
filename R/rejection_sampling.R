@@ -32,6 +32,7 @@
 #'
 #'@return returning a function with argument \code{n} that draws \code{n}
 #'  samples from the density function \code{f_den}.
+#'@export
 
 
 rejection_sampling <- function(f_den, g_den, g, M) {
@@ -43,26 +44,9 @@ rejection_sampling <- function(f_den, g_den, g, M) {
   # M is constant in the real numbers
   stopifnot(is.numeric(M))
 
-  ## f_den, g_den should be probability density functions
-  # f_den, g_den are nonnegative
-  stopifnot(class(f_den) == "function")
-  neg_f <- Vectorize(function(x) max(0, -f_den(x)))
-  neg_integral_f <- integrate(neg_f, -Inf, Inf)[[1]]
-  stopifnot(neg_integral_f == 0)
-
-  stopifnot(class(g_den) == "function")
-  neg_g <- Vectorize(function(x) max(0, -g_den(x)))
-  neg_integral_g <- integrate(neg_g, -Inf, Inf)[[1]]
-  stopifnot(neg_integral_g == 0)
-
-  #f_den, g_den are normalized
-  pos_f <- Vectorize(function(x) max(0, f_den(x)))
-  pos_integral_f <- integrate(pos_f, -Inf, Inf)[[1]]
-  stopifnot(pos_integral_f == 1)
-
-  pos_g <- Vectorize(function(x) max(0, g_den(x)))
-  pos_integral_g <- integrate(pos_g, -Inf, Inf)[[1]]
-  stopifnot(pos_integral_g == 1)
+  # f_den, g_den should be probability density functions
+  stopifnot(is_density(g_den) == TRUE)
+  stopifnot(is_density(g_den) == TRUE)
 
   # relation between f_den,M and g_den that has to be satisfied
   temp <- runif(1e6, -1e12, 1e12)
