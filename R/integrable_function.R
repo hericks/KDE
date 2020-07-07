@@ -43,28 +43,22 @@ Kernel <- function(fun, support){
   kern
 }
 
+find_support <- function(fun) {
+  testing_points <- c(-10**(10:-10), 10**(-10:10))
+  testing_values <- fun(testing_points)
+  testing_values[!is.numeric(testing_values)] <- 0
 
-find_support <- function(fun){
-  #TODO: aufräumen
-  return(c(-Inf, Inf))
+  non_zero_indices <- which(testing_values != 0)
 
-  x <- c(1e5, 1e4, 1e3, 1e2, 1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6)
-  y <- -x
-  x <- x
-  y <- y
+  if (length(non_zero_indices) == 0L) return(c(-Inf, Inf))
 
-  check_x <- fun(x) != 0
-  check_y <- fun(y) != 0
-  if(!(any(check_x) && any(check_y))){
-    return(c(-1e-6,1e-6))
-  }
-  non_zero <- min(c(which(check_x==TRUE), which(check_y==TRUE)))
-  if(non_zero != 1){
-    return(c(y[non_zero-1], x[non_zero-1]))
-  }
-  else{
-    return(c(-Inf,Inf))
-  }
+  lower_index <- min(non_zero_indices) - 1
+  upper_index <- max(non_zero_indices) + 1
+
+  lower_bound <- ifelse(lower_index < 1, -Inf, testing_points[lower_index])
+  upper_bound <- ifelse(upper_index > length(testing_points), Inf, testing_points[upper_index])
+
+  c(lower_bound, upper_bound)
 }
 
 validateIntegrableFunction <- function(obj){
