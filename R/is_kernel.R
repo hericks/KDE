@@ -1,12 +1,12 @@
-#' Validation if kernel is a kernel function.
+#' Validation if object is a kernel function.
 #'
 #' @description
 #' The \code{is_kernel()} function is used for validating a \link[KDE:kernels]{kernel function}.
 #' It has to be a integrable, numerical function with integral over R equal to one.
 #'
-#' @param kernel the fuction to be tested.
+#' @param object the fuction to be tested.
 #'
-#' @return Boolean. Returns True if kernel is a kernel function, FALSE if not. Is not supossed to return an error.
+#' @return Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
 #'
 #' @section Issue:
 #' Because of the use of the Base-R function integrate, functions that are almost everywhere zero can be kernels, but will not be detected.
@@ -18,25 +18,26 @@
 #' is_kernel(no_kernel)
 #'
 #' @export
-is_kernel <- function(kernel) {
-  if (class(kernel) != "function") return(FALSE)
+is_kernel <- function(object) {
+  if (class(object) != "function") return(FALSE)
 
-  pos_kernel <- Vectorize(function(x) max(0, kernel(x)))
-  neg_kernel <- Vectorize(function(x) max(0, -kernel(x)))
+  # neg/pos part of the kernel function to be tested
+  pos_object <- Vectorize(function(x) max(0, object(x)))
+  neg_object <- Vectorize(function(x) max(0, -object(x)))
 
   # is_kernel returns a boolean and is not supposed to throw an error
-  if(isFALSE(tryCatch(integrate(pos_kernel, -Inf, Inf), error=function(e) FALSE))){
+  if(isFALSE(tryCatch(integrate(pos_object, -Inf, Inf), error=function(e) FALSE))){
     return(FALSE)
   }
-  if(isFALSE(tryCatch(integrate(neg_kernel, -Inf, Inf), error=function(e) FALSE))){
+  if(isFALSE(tryCatch(integrate(neg_object, -Inf, Inf), error=function(e) FALSE))){
     return(FALSE)
   }
-  pos_integral <- integrate(pos_kernel, -Inf, Inf)[[1]]
-  neg_integral <- integrate(neg_kernel, -Inf, Inf)[[1]]
+  pos_integral <- integrate(pos_object, -Inf, Inf)[[1]]
+  neg_integral <- integrate(neg_object, -Inf, Inf)[[1]]
 
   if(is.infinite(pos_integral) && is.infinite(pos_integral)) return(FALSE)
 
-  isTRUE(abs(integrate(kernel, -Inf, Inf)[[1]] - 1) < integrate(kernel, -Inf, Inf)[[2]])
+  isTRUE(abs(integrate(object, -Inf, Inf)[[1]] - 1) < integrate(object, -Inf, Inf)[[2]])
 }
 
 
