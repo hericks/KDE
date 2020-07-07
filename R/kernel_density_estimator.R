@@ -14,12 +14,12 @@
 #'
 #' @seealso
 #' * [kernels()] for a list of already implemented kernels.
-#' * [is_kernel()] to validate cusotm kernel functions.
+#' * [validate_kernel()] to validate cusotm kernel functions.
 #'
 #' @export
 kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
   # Kernel conditions
-  stopifnot("kernel has to satisfy is_kernel() conditions"=is_kernel(kernel))
+  stopifnot("the kernel has to be valid" = validate_Kernel(kernel))
 
   # Samples conditions
   stopifnot(is.numeric(samples))
@@ -37,7 +37,7 @@ kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
   function(x) {
     ret <- numeric(length(x))
     for (x0 in samples) {
-      ret <- ret + kernelTransform(kernel, x0, bandwidth)(x)
+      ret <- ret + kernel_transform(kernel, x0, bandwidth)(x)
     }
     ret/length(samples)
   }

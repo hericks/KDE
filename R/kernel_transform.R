@@ -23,9 +23,9 @@
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
 #' @export
-kernelTransform <- function(kernel, sample, h) {
+kernel_transform <- function(kernel, sample, h) {
   # Kernel conditions
-  stopifnot("kernel has to satisfy is_kernel() conditions"=is_kernel(kernel))
+  stopifnot("the kernel has to be valid" = validate_Kernel(kernel))
 
   # x_i conditions
   stopifnot(is.numeric(sample))
@@ -40,8 +40,10 @@ kernelTransform <- function(kernel, sample, h) {
   force(sample)
   force(h)
 
+  fun <- evaluate_safe(kernel)
+
   function(x) {
-    kernel((x-sample)/h)/h
+    fun((x-sample)/h)/h
   }
 }
 

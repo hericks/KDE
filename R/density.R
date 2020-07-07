@@ -10,14 +10,12 @@ Density <- function(fun, support){
 }
 
 validate_Density <- function(obj){
+  if(!inherits(obj, "Density")) return(FALSE)
   if(!validate_IntegrableFunction(obj)) return(FALSE)
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
 
-  neg_obj <- Vectorize(function(x) max(0, -object(x)))
-  if(!isTRUE(all.equal(integrate(neg_obj, lower = lower, upper = upper)[[1]], 0))) return(FALSE)
-
-  isTRUE(abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
-         < integrate(object, lower = lower, upper = upper)[[2]])
+  isTRUE(abs(integrate(evaluate_safe(obj), lower = lower, upper = upper)[[1]] - 1)
+         < integrate(evaluate_safe(obj), lower = lower, upper = upper)[[2]])
 }

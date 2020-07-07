@@ -25,6 +25,6 @@ the corresponding kernel density estimator.
 \seealso{
 \itemize{
 \item \code{\link[=kernels]{kernels()}} for a list of already implemented kernels.
-\item \code{\link[=is_kernel]{is_kernel()}} to validate cusotm kernel functions.
+\item \code{\link[=validate_kernel]{validate_kernel()}} to validate cusotm kernel functions.
 }
 }

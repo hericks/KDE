@@ -15,6 +15,8 @@ new_IntegrableFunction <- function(fun, support, ..., subclass=NULL){
     )
 }
 
+#' TODO: documentation
+#' @export
 IntegrableFunction <- function(fun, support){
   func <- new_IntegrableFunction(fun, support)
   validate_IntegrableFunction(func)
@@ -39,7 +41,11 @@ find_support <- function(fun) {
   c(lower_bound, upper_bound)
 }
 
+#' TODO: documentation
+#'
+#'@export
 validate_IntegrableFunction <- function(obj){
+  if(!inherits(obj, "IntegrableFunction")) return(FALSE)
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
@@ -50,13 +56,12 @@ validate_IntegrableFunction <- function(obj){
 
   # is_kernel returns a boolean and is not supposed to throw an error
   if(isFALSE(tryCatch({
-    pos_int <- integrate(pos_object, lower=lower, upper=upper)
-    neg_int <- integrate(neg_object, lower=lower, upper=upper)
+    pos_integral <- integrate(pos_object, lower=lower, upper=upper)[[1]]
+    neg_integral <- integrate(neg_object, lower=lower, upper=upper)[[1]]
   }, error=function(e) FALSE))) {
     return(FALSE)
   }
-  pos_integral <- integrate(pos_object, lower, upper)[[1]]
-  neg_integral <- integrate(neg_object, lower, upper)[[1]]
+
   if(is.infinite(pos_integral) && is.infinite(pos_integral)){ return(FALSE)}
 
   return(TRUE)
