@@ -5,7 +5,10 @@
 #' It has to be a integrable, numerical function with integral over R equal to one.
 #'
 #' @details
-#' The is_kernel function works with centered kernels, searching a non-zero interval around the center, checking integrability over that interval.
+#' The is_kernel function works with centered kernels, searching a non-zero interval around the center,
+#' checking integrability over that interval.
+#' The function is checking the points
+#' (-1e1, -1e0, -1e-1, -1e-2, -1e-3, -1e-4, -1e-5, -1e-6, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1) around the center.
 #'
 #' @param object the object to be tested.
 #' @param center the center of the function object. Default value is zero.
@@ -29,17 +32,16 @@ is_kernel <- function(object, center=0) {
 
   force(object)
   force(center)
-
+  if(isFALSE(tryCatch({find_borders(object,center)}, error=function(e) FALSE))){
+    return(FALSE)
+  }
   borders <- find_borders(object, center)
   if(!(is_integrable(object, borders[1], borders[2]))) return(FALSE)
 
   isTRUE(abs(integrate(object, borders[1], borders[2])[[1]] - 1) < integrate(object, borders[1], borders[2])[[2]])
 }
 
-
 is_integrable <- function(object, lower=-Inf, upper=Inf){
-  if (class(object) != "function") return(FALSE)
-
   # neg/pos part of the kernel function to be tested
   pos_object <- Vectorize(function(x) max(0, object(x)))
   neg_object <- Vectorize(function(x) max(0, -object(x)))
@@ -59,18 +61,16 @@ is_integrable <- function(object, lower=-Inf, upper=Inf){
 }
 
 find_borders <- function(fun, center=0){
-  force(fun)
-  if (class(fun) != "function") return(FALSE)
-
   x <- c(1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6)
   y <- -x
   x <- x + center
   y <- y + center
-  stopifnot("function has to be numeric" = is.numeric(fun(x)) && is.numeric(fun(y)))
 
   check_x <- fun(x) != 0
   check_y <- fun(y) != 0
-  stopifnot("no non-zero point could be found" = (any(check_x) && any(check_y)))
+  if(!(any(check_x) && any(check_y))){
+    return(c(-1e-6,1e-6))
+  }
   non_zero <- min(c(which(check_x==TRUE), which(check_y==TRUE)))
   if(non_zero != 1){
     return(c(y[non_zero-1], x[non_zero-1]))
@@ -79,4 +79,3 @@ find_borders <- function(fun, center=0){
     return(c(-Inf,Inf))
   }
 }
-

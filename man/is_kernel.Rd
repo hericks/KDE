@@ -19,7 +19,10 @@ The \code{is_kernel()} function is used for validating a \link[KDE:kernels]{kern
 It has to be a integrable, numerical function with integral over R equal to one.
 }
 \details{
-The is_kernel function works with centered kernels, searching a non-zero interval around the center, checking integrability over that interval.
+The is_kernel function works with centered kernels, searching a non-zero interval around the center,
+checking integrability over that interval.
+The function is checking the points
+(-1e1, -1e0, -1e-1, -1e-2, -1e-3, -1e-4, -1e-5, -1e-6, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1) around the center.
 }
 \section{Issue}{
 
