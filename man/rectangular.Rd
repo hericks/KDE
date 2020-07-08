@@ -5,10 +5,14 @@
 \alias{rectangular}
 \title{Rectangular Function}
 \format{
-An object of class \code{Kernel} (inherits from \code{IntegrableFunction}) of length 2.
+An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+\itemize{
+\item rectangular function \code{fun}
+\item support = \code{c(-1,1)}.
+}
 }
 \usage{
-rectangular
+\code{rectangular$fun(u)}
 }
 \arguments{
 \item{u}{vector of numerical values}
@@ -17,11 +21,10 @@ rectangular
 returning evaluation of the kernel function in u.
 }
 \description{
-The rectangular function is used as the function for the S3 object \link[KDE:Kernel]{kernel}.
-Its support is given by \code{(-1,1)}.
+The rectangular function is used as the function for an S3 object \code{rectangular} of class \link[KDE:Kernel]{Kernel}.
 }
 \seealso{
-\code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+\code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{biweight}},
@@ -29,7 +32,7 @@ Other kernels:
 \code{\link{epanechnikov}},
 \code{\link{gaussian}},
 \code{\link{logistic}},
-\code{\link{sigmoidFunction}},
+\code{\link{sigmoid}},
 \code{\link{silverman}},
 \code{\link{triangular}},
 \code{\link{tricube}},

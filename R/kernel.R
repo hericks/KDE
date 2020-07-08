@@ -1,14 +1,14 @@
 #' Kernel
 #'
 #' @description
-#' The kernels in this package are S3 objects, holding a function and its support.
+#' The kernels in this package are S3 objects based on a list, holding a function and its support.
 #' They are a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}.
 #'
 #' @details{
 #' A kernel is a real valued, integrable function, such that its integral over the real numbers equals one.
 #' The built-in kernel functions are vectorised.
 #' \describe{
-#' \strong{List of built-in kernels:}
+#' \strong{List of built-in kernels functions:}
 #'   \item{\code{\link[KDE:rectangular]{rectangular}}}
 #'   \item{\code{\link[KDE:triangular]{triangular}}}
 #'   \item{\code{\link[KDE:epanechnikov]{epanechnikov}}}
@@ -89,11 +89,12 @@ validate_Kernel <- function(obj){
   lower <- obj$support[1]
   upper <- obj$support[2]
   stopifnot("The integral of a kernel over its support has to be one"=
-              (abs(integrate(evaluate_safe(obj), lower = lower, upper = upper)[[1]] - 1)
-         < integrate(evaluate_safe(obj), lower = lower, upper = upper)[[2]]))
+              (abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
+         < integrate(object, lower = lower, upper = upper)[[2]]))
   invisible(obj)
 }
 
+#' @include integrable_function.R
 new_Kernel <- function(fun, support, ..., subclass=NULL){
 
   new_IntegrableFunction(fun,support, subclass=c(subclass,"Kernel"))

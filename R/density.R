@@ -1,18 +1,17 @@
-new_Density <- function(fun, support, ..., subclass=NULL){
-
-  new_IntegrableFunction(fun,support, subclass=c(subclass,"Density"))
-}
-
-
 #'
+#' @include integrable_function.R
 #'
-#'@export
+#' @export
 Density <- function(fun, support){
   den <- new_Density(fun, support)
   validate_Density(den)
   den
 }
 
+#'
+#'@include integrable_function.R
+#'
+#' @export
 validate_Density <- function(obj){
   stopifnot("object has to be of class Density"=inherits(obj, "Density"))
   validate_IntegrableFunction(obj)
@@ -21,7 +20,12 @@ validate_Density <- function(obj){
   upper <- obj$support[2]
 
   stopifnot("The integral of a kernel over its support has to be one"=
-              (abs(integrate(evaluate_safe(obj), lower = lower, upper = upper)[[1]] - 1)
-               < integrate(evaluate_safe(obj), lower = lower, upper = upper)[[2]]))
+              (abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
+               < integrate(object, lower = lower, upper = upper)[[2]]))
   invisible(obj)
+}
+
+new_Density <- function(fun, support, ..., subclass=NULL){
+
+  new_IntegrableFunction(fun,support, subclass=c(subclass,"Density"))
 }
