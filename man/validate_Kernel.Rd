@@ -2,14 +2,13 @@
 % Please edit documentation in R/kernel.R
 \name{validate_Kernel}
 \alias{validate_Kernel}
-\title{Validation if object is a kernel function.}
+\title{Validation if object is a kernel function.
+TODO: umschreiben/mit Kernel zusammenfassen}
 \usage{
 validate_Kernel(obj)
 }
 \arguments{
 \item{object}{the object to be tested.}
-
-\item{center}{the center of the function object. Default value is zero.}
 }
 \value{
 Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
@@ -19,8 +18,9 @@ The \code{is_kernel()} function is used for validating a \link[KDE:Kernel]{Kerne
 It has to be a integrable, numerical function with integral over R equal to one.
 }
 \details{
-The is_kernel function works with centered kernels, searching a non-zero interval around the center,
-checking integrability over that interval.
+Hence a Kernel is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}},
+it makes use of \link{validate_IntegrableFunction}.
+In addition, it will check wether the object is of class \link[KDE:Kernel]{Kernel} and if the integral over its support equals one.
 }
 \section{Issue}{
 

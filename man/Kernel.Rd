@@ -7,13 +7,19 @@
 Kernel(fun, support)
 }
 \arguments{
-\item{u}{vector containing numerical values.}
-}
-\value{
-returning evaluation of the kernel function in u.
+\item{fun}{an \code{R} function taking a single numeric argument and
+returning a numeric vector of the same length: see 'Details'.}
+
+\item{support}{a numerical vector of length 2 containing the lower- and
+upperbound in the first and second entry respectively.
+\code{IntegrableFunction} will try to find bounds on the support itself if
+\code{NULL} is passed: see 'Details' of \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}.
+
+TODO: more examples (integrate/support ins Spiel bringen)}
 }
 \description{
-Built-in kernels are S3 Objects, holding a function and its support.
+The kernels in this package are S3 objects, holding a function and its support.
+They are a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}.
 }
 \details{
 {
@@ -50,4 +56,5 @@ legend("topright",
 }
 \seealso{
 \code{\link[KDE:validate_Kernel]{validate_Kernel}}
+\code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
 }

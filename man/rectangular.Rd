@@ -13,8 +13,12 @@ rectangular
 \arguments{
 \item{u}{vector of numerical values}
 }
+\value{
+returning evaluation of the kernel function in u.
+}
 \description{
-The rectangular function is used as a \link[KDE:Kernel]{kernel}.
+The rectangular function is used as the function for the S3 object \link[KDE:Kernel]{kernel}.
+Its support is given by \code{(-1,1)}.
 }
 \seealso{
 \code{\link[KDE:Kernel]{kernels}} for more information about kernels.

@@ -42,7 +42,7 @@ kernel_transform <- function(kernel, sample, h) {
 
   fun <- evaluate_safe(kernel)
 
-  function(x) {
+  function(x){
     fun((x-sample)/h)/h
   }
 }

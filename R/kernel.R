@@ -1,7 +1,8 @@
 #' Kernel
 #'
 #' @description
-#' Built-in kernels are S3 Objects, holding a function and its support.
+#' The kernels in this package are S3 objects, holding a function and its support.
+#' They are a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}.
 #'
 #' @details{
 #' A kernel is a real valued, integrable function, such that its integral over the real numbers equals one.
@@ -21,10 +22,15 @@
 #'   \item{\code{\link[KDE:silverman]{silverman}}}
 #'   }
 #' }
-#' @param u vector containing numerical values.
 #'
-#' @return returning evaluation of the kernel function in u.
+#' @param fun an \code{R} function taking a single numeric argument and
+#'   returning a numeric vector of the same length: see 'Details'.
+#' @param support a numerical vector of length 2 containing the lower- and
+#'   upperbound in the first and second entry respectively.
+#'   \code{IntegrableFunction} will try to find bounds on the support itself if
+#'   \code{NULL} is passed: see 'Details' of \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}.
 #'
+#' TODO: more examples (integrate/support ins Spiel bringen)
 #' @examples
 #' x <- seq(from = -4, to = 4, length.out = 1000)
 #' plot(x, gaussian$fun(x),
@@ -39,6 +45,7 @@
 #'
 #' @seealso
 #' \code{\link[KDE:validate_Kernel]{validate_Kernel}}
+#' \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
 #'
 #' @export
 Kernel <- function(fun, support) {
@@ -48,17 +55,18 @@ Kernel <- function(fun, support) {
 }
 
 #' Validation if object is a kernel function.
+#' TODO: umschreiben/mit Kernel zusammenfassen
 #'
 #' @description
 #' The \code{is_kernel()} function is used for validating a \link[KDE:Kernel]{Kernel}.
 #' It has to be a integrable, numerical function with integral over R equal to one.
 #'
 #' @details
-#' The is_kernel function works with centered kernels, searching a non-zero interval around the center,
-#' checking integrability over that interval.
+#' Hence a Kernel is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}},
+#' it makes use of [validate_IntegrableFunction].
+#' In addition, it will check wether the object is of class \link[KDE:Kernel]{Kernel} and if the integral over its support equals one.
 #'
 #' @param object the object to be tested.
-#' @param center the center of the function object. Default value is zero.
 #'
 #' @return Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
 #'
@@ -75,13 +83,15 @@ Kernel <- function(fun, support) {
 #' @include evaluate.R
 #' @export
 validate_Kernel <- function(obj){
-  if(!inherits(obj, "Kernel")) return(FALSE)
+  stopifnot("object has to be of class Kernel"=inherits(obj, "Kernel"))
   validate_IntegrableFunction(obj)
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
-  isTRUE(abs(integrate(evaluate_safe(obj), lower = lower, upper = upper)[[1]] - 1)
-         < integrate(evaluate_safe(obj), lower = lower, upper = upper)[[2]])
+  stopifnot("The integral of a kernel over its support has to be one"=
+              (abs(integrate(evaluate_safe(obj), lower = lower, upper = upper)[[1]] - 1)
+         < integrate(evaluate_safe(obj), lower = lower, upper = upper)[[2]]))
+  invisible(obj)
 }
 
 new_Kernel <- function(fun, support, ..., subclass=NULL){

@@ -30,6 +30,11 @@
 #' structure of the \code{fun} and \code{support} entries, such that the returned
 #' object passes a test using [validate_IntegrableFunction()].
 #'
+#' @seealso
+#' * \code{\link[KDE:Kernel]{Kernel}} for more information about Kernel.
+#'
+#' * \code{\link[KDE:Density]{Density}} for more information about Density.
+#'
 #' @export
 IntegrableFunction <- function(fun, support=NULL){
   func <- new_IntegrableFunction(fun, support)
@@ -98,6 +103,7 @@ validate_IntegrableFunction <- function(x){
   invisible(x)
 }
 
+# TODO: Why and not how or what
 # This function is only called by the public IntegrableFunction constructor followed by a call of validate_IntegrableFunction.
 # Further checking is done by validate_IntegrableFunction.
 new_IntegrableFunction <- function(fun, support=NULL, ..., subclass=NULL){

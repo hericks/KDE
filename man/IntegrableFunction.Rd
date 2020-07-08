@@ -40,3 +40,9 @@ particular it assigns the correct class attribute and verifies the correct
 structure of the \code{fun} and \code{support} entries, such that the returned
 object passes a test using \code{\link[=validate_IntegrableFunction]{validate_IntegrableFunction()}}.
 }
+\seealso{
+\itemize{
+\item \code{\link[KDE:Kernel]{Kernel}} for more information about Kernel.
+\item \code{\link[KDE:Density]{Density}} for more information about Density.
+}
+}

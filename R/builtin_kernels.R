@@ -10,9 +10,12 @@ rectangular_function <- function(u){
 #' Rectangular Function
 #'
 #' @description
-#' The rectangular function is used as a \link[KDE:Kernel]{kernel}.
+#' The rectangular function is used as the function for the S3 object \link[KDE:Kernel]{kernel}.
+#' Its support is given by \code{(-1,1)}.
 #'
 #' @param u vector of numerical values
+#'
+#' @return returning evaluation of the kernel function in u.
 #'
 #' @family kernels
 #'
@@ -21,7 +24,7 @@ rectangular_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-rectangular <- Kernel(rectangular_function, c(-Inf,Inf))
+rectangular <- Kernel(rectangular_function, c(-1,1))
 
 triangular_function <- function(u){
   check_kernel_conditions(u)
@@ -41,7 +44,7 @@ triangular_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-triangular <- Kernel(triangular_function, c(-Inf,Inf))
+triangular <- Kernel(triangular_function, c(-1,1))
 
 
 epanechnikov_function <- function(u){
@@ -63,7 +66,7 @@ epanechnikov_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-epanechnikov <- Kernel(epanechnikov_function, c(-Inf,Inf))
+epanechnikov <- Kernel(epanechnikov_function, c(-1,1))
 
 biweight_function <- function(u){
   check_kernel_conditions(u)
@@ -84,7 +87,7 @@ biweight_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-biweight <- Kernel(biweight_function, c(-Inf,Inf))
+biweight <- Kernel(biweight_function, c(-1,1))
 
 triweight_function <- function(u){
   check_kernel_conditions(u)
@@ -105,7 +108,7 @@ triweight_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-triweight <- Kernel(triweight_function, c(-Inf,Inf))
+triweight <- Kernel(triweight_function, c(-1,1))
 
 tricube_function <- function(u){
   check_kernel_conditions(u)
@@ -126,7 +129,7 @@ tricube_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-tricube <- Kernel(tricube_function, c(-Inf,Inf))
+tricube <- Kernel(tricube_function, c(-1,1))
 
 gaussian_function <- function(u){
   check_kernel_conditions(u)
@@ -168,7 +171,7 @@ cosine_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-cosine <- Kernel(cosine_function, c(-Inf,Inf))
+cosine <- Kernel(cosine_function, c(-1,1))
 
 logistic_function <- function(u){
   check_kernel_conditions(u)
@@ -193,7 +196,7 @@ logistic <- Kernel(logistic_function, c(-Inf,Inf))
 
 sigmoid_function <- function(u){
   check_kernel_conditions(u)
-  return(2/pi * (1/(exp(u) + exp(-u)) ) )
+  return(2/pi * (1/(exp(u) + exp(-u))))
 }
 
 #' Sigmoid Function
