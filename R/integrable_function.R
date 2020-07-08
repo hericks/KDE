@@ -125,9 +125,9 @@ validate_IntegrableFunction <- function(x){
   invisible(x)
 }
 
-# TODO: Why and not how or what
-# This function is only called by the public IntegrableFunction constructor followed by a call of validate_IntegrableFunction.
-# Further checking is done by validate_IntegrableFunction.
+# new_IntegrableFunction is only called by the public IntegrableFunction constructor
+# followed by a call of validate_IntegrableFunction. Further checking is done by
+# validate_IntegrableFunction.
 new_IntegrableFunction <- function(fun, support=NULL, ..., subclass=NULL){
   stopifnot("class of fun has to be function"=is.function(fun))
 
