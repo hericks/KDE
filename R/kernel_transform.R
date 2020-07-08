@@ -1,9 +1,12 @@
 #' Shifting kernels to a coefficient and applying a bandwidth.
 #'
-#' @param kernel a kernel function.
+#' @description
+#' The \code{kernel_transform} is shifting and applying a bandwidth on a kernel function.
+#'
+#' @param kernel a kernel object.
 #' @param sample the observation/coefficient as a numerical scalar.
 #' @param h the bandwidth as a numerical scalar.
-#' @return The shifted and scaled kernel function.
+#' @return the transformed, i.e. shifted and scaled kernel function.
 #'
 #' @examples
 #' # shifting the gaussian kernel
@@ -12,7 +15,7 @@
 #' stretched_gaussian <- kernelTransform(gaussian, 0, 2)
 #' x <- seq(from = -5, to = 5, length.out = 1000)
 #'
-#' plot(x, gaussian(x),
+#' plot(x, gaussian$fun(x),
 #'      xlim=c(-5,5), ylim=c(0,1),
 #'      main="Kernels", xlab="", ylab="",
 #'      col="black", type="l")
