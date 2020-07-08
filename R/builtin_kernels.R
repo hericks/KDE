@@ -10,8 +10,17 @@ rectangular_function <- function(u){
 #' Rectangular Function
 #'
 #' @description
-#' The rectangular function is used as the function for the S3 object \link[KDE:Kernel]{kernel}.
-#' Its support is given by \code{(-1,1)}.
+#' The rectangular function is used as the function for an S3 object \code{rectangular} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{rectangular$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * rectangular function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -20,7 +29,7 @@ rectangular_function <- function(u){
 #' @family kernels
 #'
 #' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -32,15 +41,28 @@ triangular_function <- function(u){
 }
 
 #' Triangular Function
+#'
 #' @description
-#' The triangular function is used as a \link[KDE:Kernel]{kernel}.
+#' The triangular function is used as the function for an S3 object \code{triangular} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{triangular$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * triangular function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
+#'
+#' @return returning evaluation of the kernel function in u.
 #'
 #' @family kernels
 #'
 #' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -55,14 +77,26 @@ epanechnikov_function <- function(u){
 #' Epanechnikov Function
 #'
 #' @description
-#' The epanechnikov function is used as a \link[KDE:Kernel]{kernel}.
+#' The epanechnikov function is used as the function for an S3 object \code{epanechnikov} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{epanechnikov$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * epanechnikov function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
+#'
+#' @return returning evaluation of the kernel function in u.
 #'
 #' @family kernels
 #'
 #' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -76,14 +110,26 @@ biweight_function <- function(u){
 #' Biweight Function
 #'
 #' @description
-#' The biweight function is used as a \link[KDE:Kernel]{kernel}.
+#' The biweight function is used as the function for an S3 object \code{biweight} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{biweight$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * biweight function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
+#'
+#' @return returning evaluation of the kernel function in u.
 #'
 #' @family kernels
 #'
 #' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export

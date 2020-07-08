@@ -5,19 +5,26 @@
 \alias{biweight}
 \title{Biweight Function}
 \format{
-An object of class \code{Kernel} (inherits from \code{IntegrableFunction}) of length 2.
+An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+\itemize{
+\item biweight function \code{fun}
+\item support = \code{c(-1,1)}.
+}
 }
 \usage{
-biweight
+\code{biweight$fun(u)}
 }
 \arguments{
 \item{u}{vector of numerical values}
 }
+\value{
+returning evaluation of the kernel function in u.
+}
 \description{
-The biweight function is used as a \link[KDE:Kernel]{kernel}.
+The biweight function is used as the function for an S3 object \code{biweight} of class \link[KDE:Kernel]{Kernel}.
 }
 \seealso{
-\code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+\code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{cosine}},

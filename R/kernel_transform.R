@@ -25,7 +25,7 @@
 #' @export
 kernel_transform <- function(kernel, sample, h) {
   # Kernel conditions
-  stopifnot("the kernel has to be valid" = validate_Kernel(kernel))
+  tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
 
   # x_i conditions
   stopifnot(is.numeric(sample))
@@ -40,10 +40,8 @@ kernel_transform <- function(kernel, sample, h) {
   force(sample)
   force(h)
 
-  fun <- evaluate_safe(kernel)
-
   function(x){
-    fun((x-sample)/h)/h
+    kernel$fun((x-sample)/h)/h
   }
 }
 

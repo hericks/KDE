@@ -18,7 +18,7 @@ upperbound in the first and second entry respectively.
 TODO: more examples (integrate/support ins Spiel bringen)}
 }
 \description{
-The kernels in this package are S3 objects, holding a function and its support.
+The kernels in this package are S3 objects based on a list, holding a function and its support.
 They are a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}.
 }
 \details{
@@ -26,7 +26,7 @@ They are a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctio
 A kernel is a real valued, integrable function, such that its integral over the real numbers equals one.
 The built-in kernel functions are vectorised.
 \describe{
-\strong{List of built-in kernels:}
+\strong{List of built-in kernels functions:}
 \item{\code{\link[KDE:rectangular]{rectangular}}}
 \item{\code{\link[KDE:triangular]{triangular}}}
 \item{\code{\link[KDE:epanechnikov]{epanechnikov}}}
