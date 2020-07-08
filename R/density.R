@@ -23,9 +23,8 @@ validate_Density <- function(obj){
   # prevent double checking with validate_integrable function
   stopifnot("density functions are non-negative" = all(object(testing_points) >= 0))
 
-  stopifnot("The integral of a kernel over its support has to be one"=
-              (abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
-               < integrate(object, lower = lower, upper = upper)[[2]]))
+  stopifnot("The integral of a density over its support has to be one"=
+              isTRUE(all.equal(integrate(object, lower = lower, upper = upper)[[1]], 1)))
   invisible(obj)
 }
 

@@ -87,9 +87,8 @@ validate_Kernel <- function(obj){
   object <- obj$fun
   lower <- obj$support[1]
   upper <- obj$support[2]
-  stopifnot("The integral of a kernel over its support has to be one"=
-              (abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
-         < integrate(object, lower = lower, upper = upper)[[2]]))
+  stopifnot("The integral of a density over its support has to be one"=
+              isTRUE(all.equal(integrate(object, lower = lower, upper = upper)[[1]], 1)))
   invisible(obj)
 }
 
