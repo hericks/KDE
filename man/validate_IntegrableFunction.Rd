@@ -16,21 +16,12 @@ This function serves as a validator for the S3 class
 potential flaws.
 }
 \details{
-The validator \code{validate_IntegrableFunction()} can be used to
+The validator \code{validate_IntegrableFunction} can be used to
 verify objects as formally correct S3 objects of class
 \link{IntegrableFunction}. In particular the formal structure is ensured.
 Additionally this function \emph{tries to} (see 'Special Attention')
 validate the additional conditions of valid integrable functions (as
-specified in \link{IntegrableFunction}), such that
-\enumerate{
-\item The represented function (the \code{fun} entry) is vectorised in its
-argument, returning numerical vectors of the same length only.
-\item The represented function returns zeros for inputs outside of the support
-interval specified in the \code{support} entry.
-\item \code{integrate} can be used to integrate the represented function over
-the interval specified in the \code{support} entry without throwing an
-error.
-}
+specified in the first 'Details'-paragraph of \link{IntegrableFunction}).
 }
 \section{Special Attention}{
 
@@ -41,12 +32,13 @@ represented function returns valid results over nearly all its range, it is
 possible that this function misses unexpected/wrong return values. Thus,
 using \link{IntegrableFunction} or \link{validate_IntegrableFunction} to construct
 and validate objects representing integrable functions is \emph{not}
-sufficient to ensure the listed properties [1-3], but more of a
+sufficient to ensure the properties [1-3] listed in the first
+'Details'-paragraph of \link{IntegrableFunction}, but serves more as a
 sanity-check.
 }
 
 \seealso{
 \itemize{
-\item \link{IntegrableFunction} for more information about the integrable functions and the S3 class \code{IntegrableFunctions}.
+\item \link{IntegrableFunction} for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
 }
 }

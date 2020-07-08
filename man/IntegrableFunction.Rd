@@ -17,28 +17,33 @@ upperbound in the first and second entry respectively.
 }
 \description{
 Many functions of the KDE package work with densities and
-kernels, which are integrable in particular the S3 class
-\code{IntegrableFunction} tries to ensure some of the properties of
-integrable functions (see 'Details') and serves as superclass for the more
-specific S3 classes \link{Density} and \link{Kernel}.
+kernels, which are integrable (see: 'Details' for exact requirements). The
+S3 class \code{IntegrableFunction} tries to ensure some of the properties
+of integrable functions and serves as superclass for the
+more specific S3 classes \link{Density} and \link{Kernel}.
 }
 \details{
-Integrable functions as \code{R} functions taking a single numeric
-argument, returning a numeric vector of the same length. Outside of its
-support they are required to return zero. Also \code{integrate} should be
-able to integrate the function over its support.
+Integrable functions as \code{R} functions are required to
+\enumerate{
+\item be vectorised in its argument, taking a single numeric argument,
+returning a numerical vector of the same length only
+\item return zero for inputs outside their support
+\item can be integrated over their support using \code{integrate} without
+throwing an error
+}
 
 The functions in this package don't just take \code{R} functions satisfying
 these conditions, but objects of S3 class \code{IntegrableFunction} (or one
 of its subclasses \code{Kernel}, \code{Density}).
 
-The S3 class \code{IntegrableFunction(fun, support)} exists to ensure some
-of the most basic properties of integrable functions. The class is build on
-lists containing two named entries \code{fun} and \code{support}
+The S3 class \code{IntegrableFunction} exists to ensure some of the most
+basic properties of integrable functions. The class is build on lists
+containing two named entries \code{fun} and \code{support}
 \itemize{
-\item \strong{\code{fun}} is an \code{R} function taking a single numeric argument
-and returning a numeric vector of the same length. This function should
-return zero outside of the interval given in the \code{support} entry.
+\item \strong{\code{fun}} is an \code{R} function (the represented function) taking
+a single numeric argument and returning a numeric vector of the same
+length. This function should return zero outside of the interval given in
+the \code{support} entry.
 \item \strong{\code{support}} is a numeric vector of length 2 containing a lower-
 and upperbound for the support of the function stored in \code{fun} in its
 first and second entry respectively. In particular the values \code{-Inf}
@@ -48,12 +53,13 @@ and \code{Inf} are allowed.
 The constructor \code{IntegrableFunction} tries to construct a valid
 \code{IntegrableFunction} object based on the passed arguments. Returned
 objects are guaranteed to pass the validator \link{validate_IntegrableFunction}
-(\bold{Attention:} This does not guarantee the conditions in the first 'Details'
-paragraph: see \link{validate_IntegrableFunction}.).
+(\bold{Attention:} This does not guarantee the conditions in the first
+'Details' paragraph: see \link{validate_IntegrableFunction}.).
 }
 \seealso{
 \itemize{
-\item \code{\link[KDE:Kernel]{Kernel}} for more information about Kernel.
-\item \code{\link[KDE:Density]{Density}} for more information about Density.
+\item \code{\link[KDE:Kernel]{Kernel}} for more information about
+Kernel. * \code{\link[KDE:Density]{Density}} for more information about
+Density.
 }
 }
