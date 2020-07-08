@@ -34,27 +34,31 @@
 #'  samples from the density function \code{f_den}.
 #'@export
 
+rejection_sampling <- function(f_den, g_den, g, M){
+  # M is constant in the real numbers
+  stopifnot(is.numeric(M))
+  stopifnot("M has length 1" = all.equal(length(M), 1))
 
-rejection_sampling <- function(f_den, g_den, g, M) {
+  # f_den, g_den should be probability density functions
+  stopifnot("f_den has to be a Density obj" = all.equal(validate_Density(f_den), f_den))
+  stopifnot("g_den has to be a Density obj" = all.equal(validate_Density(g_den), g_den))
+  stopifnot("g has to be a numerical function" = class(g) == "function")
+  # relation between f_den,M and g_den that has to be satisfied
+  lower <- f_den$support[1]
+  upper <- f_den$support[2]
+
+  testing_points <- seq(max(lower, -1e10), min(upper, 1e10), length.out=1e4)
+
+  stopifnot("relation between f_den,M and g_den that has to be satisfied"= all(f_den$fun(testing_points) <= M * g_den$fun(testing_points)))
+
+  sampling(f_den$fun, g_den$fun, g, M)
+  }
+
+sampling <- function(f_den, g_den, g, M) {
   force(f_den)
   force(g_den)
   force(g)
   force(M)
-
-  # M is constant in the real numbers
-  stopifnot(is.numeric(M))
-
-  # f_den, g_den should be probability density functions
-  stopifnot(is_density(g_den) == TRUE)
-  stopifnot(is_density(g_den) == TRUE)
-
-  # relation between f_den,M and g_den that has to be satisfied
-  temp <- runif(1e6, -1e12, 1e12)
-  for (v in temp) {
-    if (f_den(v) > M*g_den(v)) {
-      return(FALSE)
-    }
-  }
 
   function(n) {
     # n should be a nonnegative integer
