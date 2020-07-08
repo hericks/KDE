@@ -25,7 +25,7 @@ Other kernels:
 \code{\link{epanechnikov}},
 \code{\link{gaussian}},
 \code{\link{rectangular}},
-\code{\link{sigmoidFunction}},
+\code{\link{sigmoid}},
 \code{\link{silverman}},
 \code{\link{triangular}},
 \code{\link{tricube}},

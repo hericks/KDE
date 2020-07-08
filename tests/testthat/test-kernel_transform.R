@@ -4,6 +4,12 @@ test_that("kernel needs to be a kernel function",{
   expect_error(kernel_transform(non_kernel_fun,0,1))
 })
 
+test_that("kernel transform does not change the kernel object",{
+  gaussian_temp <- gaussian
+  kernel_transform(gaussian_temp, 1, 5)
+  expect_true(identical(gaussian_temp, gaussian))
+})
+
 test_that("bandwidth has to be positive numerical scalar",{
   non_numerical <- "a"
   expect_error(kernel_transform(gaussian,0,non_numerical))

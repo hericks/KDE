@@ -26,7 +26,7 @@ Other kernels:
 \code{\link{gaussian}},
 \code{\link{logistic}},
 \code{\link{rectangular}},
-\code{\link{sigmoidFunction}},
+\code{\link{sigmoid}},
 \code{\link{silverman}},
 \code{\link{triangular}},
 \code{\link{triweight}}

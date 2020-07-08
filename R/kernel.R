@@ -94,6 +94,7 @@ validate_Kernel <- function(obj){
   invisible(obj)
 }
 
+#' @include integrable_function.R
 new_Kernel <- function(fun, support, ..., subclass=NULL){
 
   new_IntegrableFunction(fun,support, subclass=c(subclass,"Kernel"))

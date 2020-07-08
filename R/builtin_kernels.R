@@ -259,7 +259,7 @@ sigmoid_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-sigmoidFunction <- Kernel(sigmoid_function, c(-Inf,Inf))
+sigmoid <- Kernel(sigmoid_function, c(-Inf,Inf))
 
 silverman_function <- function(u){
   check_kernel_conditions(u)
