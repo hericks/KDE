@@ -110,7 +110,9 @@ validate_IntegrableFunction <- function(x){
   stopifnot("Entry 'support' must be of length 2"=identical(length(support), 2L))
   stopifnot("Entry 'support' must contain lower- before upperbound"=support[1] < support[2])
 
-  # TODO: test that fun is equal to zero outside of support
+  offsets <- 10**(-1:10)
+  testing_values <- c(f(support[1] - offsets), f(support[2] + offsets))
+  stopifnot("Entry 'fun' has to be zero outside of support"=all(sapply(testing_values, function(x) isTRUE(all.equal(x, 0)))))
 
   # to test the the integrability on the given support
   tryCatch({
