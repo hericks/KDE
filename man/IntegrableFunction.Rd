@@ -17,7 +17,7 @@ upperbound in the first and second entry respectively.
 }
 \description{
 Many functions of the KDE package work with densities and
-kernels, which are integrable in particular The S3 class
+kernels, which are integrable in particular the S3 class
 \code{IntegrableFunction} tries to ensure some of the properties of
 integrable functions (see 'Details') and serves as superclass for the more
 specific S3 classes \link{Density} and \link{Kernel}.

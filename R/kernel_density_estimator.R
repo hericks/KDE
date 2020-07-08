@@ -10,7 +10,6 @@
 #'
 #' @return The constructed kernel density estimator. Therefore a function vectorised in its evaluation point returning the estimator at these points.
 #'
-#' TODO
 #'
 #' @seealso
 #' * [kernels()] for a list of already implemented kernels.

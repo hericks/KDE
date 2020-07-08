@@ -80,7 +80,6 @@ Kernel <- function(fun, support) {
 #' is_kernel(no_kernel)
 #'
 #' @include integrable_function.R
-#' @include evaluate.R
 #' @export
 validate_Kernel <- function(obj){
   stopifnot("object has to be of class Kernel"=inherits(obj, "Kernel"))

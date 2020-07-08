@@ -15,8 +15,6 @@ kernelDensityEstimator(kernel, samples, bandwidth = 1)
 }
 \value{
 The constructed kernel density estimator. Therefore a function vectorised in its evaluation point returning the estimator at these points.
-
-TODO
 }
 \description{
 The kernelDensityEstimator function factory takes observations, returning

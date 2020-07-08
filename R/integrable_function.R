@@ -1,7 +1,7 @@
 #' Integrable Functions
 #'
 #' @description Many functions of the KDE package work with densities and
-#'   kernels, which are integrable in particular The S3 class
+#'   kernels, which are integrable in particular the S3 class
 #'   \code{IntegrableFunction} tries to ensure some of the properties of
 #'   integrable functions (see 'Details') and serves as superclass for the more
 #'   specific S3 classes [Density] and [Kernel].
@@ -111,7 +111,7 @@ validate_IntegrableFunction <- function(x){
   stopifnot("Entry 'support' must contain lower- before upperbound"=support[1] < support[2])
 
   offsets <- 10**(-1:10)
-  testing_values <- c(f(support[1] - offsets), f(support[2] + offsets))
+  testing_values <- c(fun(max(support[1],-1e10) - offsets), fun(min(support[2], 1e10) + offsets))
   stopifnot("Entry 'fun' has to be zero outside of support"=all(sapply(testing_values, function(x) isTRUE(all.equal(x, 0)))))
 
   # to test the the integrability on the given support
