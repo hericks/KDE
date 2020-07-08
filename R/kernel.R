@@ -48,7 +48,7 @@
 #' \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
 #'
 #' @export
-Kernel <- function(fun, support) {
+Kernel <- function(fun, support = NULL) {
   kern <- new_Kernel(fun, support)
   validate_Kernel(kern)
   kern

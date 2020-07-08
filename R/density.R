@@ -2,7 +2,7 @@
 #' @include integrable_function.R
 #'
 #' @export
-Density <- function(fun, support){
+Density <- function(fun, support = NULL){
   den <- new_Density(fun, support)
   validate_Density(den)
   den
