@@ -2,36 +2,51 @@
 % Please edit documentation in R/integrable_function.R
 \name{validate_IntegrableFunction}
 \alias{validate_IntegrableFunction}
-\title{Validate Integrable-Function Class}
+\title{Validator for S3 class \code{IntegrableFunction}}
 \usage{
 validate_IntegrableFunction(x)
 }
 \arguments{
-\item{x}{The object to validate as S3 object of class \code{IntegrableFunction}.}
+\item{x}{an \code{R} object to validate as object of S3 class
+\code{IntegrableFunction}.}
 }
 \description{
-This function serves as a validator for the S3 class \code{IntegrableFunction}.
-See 'Details' for further information and potential flaws.
+This function serves as a validator for the S3 class
+\code{IntegrableFunction}. See 'Details' for further information and
+potential flaws.
 }
 \details{
-This function tries to verify an object as S3 object of class
+The validator \code{validate_IntegrableFunction()} can be used to
+verify objects as formally correct S3 objects of class
 \link{IntegrableFunction}. In particular the formal structure is ensured.
-Additionally this function tries to validate the additional conditions of
-valid \code{IntegrableFunction} objects, such that
+Additionally this function \emph{tries to} (see 'Special Attention')
+validate the additional conditions of valid integrable functions (as
+specified in \link{IntegrableFunction}), such that
 \enumerate{
-\item The \code{fun} entry is vectorised in its argument, returning numerical
-values only.
-\item The \code{fun} entry returns zeros for inputs outside of
-the support interval specified in the \code{support} entry.
-\item \code{integrate} can be used to integrate \code{fun} over the interval
-\code{entry} without throwing an error.
+\item The represented function (the \code{fun} entry) is vectorised in its
+argument, returning numerical vectors of the same length only.
+\item The represented function returns zeros for inputs outside of the support
+interval specified in the \code{support} entry.
+\item \code{integrate} can be used to integrate the represented function over
+the interval specified in the \code{support} entry without throwing an
+error.
+}
+}
+\section{Special Attention}{
+
+
+Like all numerical routines, \code{validate_IntegrableFunction} can
+evaluate the represented function on a finite set of points only. If the
+represented function returns valid results over nearly all its range, it is
+possible that this function misses unexpected/wrong return values. Thus,
+using \link{IntegrableFunction} or \link{validate_IntegrableFunction} to construct
+and validate objects representing integrable functions is \emph{not}
+sufficient to ensure the listed properties [1-3], but more of a
+sanity-check.
 }
 
-Like all numerical routines, this function can evaluate represented function
-on a finite set of points only. If the represented function returns valid
-results over nearly all its range, it is possible that this function misses
-unexpected/wrong return values. Thus, using \link{IntegrableFunction} or
-\link{validate_IntegrableFunction} to construct and validate objects representing
-integrable functions is \emph{not} sufficient to ensure the listed
-properties [1-3], but more of a sanity-check.
+\seealso{
+\itemize{
+\item \link{IntegrableFunction} for more information about the integrable functions and the S3 class \code{IntegrableFunctions}.
+}
 }

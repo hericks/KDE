@@ -1,38 +1,48 @@
-#' Integrable-Function Classes
+#' Integrable Functions
 #'
-#' @description The S3 class \code{IntegrableFunction} serves as superclass for
-#' the S3 classes \code{Density} and \code{Kernel}. The constructor tries to
-#' construct a valid \code{IntegrableFunction}.
+#' @description Many functions of the KDE package work with densities and
+#'   kernels, which are integrable in particular The S3 class
+#'   \code{IntegrableFunction} tries to ensure some of the properties of
+#'   integrable functions (see 'Details') and serves as superclass for the more
+#'   specific S3 classes [Density] and [Kernel].
 #'
 #' @param fun an \code{R} function taking a single numeric argument and
 #'   returning a numeric vector of the same length: see 'Details'.
 #' @param support a numerical vector of length 2 containing the lower- and
 #'   upperbound in the first and second entry respectively.
 #'   \code{IntegrableFunction} will try to find bounds on the support itself if
-#'   \code{NULL} is passed: see 'Details'.
+#'   \code{NULL} is passed.
 #'
-#' @details In this package the S3 class \code{IntegrableFunction} exists to ensure
-#' the integrability of \code{R} functions. Valid \code{IntegrableFunction} objects are build
-#' on lists and contain two names entries:
+#' @details Integrable functions as \code{R} functions taking a single numeric
+#'   argument, returning a numeric vector of the same length. Outside of its
+#'   support they are required to return zero. Also \code{integrate} should be
+#'   able to integrate the function over its support.
 #'
-#' * \strong{`fun`} is an \code{R} function taking a single numeric argument and
-#' returning a numeric vector of the same length. This function should return
-#' zero outside of the interval given in the \code{support} entry.
+#'   The functions in this package don't just take \code{R} functions satisfying
+#'   these conditions, but objects of S3 class \code{IntegrableFunction} (or one
+#'   of its subclasses \code{Kernel}, \code{Density}).
 #'
-#' * \strong{`support`} is a numeric vector of length 2 containing a lower- and
-#' upperbound for the support of the function stored in \code{fun} in its first
-#' and second entry respectively. In particular the values \code{-Inf} and
-#' \code{Inf} are allowed.
+#'   The S3 class \code{IntegrableFunction(fun, support)} exists to ensure some
+#'   of the most basic properties of integrable functions. The class is build on
+#'   lists containing two named entries \code{fun} and \code{support}
 #'
-#' The constructor \code{IntegrableFunction} tries to construct an
-#' \code{IntegrableFunction} object based on the provided arguments. In
-#' particular it assigns the correct class attribute and verifies the correct
-#' structure of the \code{fun} and \code{support} entries, such that the returned
-#' object passes a test using [validate_IntegrableFunction()].
+#'   * \strong{`fun`} is an \code{R} function taking a single numeric argument
+#'   and returning a numeric vector of the same length. This function should
+#'   return zero outside of the interval given in the \code{support} entry.
+#'
+#'   * \strong{`support`} is a numeric vector of length 2 containing a lower-
+#'   and upperbound for the support of the function stored in \code{fun} in its
+#'   first and second entry respectively. In particular the values \code{-Inf}
+#'   and \code{Inf} are allowed.
+#'
+#'   The constructor \code{IntegrableFunction} tries to construct a valid
+#'   \code{IntegrableFunction} object based on the passed arguments. Returned
+#'   objects are guaranteed to pass the validator [validate_IntegrableFunction]
+#'   (\bold{Attention:} This does not guarantee the conditions in the first 'Details'
+#'   paragraph: see [validate_IntegrableFunction].).
 #'
 #' @seealso
 #' * \code{\link[KDE:Kernel]{Kernel}} for more information about Kernel.
-#'
 #' * \code{\link[KDE:Density]{Density}} for more information about Density.
 #'
 #' @export
@@ -42,35 +52,45 @@ IntegrableFunction <- function(fun, support=NULL){
   func
 }
 
-
-#' Validate Integrable-Function Class
+#' Validator for S3 class \code{IntegrableFunction}
 #'
-#' @description This function serves as a validator for the S3 class \code{IntegrableFunction}.
-#' See 'Details' for further information and potential flaws.
+#' @description This function serves as a validator for the S3 class
+#'   \code{IntegrableFunction}. See 'Details' for further information and
+#'   potential flaws.
 #'
-#' @param x The object to validate as S3 object of class \code{IntegrableFunction}.
+#' @param x an \code{R} object to validate as object of S3 class
+#'   \code{IntegrableFunction}.
 #'
-#' @details This function tries to verify an object as S3 object of class
+#' @details The validator \code{validate_IntegrableFunction()} can be used to
+#'   verify objects as formally correct S3 objects of class
 #'   [IntegrableFunction]. In particular the formal structure is ensured.
-#'   Additionally this function tries to validate the additional conditions of
-#'   valid \code{IntegrableFunction} objects, such that
+#'   Additionally this function \emph{tries to} (see 'Special Attention')
+#'   validate the additional conditions of valid integrable functions (as
+#'   specified in [IntegrableFunction]), such that
 #'
-#'   1. The \code{fun} entry is vectorised in its argument, returning numerical
-#'   values only.
+#'   1. The represented function (the \code{fun} entry) is vectorised in its
+#'   argument, returning numerical vectors of the same length only.
 #'
-#'   2. The \code{fun} entry returns zeros for inputs outside of
-#'   the support interval specified in the \code{support} entry.
+#'   2. The represented function returns zeros for inputs outside of the support
+#'   interval specified in the \code{support} entry.
 #'
-#'   3. \code{integrate} can be used to integrate \code{fun} over the interval
-#'   \code{entry} without throwing an error.
+#'   3. \code{integrate} can be used to integrate the represented function over
+#'   the interval specified in the \code{support} entry without throwing an
+#'   error.
 #'
-#'  Like all numerical routines, this function can evaluate represented function
-#'  on a finite set of points only. If the represented function returns valid
-#'  results over nearly all its range, it is possible that this function misses
-#'  unexpected/wrong return values. Thus, using [IntegrableFunction] or
-#'  [validate_IntegrableFunction] to construct and validate objects representing
-#'  integrable functions is \emph{not} sufficient to ensure the listed
-#'  properties \[1-3\], but more of a sanity-check.
+#' @section Special Attention:
+#'
+#'   Like all numerical routines, \code{validate_IntegrableFunction} can
+#'   evaluate the represented function on a finite set of points only. If the
+#'   represented function returns valid results over nearly all its range, it is
+#'   possible that this function misses unexpected/wrong return values. Thus,
+#'   using [IntegrableFunction] or [validate_IntegrableFunction] to construct
+#'   and validate objects representing integrable functions is \emph{not}
+#'   sufficient to ensure the listed properties \[1-3\], but more of a
+#'   sanity-check.
+#'
+#' @seealso
+#' * [IntegrableFunction] for more information about the integrable functions and the S3 class \code{IntegrableFunctions}.
 #'
 #'@export
 validate_IntegrableFunction <- function(x){
