@@ -19,6 +19,10 @@ validate_Density <- function(obj){
   lower <- obj$support[1]
   upper <- obj$support[2]
 
+  testing_points <- seq(max(lower, -1e10), min(upper, 1e10), length.out=1e4)
+  # prevent double checking with validate_integrable function
+  stopifnot("density functions are non-negative" = all(object(testing_points) >= 0))
+
   stopifnot("The integral of a kernel over its support has to be one"=
               (abs(integrate(object, lower = lower, upper = upper)[[1]] - 1)
                < integrate(object, lower = lower, upper = upper)[[2]]))

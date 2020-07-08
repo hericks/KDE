@@ -5,12 +5,14 @@ test_that("a kernel should be built correctly",{
   ker <- Kernel(rectangular_function,c(-1,1))
   expect_equal(ker$fun, rectangular_function)
   expect_equal(ker$support, c(-1,1))
+  expect_true(inherits(ker, "Kernel"))
 
   # find_borders has to work on rectangular_function
   ker <- Kernel(rectangular_function, NULL)
   expect_equal(ker$fun, rectangular_function)
   # based on how find_borders works, it will find c(-10,10) as borders
   expect_equal(ker$support, c(-10,10))
+  expect_true(inherits(ker, "Kernel"))
 
   # the find_borders has to work on small bandwidth
   rectangular_function_a_e_zero <- function(u){
@@ -19,6 +21,7 @@ test_that("a kernel should be built correctly",{
   ker <- Kernel(rectangular_function_a_e_zero,NULL)
   expect_equal(0, integrate(rectangular_function_a_e_zero, -1, 1)[[1]])
   expect_equal(ker, Kernel(rectangular_function_a_e_zero,c(-0.01,0.01)))
+  expect_true(inherits(ker, "Kernel"))
 })
 
 test_that("kernel has to hold a valid support", {
