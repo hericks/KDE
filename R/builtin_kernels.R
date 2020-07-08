@@ -143,7 +143,16 @@ triweight_function <- function(u){
 #' Triweight Function
 #'
 #' @description
-#' The triweight function is used as a \link[KDE:Kernel]{kernel}.
+#' The triweight function is used as the function for an S3 object \code{triweight} of class \link[KDE:Kernel]{Kernel}.
+#' @usage
+#' \code{triweight$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * triweight function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -164,7 +173,16 @@ tricube_function <- function(u){
 #' Tricube Function
 #'
 #' @description
-#' The tricube function is used as a \link[KDE:Kernel]{kernel}.
+#' The tricube function is used as the function for an S3 object \code{tricube} of class \link[KDE:Kernel]{Kernel}.
+#' @usage
+#' \code{tricube$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * tricube function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -184,8 +202,17 @@ gaussian_function <- function(u){
 
 #' Gaussian Function
 #'
-#' @description
-#' The gaussian function is used as a \link[KDE:Kernel]{kernel}.
+#'@description
+#' The gaussian function is used as the function for an S3 object \code{gaussian} of class \link[KDE:Kernel]{Kernel}.
+#' @usage
+#' \code{gaussian$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * gaussian function \code{fun}
+#'
+#' * support = \code{c(-Inf,Inf)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -206,7 +233,16 @@ cosine_function <- function(u){
 #' Cosine Function
 #'
 #' @description
-#' The cosine function is used as a \link[KDE:Kernel]{kernel}.
+#' The cosine function is used as the function for an S3 object \code{cosine} of class \link[KDE:Kernel]{Kernel}.
+#' @usage
+#' \code{cosine$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * cosine function \code{fun}
+#'
+#' * support = \code{c(-1,1)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -227,7 +263,17 @@ logistic_function <- function(u){
 #' Logistic Function
 #'
 #' @description
-#' The logistic function is used as a \link[KDE:Kernel]{kernel}.
+#' The logistic function is used as the function for an S3 object \code{logistic} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{logistic$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * logistic function \code{fun}
+#'
+#' * support = \code{c(-Inf,Inf)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -248,7 +294,17 @@ sigmoid_function <- function(u){
 #' Sigmoid Function
 #'
 #' @description
-#' The sigmoid function is used as a \link[KDE:Kernel]{kernel}.
+#' The sigmoid function is used as the function for an S3 object \code{sigmoid} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{sigmoid$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * sigmoid function \code{fun}
+#'
+#' * support = \code{c(-Inf,Inf)}.
 #'
 #' @param u vector of numerical values
 #'
@@ -259,7 +315,7 @@ sigmoid_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-sigmoidFunction <- Kernel(sigmoid_function, c(-Inf,Inf))
+sigmoid <- Kernel(sigmoid_function, c(-Inf,Inf))
 
 silverman_function <- function(u){
   check_kernel_conditions(u)
@@ -269,7 +325,17 @@ silverman_function <- function(u){
 #' Silverman Function
 #'
 #' @description
-#' The silverman function is used as a \link[KDE:Kernel]{kernel}.
+#' The silverman function is used as the function for an S3 object \code{silverman} of class \link[KDE:Kernel]{Kernel}.
+#'
+#' @usage
+#' \code{silverman$fun(u)}
+#'
+#' @format
+#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#'
+#' * silverman function \code{fun}
+#'
+#' * support = \code{c(-Inf,Inf)}.
 #'
 #' @param u vector of numerical values
 #'

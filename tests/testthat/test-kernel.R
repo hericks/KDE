@@ -1,4 +1,4 @@
-test_that("a kernel should be recognized as a kernel",
+  test_that("a kernel should be recognized as a kernel",
           expect_true(is_kernel(gaussian))
 )
 

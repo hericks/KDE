@@ -5,16 +5,20 @@
 \alias{logistic}
 \title{Logistic Function}
 \format{
-An object of class \code{Kernel} (inherits from \code{IntegrableFunction}) of length 2.
+An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+\itemize{
+\item logistic function \code{fun}
+\item support = \code{c(-Inf,Inf)}.
+}
 }
 \usage{
-logistic
+\code{logistic$fun(u)}
 }
 \arguments{
 \item{u}{vector of numerical values}
 }
 \description{
-The logistic function is used as a \link[KDE:Kernel]{kernel}.
+The logistic function is used as the function for an S3 object \code{logistic} of class \link[KDE:Kernel]{Kernel}.
 }
 \seealso{
 \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
@@ -25,7 +29,7 @@ Other kernels:
 \code{\link{epanechnikov}},
 \code{\link{gaussian}},
 \code{\link{rectangular}},
-\code{\link{sigmoidFunction}},
+\code{\link{sigmoid}},
 \code{\link{silverman}},
 \code{\link{triangular}},
 \code{\link{tricube}},

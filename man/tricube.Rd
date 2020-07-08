@@ -5,16 +5,20 @@
 \alias{tricube}
 \title{Tricube Function}
 \format{
-An object of class \code{Kernel} (inherits from \code{IntegrableFunction}) of length 2.
+An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+\itemize{
+\item tricube function \code{fun}
+\item support = \code{c(-1,1)}.
+}
 }
 \usage{
-tricube
+\code{tricube$fun(u)}
 }
 \arguments{
 \item{u}{vector of numerical values}
 }
 \description{
-The tricube function is used as a \link[KDE:Kernel]{kernel}.
+The tricube function is used as the function for an S3 object \code{tricube} of class \link[KDE:Kernel]{Kernel}.
 }
 \seealso{
 \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
@@ -26,7 +30,7 @@ Other kernels:
 \code{\link{gaussian}},
 \code{\link{logistic}},
 \code{\link{rectangular}},
-\code{\link{sigmoidFunction}},
+\code{\link{sigmoid}},
 \code{\link{silverman}},
 \code{\link{triangular}},
 \code{\link{triweight}}
