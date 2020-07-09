@@ -7,44 +7,51 @@
 rejection_sampling(f_den, g_den, g, M)
 }
 \arguments{
-\item{f_den}{normalized probability density function, from which the desired
-samples should be drawn.}
+\item{f_den}{S3 object of the class \link[KDE:Density]{Density}. It's function
+\code{f_den$fun} is a normalized probability density function, from which
+the desired samples will be drawn.}
 
-\item{g_den}{normalized probability density function that is used as a
-help-function to draw samples from, instead of drawing samples from
+\item{g_den}{S3 object of the class \link[KDE:Density]{Density}. It's function
+\code{g_den$fun} is a normalized probability density function that is used
+as a helper-function to draw samples from, instead of drawing samples from
 \code{f_den}.}
 
-\item{g}{random number generator function that draws samples from the densitiy
-function \code{g_den}.}
+\item{g}{random number generator function that draws samples from the density
+function \code{g_den$fun}.}
 
 \item{M}{real number, which satisfies the condition that \code{f(x)} is less
 or equal than \code{M*g(x)} for all real numbers x.}
 }
 \value{
 returning a function with argument \code{n} that draws \code{n}
-samples from the density function \code{f_den}.
+samples from the density function \code{f_den$fun}.
 }
 \description{
-\code{rejection_sampling} returns a function that draws samples from a
-difficult probability density function.
+The \code{rejection_sampling} function operator creates a
+function that draws samples from a difficult probability density function.
 }
 \details{
 the algorithm first draws samples from the more "well-behaved"
-density function \code{g_den} and then accepts/rejects these draws,
+density function \code{g_den$fun} and then accepts/rejects these draws,
 according to whether they are likely within the proposed denisty function
-\code{f_den} or not. It is the most efficient if \code{M} is chosen as small
+\code{f_den$fun} or not. It is the most efficient if \code{M} is chosen as small
 as possible. That means that the shape of g_den is very close to f_den and
-as a result it is more likely that the samples drawn from \code{g_den} get
+as a result it is more likely that the samples drawn from \code{g_den$fun} get
 accepted.
 }
 \examples{
-f_den <- function(x) {
+custom_den <- function(x) {
 ret <- 1 + sin(2*pi*x)
 ret[x < 0 | 1 < x] <- 0
-ret}
-custom_sampler <- rejection_sampling(f_den, dunif, runif, 2)
+ret
+}
+f_den <- Density(custom_den, c(0,1))
+g_den <- Density(dunif)
+
+custom_sampler <- rejection_sampling(f_den, g_den, runif, 2)
 x <- seq(-0.5, 1.5, by=0.01)
-y <- f_den(x)
+y <- f_den$fun(x)
+
 plot(x, y, type="l", main="Custom density: 1 + sin(2*pi*x)", ylab="density")
 n <- 65
 points(custom_sampler(65), rep(1, n), col="red", cex=0.5)
