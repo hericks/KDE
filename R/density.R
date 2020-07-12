@@ -1,32 +1,37 @@
-#' The S3 Class \code{Kernel} tries to ensure some of the properties of kernels
+#' Density
+#'
+#' @description
+#' The S3 Class \code{Density} tries to ensure some of the properties of densities
 #' and is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}
 #' (see: 'Details' for exact requirements).
 #'
 #' @details{
-#' A kernel function is a real valued, integrable function, such that its integral over the real numbers equals one.
-#' Kernel functions as \code{R} functions are required to:
+#' A density function is a real valued, non-negative, integrable function, such that its integral over the real numbers equals one.
+#' Density functions as \code{R} functions are required to:
 #'
 #'   1. be vectorised in its argument, taking a single numeric argument,
 #'   returning a numerical vector of the same length only
 #'
 #'   2. return zero for inputs outside their support
 #'
-#'   3. can be integrated over their support using \code{integrate} without
+#'   3. return non-negative values for inputs inside their support
+#'
+#'   4. be integrated over their support using \code{integrate} without
 #'   throwing an error
 #'
-#'   4. the integral over its support, using \code{integrate}, should evaluate to one.
+#'   5. computate the integral properly over its support, using \code{integrate}. The result should be equal to one.
 #'
 #'   The functions in this package don't just take \code{R} functions satisfying
 #'   these conditions, but objects of S3 class \code{IntegrableFunction} (or one
 #'   of its subclasses \code{Kernel}, \code{Density}).
 #'
-#'   The S3 class \code{Kernel} exists to ensure some of the most
-#'   basic properties of kernel functions. The class is build on lists
+#'   The S3 class \code{Density} exists to ensure some of the most
+#'   basic properties of density functions. The class is build on lists
 #'   containing two named entries \code{fun} and \code{support}.
 #'
 #'   * \strong{`fun`} is an \code{R} function (the represented function) taking
 #'   a single numeric argument and returning a numeric vector of the same
-#'   length. This function should return zero outside of the interval given in
+#'   length. This function should return zero outside, and non-negative values inside of the interval given in
 #'   the \code{support} entry. Using \code{integrate} over its support should evaluate to one.
 #'
 #'   * \strong{`support`} is a numeric vector of length 2 containing a lower-
@@ -34,41 +39,36 @@
 #'   first and second entry respectively. In particular the values \code{-Inf}
 #'   and \code{Inf} are allowed.
 #'
-#'   The constructor \code{Kernel} tries to construct a valid
-#'   \code{Kernel} object based on the passed arguments. Returned
-#'   objects are guaranteed to pass the validator [validate_Kernel]
+#'   The constructor \code{Density} tries to construct a valid
+#'   \code{Density} object based on the passed arguments. Returned
+#'   objects are guaranteed to pass the validator [validate_Density]
 #'   (\bold{Attention:} This does not guarantee the conditions in the first
-#'   'Details' paragraph: see [validate_Kernel].).
-#'
-#' \describe{
-#' \strong{List of built-in kernels functions:}
-#'   \item{\code{\link[KDE:rectangular]{rectangular}}}
-#'   \item{\code{\link[KDE:triangular]{triangular}}}
-#'   \item{\code{\link[KDE:epanechnikov]{epanechnikov}}}
-#'   \item{\code{\link[KDE:biweight]{biweight}}}
-#'   \item{\code{\link[KDE:triweight]{triweight}}}
-#'   \item{\code{\link[KDE:tricube]{tricube}}}
-#'   \item{\code{\link[KDE:gaussian]{gaussian}}}
-#'   \item{\code{\link[KDE:cosine]{cosine}}}
-#'   \item{\code{\link[KDE:logistic]{logistic}}}
-#'   \item{\code{\link[KDE:sigmoidFunction]{sigmoidFunction}}}
-#'   \item{\code{\link[KDE:silverman]{silverman}}}
-#'   }
-#' }
+#'   'Details' paragraph: see [validate_Density].).}
 #'
 #' @param fun an \code{R} function taking a single numeric argument and
 #' returning a numeric vector of the same length: see 'Details'.
 #' @param support a numerical vector of length 2 containing the lower- and
 #'   upperbound in the first and second entry respectively.
-#'   \code{\link[KDE:Kernel]{Kernel}} will try to find bounds on the support itself if
+#'   \code{Density} will try to find bounds on the support itself if
 #'   \code{NULL} is passed.
 #'
 #' @examples
-#'
-#'
+#' dens_norm <- Density(dnorm, c(-Inf, Inf))
+#' dens_unif <- Density(dunif)
+#' x <- seq(from = -4, to = 4, length.out = 1000)
+#' plot(x, dens_norm$fun(x),
+#'      xlim=c(-5,5), ylim=c(0,1),
+#'      main="Densities", xlab="", ylab="",
+#'      col="black", type="l")
+#' lines(x,dens_unif$fun(x), col="red")
+#' legend("topright",
+#'        legend=c("dens_norm", "dens_unif"),
+#'        col=c("black","red"), lty=1, cex=0.8)
 #' @seealso
-#' \code{\link[KDE:validate_Kernel]{validate_Kernel}}
+#' \code{\link[KDE:validate_Density]{validate_Density}}
 #' \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
+#'
+#' @include integrable_function.R
 #'
 #' @export
 Density <- function(fun, support = NULL){
@@ -77,10 +77,42 @@ Density <- function(fun, support = NULL){
   den
 }
 
+#'Validator for S3 class \code{Density}
 #'
-#'@include integrable_function.R
+#' @description This function serves as a validator for the S3 class
+#'   \code{Density}. See 'Details' for further information and
+#'   potential flaws.
 #'
-#' @export
+#' @param x an \code{R} object to validate as object of S3 class
+#'   \code{[Density]}.
+#'
+#' @details The validator \code{validate_Density} can be used to
+#'   verify objects as formally correct S3 objects of class
+#'   [Density]. In particular the formal structure is ensured and it makes use of the [validate_IntegrableFunction].
+#'   Additionally this function \emph{tries to} (see 'Special Attention')
+#'   validate the additional conditions of valid integrable functions (as
+#'   specified in the first 'Details'-paragraph of [Density]).
+#'
+#' @section Special Attention:
+#'
+#'   Like all numerical routines, \code{validate_Density} can
+#'   evaluate the represented function on a finite set of points only. If the
+#'   represented function returns valid results over nearly all its range, it is
+#'   possible that this function misses unexpected/wrong return values. Thus,
+#'   using [Density] or [validate_Density] to construct
+#'   and validate objects representing integrable functions is \emph{not}
+#'   sufficient to ensure the properties \[1-5\] listed in the first
+#'   'Details'-paragraph of [Density], but serves more as a
+#'   sanity-check.
+#'
+#' @seealso
+#' * [Density] for more information about Density functions and the S3 class \code{Density}.
+#' * [IntegrableFunction] for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
+#' * [validate_IntegrableFunction] for more information about the IntegrableFunction validator.
+#'
+#' @include integrable_function.R
+#'
+#'@export
 validate_Density <- function(x){
   stopifnot("object has to be of class Density"=inherits(x, "Density"))
   validate_IntegrableFunction(x)

@@ -18,7 +18,7 @@
 #'   3. can be integrated over their support using \code{integrate} without
 #'   throwing an error
 #'
-#'   4. the integral over its support, using \code{integrate}, should evaluate to one.
+#'   4. computate the integral properly over its support, using \code{integrate}. The result should be equal to one
 #'
 #'   The functions in this package don't just take \code{R} functions satisfying
 #'   these conditions, but objects of S3 class \code{IntegrableFunction} (or one
@@ -64,7 +64,7 @@
 #' returning a numeric vector of the same length: see 'Details'.
 #' @param support a numerical vector of length 2 containing the lower- and
 #'   upperbound in the first and second entry respectively.
-#'   \code{\link[KDE:Kernel]{Kernel}} will try to find bounds on the support itself if
+#'   \code{Kernel} will try to find bounds on the support itself if
 #'   \code{NULL} is passed.
 #'
 #' @examples
@@ -88,6 +88,8 @@
 #' \code{\link[KDE:validate_Kernel]{validate_Kernel}}
 #' \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
 #'
+#' @include integrable_function.R
+#'
 #' @export
 Kernel <- function(fun, support = NULL) {
   kern <- new_Kernel(fun, support)
@@ -106,7 +108,7 @@ Kernel <- function(fun, support = NULL) {
 #'
 #' @details The validator \code{validate_Kernel} can be used to
 #'   verify objects as formally correct S3 objects of class
-#'   [Kernel]. In particular the formal structure is ensured and it makes use of the [validate_IntegrableFunction.
+#'   [Kernel]. In particular the formal structure is ensured and it makes use of the [validate_IntegrableFunction].
 #'   Additionally this function \emph{tries to} (see 'Special Attention')
 #'   validate the additional conditions of valid integrable functions (as
 #'   specified in the first 'Details'-paragraph of [Kernel]).
@@ -127,6 +129,8 @@ Kernel <- function(fun, support = NULL) {
 #' * [Kernel] for more information about kernel functions and the S3 class \code{Kernel}.
 #' * [IntegrableFunction] for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
 #' * [validate_IntegrableFunction] for more information about the IntegrableFunction validator.
+#'
+#' @include integrable_function.R
 #'
 #'@export
 validate_Kernel <- function(x){
