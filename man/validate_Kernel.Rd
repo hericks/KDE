@@ -2,35 +2,45 @@
 % Please edit documentation in R/kernel.R
 \name{validate_Kernel}
 \alias{validate_Kernel}
-\title{Validation if object is a kernel function.
-TODO: umschreiben/mit Kernel zusammenfassen}
+\title{Validator for S3 class \code{Kernel}}
 \usage{
-validate_Kernel(obj)
+validate_Kernel(x)
 }
 \arguments{
-\item{object}{the object to be tested.}
-}
-\value{
-Boolean. Returns True if object is a kernel function, FALSE if not. Is not supossed to return an error.
+\item{x}{an \code{R} object to validate as object of S3 class
+\code{[Kernel]}.}
 }
 \description{
-The \code{is_kernel()} function is used for validating a \link[KDE:Kernel]{Kernel}.
-It has to be a integrable, numerical function with integral over R equal to one.
+This function serves as a validator for the S3 class
+\code{Kernel}. See 'Details' for further information and
+potential flaws.
 }
 \details{
-Hence a Kernel is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}},
-it makes use of \link{validate_IntegrableFunction}.
-In addition, it will check wether the object is of class \link[KDE:Kernel]{Kernel} and if the integral over its support equals one.
+The validator \code{validate_Kernel} can be used to
+verify objects as formally correct S3 objects of class
+\link{Kernel}. In particular the formal structure is ensured and it makes use of the [validate_IntegrableFunction.
+Additionally this function \emph{tries to} (see 'Special Attention')
+validate the additional conditions of valid integrable functions (as
+specified in the first 'Details'-paragraph of \link{Kernel}).
 }
-\section{Issue}{
+\section{Special Attention}{
 
-Because of the use of the Base-R function integrate, functions that are almost everywhere zero can be kernels, but will not be detected.
-For example: kernels that are shifted with a very small bandwidth.
+
+Like all numerical routines, \code{validate_Kernel} can
+evaluate the represented function on a finite set of points only. If the
+represented function returns valid results over nearly all its range, it is
+possible that this function misses unexpected/wrong return values. Thus,
+using \link{Kernel} or \link{validate_Kernel} to construct
+and validate objects representing integrable functions is \emph{not}
+sufficient to ensure the properties [1-4] listed in the first
+'Details'-paragraph of \link{Kernel}, but serves more as a
+sanity-check.
 }
 
-\examples{
-is_kernel(gaussian)
-no_kernel <- function(x) 1
-is_kernel(no_kernel)
-
+\seealso{
+\itemize{
+\item \link{Kernel} for more information about kernel functions and the S3 class \code{Kernel}.
+\item \link{IntegrableFunction} for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
+\item \link{validate_IntegrableFunction} for more information about the IntegrableFunction validator.
+}
 }

@@ -4,7 +4,7 @@
 \alias{Kernel}
 \title{Kernel}
 \usage{
-Kernel(fun, support)
+Kernel(fun, support = NULL)
 }
 \arguments{
 \item{fun}{an \code{R} function taking a single numeric argument and
@@ -12,19 +12,52 @@ returning a numeric vector of the same length: see 'Details'.}
 
 \item{support}{a numerical vector of length 2 containing the lower- and
 upperbound in the first and second entry respectively.
-\code{IntegrableFunction} will try to find bounds on the support itself if
-\code{NULL} is passed: see 'Details' of \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}.
-
-TODO: more examples (integrate/support ins Spiel bringen)}
+\code{\link[KDE:Kernel]{Kernel}} will try to find bounds on the support itself if
+\code{NULL} is passed.}
 }
 \description{
-The kernels in this package are S3 objects based on a list, holding a function and its support.
-They are a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}.
+The kernels are the core of the KDE package.
+The S3 Class \code{Kernel} tries to ensure some of the properties of kernels
+and is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}
+(see: 'Details' for exact requirements).
 }
 \details{
 {
-A kernel is a real valued, integrable function, such that its integral over the real numbers equals one.
-The built-in kernel functions are vectorised.
+A kernel function is a real valued, integrable function, such that its integral over the real numbers equals one.
+Kernel functions as \code{R} functions are required to:
+\enumerate{
+\item be vectorised in its argument, taking a single numeric argument,
+returning a numerical vector of the same length only
+\item return zero for inputs outside their support
+\item can be integrated over their support using \code{integrate} without
+throwing an error
+\item the integral over its support, using \code{integrate}, should evaluate to one.
+}
+
+The functions in this package don't just take \code{R} functions satisfying
+these conditions, but objects of S3 class \code{IntegrableFunction} (or one
+of its subclasses \code{Kernel}, \code{Density}).
+
+The S3 class \code{Kernel} exists to ensure some of the most
+basic properties of kernel functions. The class is build on lists
+containing two named entries \code{fun} and \code{support}.
+\itemize{
+\item \strong{\code{fun}} is an \code{R} function (the represented function) taking
+a single numeric argument and returning a numeric vector of the same
+length. This function should return zero outside of the interval given in
+the \code{support} entry. Using \code{integrate} over its support should evaluate to one.
+\item \strong{\code{support}} is a numeric vector of length 2 containing a lower-
+and upperbound for the support of the function stored in \code{fun} in its
+first and second entry respectively. In particular the values \code{-Inf}
+and \code{Inf} are allowed.
+}
+
+The constructor \code{Kernel} tries to construct a valid
+\code{Kernel} object based on the passed arguments. Returned
+objects are guaranteed to pass the validator \link{validate_Kernel}
+(\bold{Attention:} This does not guarantee the conditions in the first
+'Details' paragraph: see \link{validate_Kernel}.).
+
 \describe{
 \strong{List of built-in kernels functions:}
 \item{\code{\link[KDE:rectangular]{rectangular}}}
@@ -42,13 +75,18 @@ The built-in kernel functions are vectorised.
 }
 }
 \examples{
+rectangular_function <- function(u){
+  check_kernel_conditions(u)
+  return(1/2*(abs(u) <= 1))
+}
+rectangular_ker <- Kernel(rectangular_function, support=c(-1,1))
 x <- seq(from = -4, to = 4, length.out = 1000)
 plot(x, gaussian$fun(x),
      xlim=c(-5,5), ylim=c(0,1),
      main="Kernels", xlab="", ylab="",
      col="black", type="l")
 lines(x,triangular$fun(x), col="red")
-lines(x, rectangular$fun(x), col="blue")
+lines(x, rectangular_ker$fun(x), col="blue")
 legend("topright",
        legend=c("gaussian", "triangular","rectangular"),
        col=c("black","red", "blue"), lty=1, cex=0.8)
