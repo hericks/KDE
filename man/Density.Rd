@@ -12,7 +12,7 @@ returning a numeric vector of the same length: see 'Details'.}
 
 \item{support}{a numerical vector of length 2 containing the lower- and
 upperbound in the first and second entry respectively.
-\code{\link[KDE:Density]{Density}} will try to find bounds on the support itself if
+\code{Density} will try to find bounds on the support itself if
 \code{NULL} is passed.}
 }
 \description{
@@ -29,9 +29,9 @@ Density functions as \code{R} functions are required to:
 returning a numerical vector of the same length only
 \item return zero for inputs outside their support
 \item return non-negative values for inputs inside their support
-\item can be integrated over their support using \code{integrate} without
+\item be integrated over their support using \code{integrate} without
 throwing an error
-\item the integral over its support, using \code{integrate}, should evaluate to one.
+\item computate the integral properly over its support, using \code{integrate}. The result should be equal to one.
 }
 
 The functions in this package don't just take \code{R} functions satisfying

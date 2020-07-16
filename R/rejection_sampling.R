@@ -1,26 +1,29 @@
 #'Rejection Sampling (I.e., Accept-reject Method)
 #'
-#'The \code{rejection_sampling} function operator creates a
-#'function that draws samples from a difficult probability density function.
+#'The \code{rejection_sampling} function operator creates a function that draws
+#'samples from a given probability density function.
 #'
-#'@param f_den S3 object of the class \link[KDE:Density]{Density}. It's function
-#'  \code{f_den$fun} is a normalized probability density function, from which
-#'  the desired samples will be drawn.
-#'@param g_den S3 object of the class \link[KDE:Density]{Density}. It's function
-#'  \code{g_den$fun} is a normalized probability density function that is used
-#'  as a helper-function to draw samples from, instead of drawing samples from
+#'@param f_den density function as an S3 object of the class
+#'  \link[KDE:Density]{Density}. The function \code{f_den$fun} of the S3 object
+#'  \code{f_den} is a normalized probability density function, from which the
+#'  desired samples will be drawn.
+#'@param g_den density function as an S3 object of the class
+#'  \link[KDE:Density]{Density}. The function \code{g_den$fun} of the S3 object
+#'  \code{g_den} is a normalized probability density function that is used as a
+#'  helper-function to draw samples from, instead of drawing samples from
 #'  \code{f_den}.
 #'@param g random number generator function that draws samples from the density
 #'  function \code{g_den$fun}.
 #'@param M real number, which satisfies the condition that \code{f(x)} is less
 #'  or equal than \code{M*g(x)} for all real numbers x.
-#'@details the algorithm first draws samples from the more "well-behaved"
-#'  density function \code{g_den$fun} and then accepts/rejects these draws,
+#'@details the algorithm first draws samples from the density function
+#'  \code{g_den$fun}, for which (in general) should exist an easier method to
+#'  generate samples. Subsequently the algorithm accepts/rejects these draws,
 #'  according to whether they are likely within the proposed denisty function
-#'  \code{f_den$fun} or not. It is the most efficient if \code{M} is chosen as small
-#'  as possible. That means that the shape of g_den is very close to f_den and
-#'  as a result it is more likely that the samples drawn from \code{g_den$fun} get
-#'  accepted.
+#'  \code{f_den$fun} or not. It is the most efficient if \code{M} is chosen as
+#'  small as possible. That means that the shape of g_den is very close to f_den
+#'  and as a result it is more likely that the samples drawn from
+#'  \code{g_den$fun} get accepted.
 #' @examples
 #' custom_den <- function(x) {
 #' ret <- 1 + sin(2*pi*x)
