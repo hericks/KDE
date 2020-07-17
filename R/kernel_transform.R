@@ -43,8 +43,11 @@ kernel_transform <- function(kernel, sample, h) {
   force(sample)
   force(h)
 
-  function(x){
+  fun <- function(x){
     kernel$fun((x-sample)/h)/h
   }
+  support <- (h * kernel$support + sample)
+
+  Kernel(fun, support)
 }
 

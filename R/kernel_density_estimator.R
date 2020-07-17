@@ -36,7 +36,8 @@ kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
   function(x) {
     ret <- numeric(length(x))
     for (x0 in samples) {
-      ret <- ret + kernel_transform(kernel, x0, bandwidth)(x)
+      ker <- kernel_transform(kernel, x0, bandwidth)
+      ret <- ret + ker$fun(x)
     }
     ret/length(samples)
   }
