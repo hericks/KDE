@@ -1,7 +1,7 @@
 #' Shifting kernels to a coefficient and applying a bandwidth.
 #'
 #' @description
-#' The \code{kernel_transform} is shifting and applying a bandwidth on a kernel function.
+#' The \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
 #'
 #' @param kernel a kernel object.
 #' @param sample the observation/coefficient as a numerical scalar.
@@ -39,12 +39,6 @@ kernel_transform <- function(kernel, sample, h) {
   stopifnot(length(h) == 1)
   stopifnot(h > 0)
 
-  force(kernel)
-  force(sample)
-  force(h)
-
-  function(x){
-    kernel$fun((x-sample)/h)/h
-  }
+  Kernel(function(x) kernel$fun((x-sample)/h)/h, h*kernel$support + sample)
 }
 
