@@ -14,24 +14,25 @@ kernel_transform(kernel, sample, h)
 \item{h}{the bandwidth as a numerical scalar.}
 }
 \value{
-the transformed, i.e. shifted and scaled kernel function.
+The transformed (shifted and scaled) kernel as valid S3 object of
+class \code{Kernel}.
 }
 \description{
-The \code{kernel_transform} is shifting and applying a bandwidth on a kernel function.
+The \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
 }
 \examples{
 # shifting the gaussian kernel
-shifted_gaussian <- kernelTransform(gaussian, 2, 1)
+shifted_gaussian <- kernel_transform(gaussian, 2, 1)
 # stretching the gaussian kernel
-stretched_gaussian <- kernelTransform(gaussian, 0, 2)
+stretched_gaussian <- kernel_transform(gaussian, 0, 2)
 x <- seq(from = -5, to = 5, length.out = 1000)
 
 plot(x, gaussian$fun(x),
      xlim=c(-5,5), ylim=c(0,1),
      main="Kernels", xlab="", ylab="",
      col="black", type="l")
-lines(x, shifted_gaussian(x), col="red")
-lines(x, stretched_gaussian(x), col="blue")
+lines(x, shifted_gaussian$fun(x), col="red")
+lines(x, stretched_gaussian$fun(x), col="blue")
 legend("topright",
        legend=c("gaussian", "shifted_gaussian","stretched_gaussian"),
        col=c("black","red", "blue"), lty=1, cex=0.8)
