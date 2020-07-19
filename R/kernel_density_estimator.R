@@ -16,9 +16,9 @@
 #' * [validate_kernel()] to validate cusotm kernel functions.
 #'
 #' @export
-kernelDensityEstimator <- function(kernel, samples, bandwidth=1) {
+kernel_density_estimator <- function(kernel, samples, bandwidth=1) {
   # Kernel conditions
-  stopifnot("the kernel has to be valid" = validate_Kernel(kernel))
+  tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
 
   # Samples conditions
   stopifnot(is.numeric(samples))

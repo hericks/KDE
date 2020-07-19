@@ -19,6 +19,7 @@ Collate:
     'kernel.R'
     'builtin_kernels.R'
     'density.R'
+    'goldenshluger_lepski_method.R'
     'kernel_density_estimator.R'
     'kernel_transform.R'
     'rejection_sampling.R'
