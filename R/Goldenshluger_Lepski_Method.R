@@ -3,7 +3,7 @@ variance_estim <- function(kernel, samples){
   l1_kernel <- integrate(function(x){abs(kernel$fun(x))},lower = kernel$support[1], upper = kernel$support[2])
   l2_kernel <- integrate(function(x){kernel$fun(x)^2}, lower = kernel$support[1], upper = kernel$support[2])
   function(h){
-    l1_kernel*l2_kernel/(n*h)
+    l1_kernel[[1]] * l2_kernel[[1]]/(n*h)
   }
 }
 
@@ -48,8 +48,6 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
 
 
   support <- find_support(fun)
-  print(support)
-
   list("fun"=fun, "support"=support)
 }
 
@@ -62,14 +60,14 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_convo
     if (f_double$support[2] < kde_h_ap$support[1] | kde_h_ap$support[2] < f_double$support[1]){
       z1 <- integrate(function(x){f_double(x)^2}, f_double$support[1], f_double$support[2])
       z2 <- integrate(function(x){kde_h_ap(x)^2}, kde_h_ap$support[1], kde_h_ap$support[2])
-      l2 <- z1+z2
+      l2 <- z1[[1]] + z2[[1]]
     }
     else{
-      l2 <- integrate(function(x){(f_double(x) - kde_h_ap(x))^2},
+      l2 <- integrate(function(x){(f_double$fun(x) - kde_h_ap$fun(x))^2},
                       lower=min(f_double$support[1], kde_h_ap$support[1]),
                       upper=max(f_double$support[2], kde_h_ap$support[2]))
     }
-    res <- c(res, l2 - kappa*var_est(h_ap))
+    res <- c(res, l2[[1]] - kappa * var_est(h_ap))
   }
   max(res)
 }
@@ -77,7 +75,7 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_convo
 #'
 #'
 #'@export
-goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2, grid_convolve=2001L){
+goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2, grid_convolve=501L){
   #TODO arg-checks
 
   # Kernel conditions
@@ -117,10 +115,11 @@ goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2
   res <- c()
   var_est <- variance_estim(kernel, samples)
   for (h in H_n){
-    res_temp <- bias_estim(kernel, samples, h, H_n, kappa, var_est(h), grid_convolve) + 2*kappa*var_est(h)
+    res_temp <- bias_estim(kernel, samples, h, H_n, kappa, var_est, grid_convolve) + 2 * kappa * var_est(h)
+    print(res_temp)
     res <- c(res, res_temp)
   }
-  h_est <- which.min(res)/M
+  h_est <- H_n[which.min(res)]
 }
 
 find_support <- function(fun) {

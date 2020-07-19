@@ -15,11 +15,11 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Collate: 
+    'Goldenshluger_Lepski_Method.R'
     'integrable_function.R'
     'kernel.R'
     'builtin_kernels.R'
     'density.R'
-    'goldenshluger_lepski_method.R'
     'kernel_density_estimator.R'
     'kernel_transform.R'
     'rejection_sampling.R'

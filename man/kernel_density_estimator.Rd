@@ -7,22 +7,26 @@
 kernel_density_estimator(kernel, samples, bandwidth = 1)
 }
 \arguments{
-\item{kernel}{The (vectorised) kernel function to use for the construction of the estimator satisfying \link{is_kernel}.}
+\item{kernel}{The (vectorised) kernel function to use for the construction of
+the estimator satisfying \link{is_kernel}.}
 
-\item{samples}{A numerical vector to base the construction of the estimator on.}
+\item{samples}{A numerical vector to base the construction of the estimator
+on.}
 
-\item{bandwidth}{A non-negative numeric value to use as the bandwidth for the kernel.}
+\item{bandwidth}{A non-negative numeric value to use as the bandwidth for the
+kernel.}
 }
 \value{
-The constructed kernel density estimator. Therefore a function vectorised in its evaluation point returning the estimator at these points.
+The constructed kernel density estimator. Therefore a function
+vectorised in its evaluation point returning the estimator at these points.
 }
 \description{
-The kernelDensityEstimator function factory takes observations, returning
-the corresponding kernel density estimator.
+The kernelDensityEstimator function factory takes observations,
+returning the corresponding kernel density estimator.
 }
 \seealso{
 \itemize{
-\item \code{\link[=kernels]{kernels()}} for a list of already implemented kernels.
-\item \code{\link[=validate_kernel]{validate_kernel()}} to validate cusotm kernel functions.
+\item \code{\link[=kernels]{kernels()}} for a list of already implemented kernels. *
+\code{\link[=validate_kernel]{validate_kernel()}} to validate cusotm kernel functions.
 }
 }

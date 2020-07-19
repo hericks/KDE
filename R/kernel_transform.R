@@ -48,6 +48,6 @@ kernel_transform <- function(kernel, sample, h) {
   }
   support <- (h * kernel$support + sample)
 
-  Kernel(fun, support)
+  list(fun=fun, support=support)
 }
 

@@ -1,19 +1,20 @@
 #' Construct a kernel density estimator
 #'
-#' @description
-#' The kernelDensityEstimator function factory takes observations, returning
-#' the corresponding kernel density estimator.
+#' @description The kernelDensityEstimator function factory takes observations,
+#' returning the corresponding kernel density estimator.
 #'
-#' @param kernel The (vectorised) kernel function to use for the construction of the estimator satisfying [is_kernel].
-#' @param samples A numerical vector to base the construction of the estimator on.
-#' @param bandwidth A non-negative numeric value to use as the bandwidth for the kernel.
+#' @param kernel The (vectorised) kernel function to use for the construction of
+#'   the estimator satisfying [is_kernel].
+#' @param samples A numerical vector to base the construction of the estimator
+#'   on.
+#' @param bandwidth A non-negative numeric value to use as the bandwidth for the
+#'   kernel.
 #'
-#' @return The constructed kernel density estimator. Therefore a function vectorised in its evaluation point returning the estimator at these points.
+#' @return The constructed kernel density estimator. Therefore a function
+#'   vectorised in its evaluation point returning the estimator at these points.
 #'
-#'
-#' @seealso
-#' * [kernels()] for a list of already implemented kernels.
-#' * [validate_kernel()] to validate cusotm kernel functions.
+#' @seealso * [kernels()] for a list of already implemented kernels. *
+#' [validate_kernel()] to validate cusotm kernel functions.
 #'
 #' @export
 kernel_density_estimator <- function(kernel, samples, bandwidth=1) {
@@ -29,17 +30,19 @@ kernel_density_estimator <- function(kernel, samples, bandwidth=1) {
   stopifnot(length(bandwidth) == 1)
   stopifnot(bandwidth > 0)
 
-  force(kernel)
-  force(samples)
-  force(bandwidth)
+  kernel_eval <- kernel$fun
 
-  function(x) {
+  estimator_eval <- function(x) {
+    stopifnot("input has to be numeric"=is.numeric(x))
+
     ret <- numeric(length(x))
     for (x0 in samples) {
-      ker <- kernel_transform(kernel, x0, bandwidth)
-      ret <- ret + ker$fun(x)
+      ret <- ret + kernel_eval((x - x0)/bandwidth)/bandwidth
     }
     ret/length(samples)
   }
-}
 
+  support <- c(bandwidth*kernel$support[1] + min(samples), bandwidth*kernel$support[2] + max(samples))
+
+  IntegrableFunction(estimator_eval, support)
+}

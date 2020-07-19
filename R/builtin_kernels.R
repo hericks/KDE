@@ -223,7 +223,7 @@ gaussian_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-gaussian <- Kernel(gaussian_function, c(-Inf,Inf))
+gaussian <- Kernel(gaussian_function)
 
 cosine_function <- function(u){
   check_kernel_conditions(u)
