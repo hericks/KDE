@@ -7,14 +7,13 @@ variance_estim <- function(kernel, samples){
   }
 }
 
-#TODO: Faltung und support der Funktion finden (geht das i.A?)
 double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
   # center the grid vector
   if(grid %% 2 == 0){
     grid <- grid + 1
   }
   n <- length(samples)
-  c <- 1/(h * h_ap * n)
+  c <- 1/n
   kernel_h_ap <- kernel_transform(kernel, 0, h_ap)
 
   kernels_h <- lapply(samples, function(sample) kernel_transform(kernel, sample, h))
@@ -33,6 +32,7 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
 
         vec <- convolve(kernel_h_ap$fun(y), rev(ker_h$fun(y)), type='open')
         vec <- vec[1:grid]
+
         vec[as.integer(grid/2) + 1]
       })
       res_vec <- c(res_vec, c * sum(res_temp))
@@ -43,11 +43,12 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
   # get the support of the estimator
   kernels_h_support_lower <- min(sapply(kernels_h, function(x) x$support[1]))
   kernels_h_support_upper <- max(sapply(kernels_h, function(x) x$support[2]))
-  #support <- c(kernels_h_support_lower - abs(kernel_h_ap$support[1]),
-  #             kernels_h_support_upper + abs(kernel_h_ap$support[2]))
+  support <- c(kernels_h_support_lower - abs(kernel_h_ap$support[1]),
+               kernels_h_support_upper + abs(kernel_h_ap$support[2]))
 
+  print(support)
+  #support <- find_support(fun)
 
-  support <- find_support(fun)
   list("fun"=fun, "support"=support)
 }
 
@@ -76,6 +77,7 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_convo
 #'
 #'@export
 goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2, grid_convolve=501L){
+  print(samples)
   #TODO arg-checks
 
   # Kernel conditions
