@@ -3,7 +3,7 @@ variance_estim <- function(kernel, samples){
   l1_kernel <- integrate(function(x){abs(kernel$fun(x))},lower = kernel$support[1], upper = kernel$support[2])
   l2_kernel <- integrate(function(x){kernel$fun(x)^2}, lower = kernel$support[1], upper = kernel$support[2])
   function(h){
-    l1_kernel[[1]] * l2_kernel[[1]]/(n*h)
+    l1_kernel[[1]]^2 * l2_kernel[[1]]/(n*h)
   }
 }
 
@@ -46,7 +46,6 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
   support <- c(kernels_h_support_lower - abs(kernel_h_ap$support[1]),
                kernels_h_support_upper + abs(kernel_h_ap$support[2]))
 
-  print(support)
   #support <- find_support(fun)
 
   list("fun"=fun, "support"=support)
@@ -67,8 +66,9 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_convo
       l2 <- integrate(function(x){(f_double$fun(x) - kde_h_ap$fun(x))^2},
                       lower=min(f_double$support[1], kde_h_ap$support[1]),
                       upper=max(f_double$support[2], kde_h_ap$support[2]))
+      l2 <- l2[[1]]
     }
-    res <- c(res, l2[[1]] - kappa * var_est(h_ap))
+    res <- c(res, l2 - kappa * var_est(h_ap))
   }
   max(res)
 }
@@ -77,7 +77,15 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_convo
 #'
 #'@export
 goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2, grid_convolve=501L){
-  print(samples)
+
+  if(is.null(H_n)) {
+    H_n <- c()
+    n <-length(samples)
+    for (m in (1:as.integer(n))){
+      H_n <- c(H_n, m/n)
+    }
+  }
+
   #TODO arg-checks
 
   # Kernel conditions
@@ -106,19 +114,12 @@ goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2
   # grid will not work with less than 2 points
   stopifnot("grid_convolve has to be greater or equal to 2"= grid_convolve >= 2)
 
-  if(is.null(H_n)) {
-    H_n <- c()
-    n <-length(samples)
-    for (m in (1:as.integer(n))){
-      H_n <- c(H_n, m/n)
-    }
-  }
+
 
   res <- c()
   var_est <- variance_estim(kernel, samples)
   for (h in H_n){
     res_temp <- bias_estim(kernel, samples, h, H_n, kappa, var_est, grid_convolve) + 2 * kappa * var_est(h)
-    print(res_temp)
     res <- c(res, res_temp)
   }
   h_est <- H_n[which.min(res)]

@@ -1,7 +1,11 @@
 # Settings
-num_samples <- 25
-bandwidth <- 0.05
+num_samples <- 1000
+bandwidth_set <- c(1, 0.5, 0.25, 0.1, 0.05, 0.04)
 kernel <- rectangular
+bandwidth_set_2 <- c()
+for (m in (1:as.integer(40))){
+  bandwidth_set_2 <- c(bandwidth_set_2, m/40)
+}
 
 # Custom density
 f_den <- function(x) {
@@ -17,6 +21,10 @@ custom_sampler <- rejection_sampling(f_den, dens_unif, runif, 2)
 
 # Sample from custom sampler
 samples <- custom_sampler(num_samples)
+
+# pco bandwidth estimation
+bandwidth <- pco_method(kernel, samples, bandwidth_set)
+print(bandwidth)
 
 # Create KDE
 p_hat <- kernel_density_estimator(kernel, samples, bandwidth)
