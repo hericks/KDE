@@ -18,6 +18,7 @@ Collate:
     'integrable_function.R'
     'kernel.R'
     'builtin_kernels.R'
+    'cross_validation.R'
     'density.R'
     'kernel_density_estimator.R'
     'kernel_transform.R'
