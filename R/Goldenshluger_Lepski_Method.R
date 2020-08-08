@@ -7,10 +7,10 @@ variance_estim <- function(kernel, samples){
   }
 }
 
-double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
+double_kernel_estim <- function(kernel, samples, h, h_ap, grid_size){
   # center the grid vector
-  if(grid %% 2 == 0){
-    grid <- grid + 1
+  if(grid_size %% 2 == 0){
+    grid_size <- grid_size + 1
   }
   n <- length(samples)
   c <- 1/n
@@ -26,14 +26,15 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid){
       res_temp <- sapply(kernels_h, function(ker_h){
         a <- ker_h$support[1] - abs(kernel_h_ap$support[1])
         b <- ker_h$support[2] + abs(kernel_h_ap$support[2])
-        y <- c(seq(from=x, to= a, length.out=(as.integer(grid/2))),
+        offset <- (b - a) / grid_size
+        grid <- c(rev(seq(from=x - offset, to= a, length.out=(as.integer(grid_size/2)))),
                x,
-               seq(from=x, to= b, length.out=as.integer(grid/2)))
+               seq(from=x + offset, to= b, length.out=as.integer(grid_size/2)))
 
-        vec <- convolve(kernel_h_ap$fun(y), rev(ker_h$fun(y)), type='open')
-        vec <- vec[1:grid]
+        vec <- convolve(kernel_h_ap$fun(grid), rev(ker_h$fun(grid)), type='open')
 
-        vec[as.integer(grid/2) + 1]
+
+        vec[grid_size]
       })
       res_vec <- c(res_vec, c * sum(res_temp))
     }
@@ -68,6 +69,7 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_convo
                       upper=max(f_double$support[2], kde_h_ap$support[2]))
       l2 <- l2[[1]]
     }
+    print(l2 - kappa * var_est(h_ap))
     res <- c(res, l2 - kappa * var_est(h_ap))
   }
   max(res)
@@ -119,7 +121,9 @@ goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2
   res <- c()
   var_est <- variance_estim(kernel, samples)
   for (h in H_n){
+    print("-------------------------")
     res_temp <- bias_estim(kernel, samples, h, H_n, kappa, var_est, grid_convolve) + 2 * kappa * var_est(h)
+    print(res_temp)
     res <- c(res, res_temp)
   }
   h_est <- H_n[which.min(res)]
