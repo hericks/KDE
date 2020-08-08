@@ -1,5 +1,5 @@
 # Settings
-num_samples <- 25
+num_samples <- 2500
 bandwidth_set <- c(1, 0.5, 0.25, 0.1, 0.05, 0.04)
 kernel <- gaussian
 
@@ -28,7 +28,7 @@ custom_sampler_ap <- rejection_sampling(f_den_ap, f_den_ap, runif_shift, 2)
 samples <- custom_sampler(num_samples)
 
 # goldenshluger_lepski bandwidth estimation
-bandwidth <- goldenshluger_lepski_method_2(kernel, samples, bandwidth_set)
+bandwidth <- goldenshluger_lepski_method_2(kernel, samples, bandwidth_set, 50001)
 print(bandwidth)
 
 # Create KDE

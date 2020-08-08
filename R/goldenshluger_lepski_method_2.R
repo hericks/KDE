@@ -7,47 +7,27 @@ variance_estim <- function(kernel, samples){
   }
 }
 
+conv <- function(f, g, x_min, x_max, N = 300) {
+  x <- seq(x_min, x_max, len = N)
+  s <- (x_max - x_min) / N
+  y_out <- s * convolve(f(x), g(rev(x)), conj=TRUE, type="open")
+  x_out <- seq(2*x_min+s, 2*x_max-s, len = 2*N-1) # offset s is artifact of discretization
+  list(x = x_out, y = y_out)
+}
+
 double_kernel_estim <- function(kernel, samples, h, h_ap, grid_size){
-  # center the grid vector
-  if(grid_size %% 2 == 0){
-    grid_size <- grid_size + 1
-  }
   n <- length(samples)
   kernel_h_ap <- kernel_transform(kernel, 0, h_ap)
-
   kernel_h <- kernel_density_estimator(kernel, samples, h)
 
-  # get the double_kernel_estimator
-  fun <- function(vec){
-    res_vec <- c()
-    for(x in vec){
-      res_temp <- c()
-      ker_h <- kernel_h
-      a <- ker_h$support[1] - abs(kernel_h_ap$support[1])
-      b <- ker_h$support[2] + abs(kernel_h_ap$support[2])
-      offset <- (b - a) / grid_size
-      grid <- c(rev(seq(from=x - offset, to= a, length.out=(as.integer(grid_size/2)))),
-                  x,
-                  seq(from=x + offset, to= b, length.out=as.integer(grid_size/2)))
+  x_min <- kernel_h$support[1] - abs(kernel_h_ap$support[1])
+  x_max <- kernel_h$support[2] + abs(kernel_h_ap$support[2])
 
-      vec <- convolve(kernel_h_ap$fun(grid), rev(ker_h$fun(grid)), type='open')
+  convolution <- conv(kernel_h_ap$fun, kernel_h$fun, x_min, x_max, grid_size)
+  fun <- approxfun(convolution$x, convolution$y)
 
-
-      res_temp <- vec[grid_size]
-
-      res_vec <- c(res_vec, res_temp)
-    }
-    res_vec
-  }
-
-  # get the support of the estimator
-  kernel_h_support_lower <- kernel_h$support[1]
-  kernel_h_support_upper <- kernel_h$support[2]
-  support <- c(kernel_h_support_lower - abs(kernel_h_ap$support[1]),
-               kernel_h_support_upper + abs(kernel_h_ap$support[2]))
-
-  #support <- find_support(fun)
-
+  support <- c(x_min, x_max)
+  plot(convolution$x, convolution$y)
   list("fun"=fun, "support"=support)
 }
 
