@@ -13,39 +13,38 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid_size){
     grid_size <- grid_size + 1
   }
   n <- length(samples)
-  c <- 1/n
   kernel_h_ap <- kernel_transform(kernel, 0, h_ap)
 
-  kernels_h <- lapply(samples, function(sample) kernel_transform(kernel, sample, h))
+  kernel_h <- kernel_density_estimator(kernel, samples, h)
 
   # get the double_kernel_estimator
   fun <- function(vec){
     res_vec <- c()
     for(x in vec){
       res_temp <- c()
-      res_temp <- sapply(kernels_h, function(ker_h){
-        a <- ker_h$support[1] - abs(kernel_h_ap$support[1])
-        b <- ker_h$support[2] + abs(kernel_h_ap$support[2])
-        offset <- (b - a) / grid_size
-        grid <- c(rev(seq(from=x - offset, to= a, length.out=(as.integer(grid_size/2)))),
-               x,
-               seq(from=x + offset, to= b, length.out=as.integer(grid_size/2)))
+      ker_h <- kernel_h
+      a <- ker_h$support[1] - abs(kernel_h_ap$support[1])
+      b <- ker_h$support[2] + abs(kernel_h_ap$support[2])
+      offset <- (b - a) / grid_size
+      grid <- c(rev(seq(from=x - offset, to= a, length.out=(as.integer(grid_size/2)))),
+                  x,
+                  seq(from=x + offset, to= b, length.out=as.integer(grid_size/2)))
 
-        vec <- convolve(kernel_h_ap$fun(grid), rev(ker_h$fun(grid)), type='open')
+      vec <- convolve(kernel_h_ap$fun(grid), rev(ker_h$fun(grid)), type='open')
 
 
-        vec[grid_size]
-      })
-      res_vec <- c(res_vec, c * sum(res_temp))
+      res_temp <- vec[grid_size]
+
+      res_vec <- c(res_vec, res_temp)
     }
     res_vec
   }
 
   # get the support of the estimator
-  kernels_h_support_lower <- min(sapply(kernels_h, function(x) x$support[1]))
-  kernels_h_support_upper <- max(sapply(kernels_h, function(x) x$support[2]))
-  support <- c(kernels_h_support_lower - abs(kernel_h_ap$support[1]),
-               kernels_h_support_upper + abs(kernel_h_ap$support[2]))
+  kernel_h_support_lower <- kernel_h$support[1]
+  kernel_h_support_upper <- kernel_h$support[2]
+  support <- c(kernel_h_support_lower - abs(kernel_h_ap$support[1]),
+               kernel_h_support_upper + abs(kernel_h_ap$support[2]))
 
   #support <- find_support(fun)
 
@@ -66,7 +65,8 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_size)
     else{
       l2 <- integrate(function(x){(f_double$fun(x) - kde_h_ap$fun(x))^2},
                       lower=min(f_double$support[1], kde_h_ap$support[1]),
-                      upper=max(f_double$support[2], kde_h_ap$support[2]))
+                      upper=max(f_double$support[2], kde_h_ap$support[2]),
+                      subdivisions=2000)
       l2 <- l2[[1]]
     }
     print(l2 - kappa * var_est(h_ap))
@@ -78,7 +78,7 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_size)
 #'
 #'
 #'@export
-goldenshluger_lepski_method <- function(kernel, samples, H_n = NULL, kappa = 1.2, grid_size=501L){
+goldenshluger_lepski_method_2 <- function(kernel, samples, H_n = NULL, kappa = 1.2, grid_size=501L){
 
   if(is.null(H_n)) {
     H_n <- c()

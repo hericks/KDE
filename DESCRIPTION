@@ -20,6 +20,7 @@ Collate:
     'builtin_kernels.R'
     'density.R'
     'goldenshluger_lepski_method.R'
+    'goldenshluger_lepski_method_2.R'
     'kernel_density_estimator.R'
     'kernel_transform.R'
     'pco_method.R'

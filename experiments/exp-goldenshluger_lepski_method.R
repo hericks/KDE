@@ -9,17 +9,26 @@ f_den <- function(x) {
   ret[x < 0 | 1 < x] <- 0
   ret
 }
+d_fun <- function(x){
+  dunif(x,-0.5,0.5)
+}
+f_den_ap <- Density(d_fun, c(-0.5,0.5))
 f_den <- Density(f_den, c(0,1))
+runif_shift <- function(x){
+  runif(x, -0.5, 0.5)
+}
 
 # Create sampler from custom density
 dens_unif <- Density(dunif)
 custom_sampler <- rejection_sampling(f_den, dens_unif, runif, 2)
+custom_sampler_ap <- rejection_sampling(f_den_ap, f_den_ap, runif_shift, 2)
 
 # Sample from custom sampler
+#samples <- custom_sampler(num_samples)
 samples <- custom_sampler(num_samples)
 
 # goldenshluger_lepski bandwidth estimation
-bandwidth <- goldenshluger_lepski_method(kernel, samples, bandwidth_set)
+bandwidth <- goldenshluger_lepski_method_2(kernel, samples, bandwidth_set)
 print(bandwidth)
 
 # Create KDE

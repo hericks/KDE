@@ -1,14 +1,15 @@
-grid <- 501
-sample <- 1
+grid <- 11
+sample <- 0.5
 kernel_h_ap <- kernel_transform(rectangular, 0, 0.5)
-ker_h <- kernel_transform(rectangular, sample, 0.5)
+ker_h <- kernel_transform(rectangular, 0, 0.5)
 
 
 
-a <- -1
-b <- 1
+a <- ker_h$support[1] - abs(kernel_h_ap$support[1])
+b <- ker_h$support[2] + abs(kernel_h_ap$support[2])
 s <- (b - a) / grid
 
+# grid ist ungleichmäßig!
 x <- c(rev(seq(from=sample - s, to= a, length.out=(as.integer(grid/2)))),
        sample,
        seq(from=sample + s, to= b, length.out=as.integer(grid/2)))
