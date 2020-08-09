@@ -1,6 +1,4 @@
 cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=100L) {
-  print(bandwidth)
-
   density_estimator <- kernelDensityEstimator(kernel, samples, bandwidth, subdivisions)
 
   squared_l2_norm_estimate <-
