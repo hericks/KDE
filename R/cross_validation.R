@@ -1,6 +1,7 @@
 cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=100L) {
   density_estimator <- kernelDensityEstimator(kernel, samples, bandwidth, subdivisions)
 
+  # TODO: Usable error if integration fails (increase number of subdivisions)
   squared_l2_norm_estimate <-
     integrate(
       function(x)
