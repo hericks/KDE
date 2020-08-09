@@ -66,7 +66,7 @@ triangular_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-triangular <- Kernel(triangular_function, c(-1,1))
+triangular <- Kernel(triangular_function, c(-1,1), subdivisions=10L)
 
 
 epanechnikov_function <- function(u){
@@ -100,7 +100,7 @@ epanechnikov_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-epanechnikov <- Kernel(epanechnikov_function, c(-1,1))
+epanechnikov <- Kernel(epanechnikov_function, c(-1,1), subdivisions=10L)
 
 biweight_function <- function(u){
   check_kernel_conditions(u)
@@ -133,7 +133,7 @@ biweight_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-biweight <- Kernel(biweight_function, c(-1,1))
+biweight <- Kernel(biweight_function, c(-1,1), subdivisions = 10L)
 
 triweight_function <- function(u){
   check_kernel_conditions(u)
@@ -163,7 +163,7 @@ triweight_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-triweight <- Kernel(triweight_function, c(-1,1))
+triweight <- Kernel(triweight_function, c(-1,1), subdivisions=10L)
 
 tricube_function <- function(u){
   check_kernel_conditions(u)
@@ -193,7 +193,7 @@ tricube_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-tricube <- Kernel(tricube_function, c(-1,1))
+tricube <- Kernel(tricube_function, c(-1,1), subdivisions = 10L)
 
 gaussian_function <- function(u){
   check_kernel_conditions(u)
@@ -223,7 +223,7 @@ gaussian_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-gaussian <- Kernel(gaussian_function, c(-Inf,Inf))
+gaussian <- Kernel(gaussian_function, c(-Inf,Inf), subdivisions = 10L)
 
 cosine_function <- function(u){
   check_kernel_conditions(u)
@@ -253,7 +253,7 @@ cosine_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-cosine <- Kernel(cosine_function, c(-1,1))
+cosine <- Kernel(cosine_function, c(-1,1), subdivisions = 10L)
 
 logistic_function <- function(u){
   check_kernel_conditions(u)
@@ -284,7 +284,7 @@ logistic_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-logistic <- Kernel(logistic_function, c(-Inf,Inf))
+logistic <- Kernel(logistic_function, c(-Inf,Inf), subdivisions = 10L)
 
 sigmoid_function <- function(u){
   check_kernel_conditions(u)
@@ -315,7 +315,7 @@ sigmoid_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-sigmoid <- Kernel(sigmoid_function, c(-Inf,Inf))
+sigmoid <- Kernel(sigmoid_function, c(-Inf,Inf), subdivisions = 10L)
 
 silverman_function <- function(u){
   check_kernel_conditions(u)
@@ -346,7 +346,7 @@ silverman_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-silverman <- Kernel(silverman_function, c(-Inf,Inf))
+silverman <- Kernel(silverman_function, c(-Inf,Inf), subdivisions = 20L)
 
 
 

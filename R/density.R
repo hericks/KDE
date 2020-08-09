@@ -71,8 +71,8 @@
 #' @include integrable_function.R
 #'
 #' @export
-Density <- function(fun, support = NULL){
-  den <- new_Density(fun, support)
+Density <- function(fun, support = NULL, subdivisions = 100L){
+  den <- new_Density(fun, support, subdivisions)
   validate_Density(den)
   den
 }
@@ -119,17 +119,17 @@ validate_Density <- function(x){
   object <- x$fun
   lower <- x$support[1]
   upper <- x$support[2]
+  subdivisions <- x$subdivisions
 
   testing_points <- seq(max(lower, -1e10), min(upper, 1e10), length.out=1e4)
   # prevent double checking with validate_integrable function
   stopifnot("density functions are non-negative" = all(object(testing_points) >= 0))
 
   stopifnot("The integral of a density over its support has to be one"=
-              isTRUE(all.equal(integrate(object, lower = lower, upper = upper)[[1]], 1)))
+              isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivision)[[1]], 1)))
   invisible(x)
 }
 
-new_Density <- function(fun, support, ..., subclass=NULL){
-
-  new_IntegrableFunction(fun,support, subclass=c(subclass,"Density"))
+new_Density <- function(fun, support, subdivisions..., subclass=NULL){
+  new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Density"))
 }
