@@ -1,10 +1,7 @@
-cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=NULL) {
-  if (is.null(subdivisions)) {
-    subdivisions = 35*sqrt(length(samples))/sqrt(bandwidth)
-    print(subdivisions)
-  }
+cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=100L) {
+  print(bandwidth)
 
-  density_estimator <- kernelDensityEstimator(kernel, samples, bandwidth)
+  density_estimator <- kernelDensityEstimator(kernel, samples, bandwidth, subdivisions)
 
   squared_l2_norm_estimate <-
     integrate(
@@ -17,16 +14,12 @@ cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=NULL
 
   num_samples <- length(samples)
 
-  temp <- 0
-  for(i in seq_along(samples)) {
-    for(j in seq_along(samples)) {
-      if (i == j) next
+  # Nutze, dass kernel$fun vektorisiert ist
+  differences <- outer(samples, samples, `-`)
+  diag(differences) <- NA_real_
+  eval_points <- differences[!is.na(differences)]/bandwidth
+  summation <- sum(kernel$fun(eval_points))
 
-      temp <- temp + kernel$fun((samples[i] - samples[j])/bandwidth)
-    }
-  }
-
-  mixed_integral_estimate <- temp/(num_samples*(num_samples-1)*bandwidth)
-
+  mixed_integral_estimate <- summation/(num_samples*(num_samples-1)*bandwidth)
   squared_l2_norm_estimate - 2*mixed_integral_estimate
 }
