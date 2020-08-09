@@ -1,7 +1,7 @@
 # Settings
 num_samples <- 1000
 bandwidth_set <- c(1, 0.5, 0.25, 0.1, 0.05, 0.04)
-kernel <- rectangular
+kernel <- gaussian
 bandwidth_set_2 <- c()
 for (m in (1:as.integer(40))){
   bandwidth_set_2 <- c(bandwidth_set_2, m/40)

@@ -27,7 +27,6 @@ double_kernel_estim <- function(kernel, samples, h, h_ap, grid_size){
   fun <- approxfun(convolution$x, convolution$y)
 
   support <- c(x_min, x_max)
-  plot(convolution$x, convolution$y)
   list("fun"=fun, "support"=support)
 }
 
@@ -49,9 +48,11 @@ bias_estim <- function(kernel, samples, h, H_n, kappa = 1.2, var_est, grid_size)
                       subdivisions=2000)
       l2 <- l2[[1]]
     }
+
     print(l2 - kappa * var_est(h_ap))
     res <- c(res, l2 - kappa * var_est(h_ap))
   }
+  res[res < 0] <- 0
   max(res)
 }
 
@@ -70,27 +71,27 @@ goldenshluger_lepski_method_2 <- function(kernel, samples, H_n = NULL, kappa = 1
 
   #TODO arg-checks
 
-  # Kernel conditions
+  # conditions for kernel
   tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
 
-  # Samples conditions
+  # conditions for samples
   stopifnot(is.numeric(samples))
   stopifnot(length(samples) > 0)
 
   # conditions for H_n
-  stopifnot("samplesize has to be greater or equal to M"=length(samples) >= length(H_n))
+  stopifnot("samplesize has to be greater or equal to M"= length(samples) >= length(H_n))
   stopifnot(is.numeric(H_n))
   stopifnot(length(H_n) > 0)
   stopifnot(all(H_n <= 1) & all(H_n >= 1/length(samples)))
-  # TODO: Seite 67 Bedingung 3.5 Comte (?), crashes at sample size between 1e7 and 1e8
-  stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
+  #stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
+  stopifnot(isTRUE(all(H_n > 0)))
 
-  #conditions for kappa
+  # conditions for kappa
   stopifnot(is.numeric(kappa))
   stopifnot(length(kappa) == 1)
   stopifnot("kappa has to be greater or equal to 1"= kappa >= 1)
 
-  # conditions for grid_convolve
+  # conditions for grid_size
   stopifnot(is.integer(grid_size))
   stopifnot(length(grid_size) == 1)
   # grid will not work with less than 2 points
