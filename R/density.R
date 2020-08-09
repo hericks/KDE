@@ -126,10 +126,10 @@ validate_Density <- function(x){
   stopifnot("density functions are non-negative" = all(object(testing_points) >= 0))
 
   stopifnot("The integral of a density over its support has to be one"=
-              isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivision)[[1]], 1)))
+              isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivisions)[[1]], 1)))
   invisible(x)
 }
 
-new_Density <- function(fun, support, subdivisions..., subclass=NULL){
+new_Density <- function(fun, support, subdivisions, ..., subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Density"))
 }
