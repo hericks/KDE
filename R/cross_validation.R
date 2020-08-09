@@ -12,7 +12,7 @@ cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=100L
 
   num_samples <- length(samples)
 
-  # Nutze, dass kernel$fun vektorisiert ist
+  # to use that kernel$fun is vectorised in its argument
   differences <- outer(samples, samples, `-`)
   diag(differences) <- NA_real_
   eval_points <- differences[!is.na(differences)]/bandwidth
