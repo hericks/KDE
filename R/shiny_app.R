@@ -29,8 +29,8 @@ ui <- fluidPage(
     "Choose a density:",
     c(
       "Uniform distribution" = "dunif",
-      "Normal distribution" = "dnorm",
-      "Custom Density" = "custom_dens"
+      "Normal distribution" = "dnorm"
+      #"Custom Density" = "custom_dens"
     )
   ),
   fluidRow(
@@ -58,8 +58,15 @@ ui <- fluidPage(
 
   conditionalPanel(
     condition = "input.density == 'custom_dens'",
-    textInput("Custom Density Term", "custom_density_term")
+    textInput("custom density term", "custom_density_term")
   ),
+  conditionalPanel(condition = "input.density == 'custom_dens'", textInput("helper density term", "helper_density")),
+  conditionalPanel(
+    condition = "input.density == 'custom_dens'",
+    textInput("helper density sampler", "helper_density_sampler")
+  ),
+  conditionalPanel(condition = "input.density == 'custom_dens'", numericInput("condition parameter", "M", "1")),
+
 
 
   # Kernel selection
@@ -95,6 +102,12 @@ ui <- fluidPage(
   numericInput("num_samples", "Number of samples:", value = 25L),
   sliderInput("bandwidth", "Choose a bandwidth:", 0.001, 1, 0.5, 0.01),
 
+  # bandwidth estimation
+  actionButton("suggestions", "get bandwidth suggestions"),
+  tableOutput("bandwidth_table"),
+
+  plotOutput("plot"),
+
   fluidRow(
     column(width = 2,
            numericInput("xlim_1", "x lower limit:", value = -2L)),
@@ -112,13 +125,7 @@ ui <- fluidPage(
       offset = 0,
       numericInput("ylim_2", "y upper limit:", value = 2L)
     )
-  ),
-
-  # bandwidth estimation
-  actionButton("suggestions", "get bandwidth suggestions"),
-  tableOutput("bandwidth_table"),
-
-  plotOutput("plot")
+  )
 )
 
 server <- function(input, output, session) {
@@ -174,11 +181,18 @@ server <- function(input, output, session) {
         "dnorm" = rnorm(x, input$dnorm_mean, input$dnorm_sd)
       )
     }
-    sampler <-
-      rejection_sampling(reactive_density$object(),
-                         reactive_density$object(),
-                         sampler_fun,
-                         1)
+
+    if (input$density == 'custom_dens') {
+      M <- input$M
+    }
+    else{
+      M <- 1
+    }
+
+    sampler <- rejection_sampling(reactive_density$object(),
+                                  reactive_density$object(),
+                                  sampler_fun,
+                                  M)
     sampler(num_of_samples)
   }
 
@@ -257,7 +271,11 @@ server <- function(input, output, session) {
               lines(x_grid(),
                     reactive_kde$fun(x_grid(), samples, cv_suggestion))
               lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, gl_suggestion))
+                    reactive_kde$fun(x_grid(), samples, gl_suggestion, col= "green"))
+              points(samples,
+                     integer(length(samples)),
+                     pch = ".",
+                     col = "blue")
 
 
               bandwidth_tb <-
@@ -284,4 +302,3 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-
