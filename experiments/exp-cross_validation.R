@@ -1,6 +1,5 @@
 # Settings
-num_samples <- 100
-bandwidths <- c(1, 0.5, 0.25, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01)
+num_samples <- 50
 kernel <- gaussian
 
 # Custom density
@@ -19,14 +18,8 @@ custom_sampler <- rejection_sampling(f_den, g_den, runif, 2)
 # Sample from custom sampler
 samples <- custom_sampler(num_samples)
 
-# Calculate cross-validation errors
-errors <- sapply(bandwidths, function(h) cross_validation_error(kernel, samples, h, 100))
-
-# Print optimal bandwidth
-paste("Selected bandwidth:", bandwidths[which.min(errors)])
-
-# Create KDEs
-estimators <- lapply(bandwidths, function(h) kernelDensityEstimator(kernel, samples, h, 100)$fun)
+# Calculate cross validation bandwidth
+bandwidth <- cross_validation(kernel, samples, subdivisions = 300L)
 
 # Plot the density in red
 x <- seq(-3, 3, by=0.005)
@@ -36,5 +29,7 @@ plot(x, f_den_eval(x), col="red", type="l", ylim=c(0,2.5), xlim=c(-0.5,1.5))
 points(samples, integer(length(samples)), pch=".", col="blue")
 
 # Plot best estimator
-lines(x, estimators[[which.min(errors)]](x))
+lines(x, kernelDensityEstimator(kernel, samples, bandwidth)$fun(x))
 
+# Print optimal bandwidth
+paste0("The optimal bandwidth (chosen by cross-validation) is ", bandwidth)
