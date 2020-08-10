@@ -1,4 +1,16 @@
-cross_validation_error <- function(kernel, samples, bandwidth, subdivisions=100L) {
+cross_validation <- function(kernel, samples, bandwidths = NULL, subdivisions = 100L) {
+  if (is.null(bandwidths)) {
+    num_samples <- length(samples)
+    bandwidths <- log(1 - seq(1, 1/num_samples, length.out=20))/log(1 - 1/num_samples)
+    bandwidths <- bandwidths[is.finite(bandwidths)] - min(bandwidths)
+    bandwidths <- 1/num_samples + (1 - 1/num_samples)*bandwidths/max(bandwidths)
+  }
+
+  errors <- sapply(bandwidths, function(h) cross_validation_error(kernel, samples, h, subdivisions = subdivisions))
+  bandwidths[which.min(errors)]
+}
+
+cross_validation_error <- function(kernel, samples, bandwidth, subdivisions = 100L) {
   density_estimator <- kernelDensityEstimator(kernel, samples, bandwidth, subdivisions)
 
   # TODO: Usable error if integration fails (increase number of subdivisions)
