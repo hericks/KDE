@@ -21,4 +21,6 @@ Collate:
     'density.R'
     'kernel_density_estimator.R'
     'kernel_transform.R'
+    'pco_method.R'
     'rejection_sampling.R'
+    'shiny_app.R'

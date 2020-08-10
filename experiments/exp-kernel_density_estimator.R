@@ -20,7 +20,7 @@ custom_sampler <- rejection_sampling(f_den, g_den, runif, 2)
 samples <- custom_sampler(num_samples)
 
 # Create KDE
-p_hat <- kernelDensityEstimator(kernel, samples, bandwidth)$fun
+p_hat <- kernel_density_estimator(kernel, samples, bandwidth)$fun
 
 # Plot the density in red
 x <- seq(-3, 3, by=0.005)
