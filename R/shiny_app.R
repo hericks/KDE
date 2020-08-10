@@ -27,8 +27,23 @@ ui <- fluidPage(
     "density",
     "Choose a density:",
     c(
-      "Uniform distribution" = "dunif",
-      "Normal distribution" = "dnorm"
+      #"Beta distribution" = "dbeta",
+      #"Binomial distribution" = "dbinom",
+      #"Cauchy distribution" = "dcauchy",
+      #"Chi-squared distribution" = "dchisq"
+      #"Exponential distribution" = "dexp",
+      #"F distribution" = "df",
+      #"Gamma distribution" = "dgamma",
+      #"Geometric distribution" = "dgeom"
+      #"Hypergeometric distribution" = "dhyper",
+      #"Log-normal distribution" = "dlnorm",
+      #"Multinomial distribution" = "dmultinom",
+      #"Negative binomial distribution" = "dnbinom",
+      "Normal distribution" = "dnorm",
+      #"Poisson distribution" = "dpois"
+      #"Student's t distribution" = "dt",
+      "Uniform distribution" = "dunif"
+      #"Weibull distribution" = "dweibull"
       #"Custom Density" = "custom_dens"
     )
   ),
@@ -102,20 +117,20 @@ ui <- fluidPage(
 
   fluidRow(
     column(width = 2,
-           numericInput("xlim_1", "x lower limit:", value = -2L)),
+           numericInput("xlim_1", "x lower limit:", value = -5L)),
     column(
       width = 2,
       offset = 0,
-      numericInput("xlim_2", "x upper limit:", value = 2L)
+      numericInput("xlim_2", "x upper limit:", value = 5L)
     )
   ),
   fluidRow(
     column(width = 2,
-           numericInput("ylim_1", "y lower limit:", value = -1L)),
+           numericInput("ylim_1", "y lower limit:", value = 0L)),
     column(
       width = 2,
       offset = 0,
-      numericInput("ylim_2", "y upper limit:", value = 2L)
+      numericInput("ylim_2", "y upper limit:", value = 1L)
     )
   )
 )
@@ -238,8 +253,17 @@ server <- function(input, output, session) {
               x_grid(),
               reactive_density$fun(x_grid()),
               xlim = c(input$xlim_1, input$xlim_2),
-              ylim = c(input$ylim_1, input$ylim_2)
+              ylim = c(input$ylim_1, input$ylim_2),
+              main = "graphic representation",
+              xlab = "",
+              ylab = "",
+              col = "dark red",
+              type = "l",
+              lwd = 2
+
             )
+            legend("topleft", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
+
             if (input$show_kernel) {
               lines(x_grid(), reactive_kernel$fun(x_grid()))
             }
@@ -251,13 +275,13 @@ server <- function(input, output, session) {
               gl_suggestion <- 1
 
               lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, input$bandwidth))
+                    reactive_kde$fun(x_grid(), samples, input$bandwidth), col = "black")
               lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, pco_suggestion))
+                    reactive_kde$fun(x_grid(), samples, pco_suggestion), col = "dark green")
               lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, cv_suggestion))
+                    reactive_kde$fun(x_grid(), samples, cv_suggestion), col = "violet")
               lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, gl_suggestion))
+                    reactive_kde$fun(x_grid(), samples, gl_suggestion), col = "steelblue2")
               points(samples,
                      integer(length(samples)),
                      pch = ".",
@@ -270,6 +294,7 @@ server <- function(input, output, session) {
                   "goldenshluger_lepski_method" = gl_suggestion
                 )
               output$bandwidth_table <- renderTable(bandwidth_tb)
+              legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
             }
             else {
               lines(x_grid(),
@@ -278,6 +303,7 @@ server <- function(input, output, session) {
                      integer(length(samples)),
                      pch = ".",
                      col = "blue")
+
             }
           })
         })
