@@ -88,15 +88,8 @@ ui <- fluidPage(
   ),
   checkboxInput("show_kernel", "Plot kernel", 0),
 
+  numericInput("subdivisions", "Number subdivisions for integration:", value = 100L),
 
-  sliderInput(
-    "subdivision",
-    "Subdivisions for integration:",
-    100L,
-    1000L,
-    100L,
-    50
-  ),
   # parameter tweaking
   numericInput("num_samples", "Number of samples:", value = 25L),
   sliderInput("bandwidth", "Choose a bandwidth:", 0.001, 1, 0.5, 0.01),
@@ -217,21 +210,15 @@ server <- function(input, output, session) {
       reactive_kernel$object()$fun(x)
     }
 
-
   reactive_kde <- reactiveValues()
   reactive_kde$kde <-
     function(samples, bandwidth) {
-      kernel_density_estimator(reactive_kernel$object(), samples, bandwidth)
+      kernel_density_estimator(reactive_kernel$object(), samples, bandwidth, input$subdivisions)
     }
   reactive_kde$fun <-
     function(x, samples, bandwidth) {
-      kernel_density_estimator(reactive_kernel$object(), samples, bandwidth)$fun(x)
+      kernel_density_estimator(reactive_kernel$object(), samples, bandwidth, input$subdivisions)$fun(x)
     }
-
-  reactive_kde$pco <- function(samples) {
-    pco_method(reactive_kernel$object(), samples)
-  }
-
 
   x_grid <-
     reactive({
@@ -258,9 +245,9 @@ server <- function(input, output, session) {
             }
             if (input$suggestions) {
               # bandwidth estimations
-              pco_suggestion <- reactive_kde$pco(samples)
+              pco_suggestion <- pco_method(reactive_kernel$object(), samples, subdivisions=input$subdivisions)
               #TODO: cv and goldenshluger algorithms!!
-              cv_suggestion <- 1
+              cv_suggestion <- cross_validation(reactive_kernel$object(), samples, subdivisions=input$subdivisions)
               gl_suggestion <- 1
 
               lines(x_grid(),
@@ -270,12 +257,11 @@ server <- function(input, output, session) {
               lines(x_grid(),
                     reactive_kde$fun(x_grid(), samples, cv_suggestion))
               lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, gl_suggestion, col= "green"))
+                    reactive_kde$fun(x_grid(), samples, gl_suggestion))
               points(samples,
                      integer(length(samples)),
                      pch = ".",
                      col = "blue")
-
 
               bandwidth_tb <-
                 data.frame(

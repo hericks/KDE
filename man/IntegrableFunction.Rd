@@ -4,7 +4,7 @@
 \alias{IntegrableFunction}
 \title{Integrable Functions}
 \usage{
-IntegrableFunction(fun, support = NULL)
+IntegrableFunction(fun, support = NULL, subdivisions = 100L)
 }
 \arguments{
 \item{fun}{an \code{R} function taking a single numeric argument and

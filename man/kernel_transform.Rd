@@ -4,7 +4,7 @@
 \alias{kernel_transform}
 \title{Shifting kernels to a coefficient and applying a bandwidth.}
 \usage{
-kernel_transform(kernel, sample, h)
+kernel_transform(kernel, sample, h, subdivisions = 100L)
 }
 \arguments{
 \item{kernel}{a kernel object.}

@@ -1,7 +1,7 @@
-penalty_term <- function(kernel, samples, h_min, h, lambda) {
+penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L) {
   n <- length(samples)
-  ker_h_min <- kernel_transform(kernel, 0, h_min)
-  ker_h <- kernel_transform(kernel, 0, h)
+  ker_h_min <- kernel_transform(kernel, 0, h_min, subdivisions)
+  ker_h <- kernel_transform(kernel, 0, h, subdivisions)
 
   # calculate the variance term
   l2_h_kernel <-
@@ -39,13 +39,13 @@ penalty_term <- function(kernel, samples, h_min, h, lambda) {
   penalty <- h_var_term - bias_term
 }
 
-pco_run <- function(kernel, samples, H_n, lambda) {
+pco_run <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
   res <- c()
   h_min <- min(H_n)
-  f_h_min_est <- kernel_density_estimator(kernel, samples, h_min)
+  f_h_min_est <- kernel_density_estimator(kernel, samples, h_min, subdivisions)
 
   for (h in H_n) {
-    f_h_est <- kernel_density_estimator(kernel, samples, h)
+    f_h_est <- kernel_density_estimator(kernel, samples, h, subdivisions)
     if (f_h_min_est$support[2] < f_h_est$support[1] |
         f_h_est$support[2] < f_h_min_est$support[1]) {
       z1 <-
@@ -83,13 +83,13 @@ pco_run <- function(kernel, samples, H_n, lambda) {
 pco_method <- function(kernel,
                        samples,
                        H_n = NULL,
-                       lambda = 1) {
+                       lambda = 1,
+                       subdivisions = 100L) {
   if (is.null(H_n)) {
-    H_n <- c()
-    n <- length(samples)
-    for (m in (1:as.integer(n))) {
-      H_n <- c(H_n, m / n)
-    }
+    num_samples <- length(samples)
+    H_n <- log(1 - seq(1, 1/num_samples, length.out=20))/log(1 - 1/num_samples)
+    H_n <- H_n[is.finite(H_n)] - min(H_n)
+    H_n <- 1/num_samples + (1 - 1/num_samples)*H_n/max(H_n)
   }
 
   # conditions for kernel
@@ -115,6 +115,6 @@ pco_method <- function(kernel,
   stopifnot(length(lambda) == 1)
 
 
-  res_tuple <- pco_run(kernel, samples, H_n, lambda)
+  res_tuple <- pco_run(kernel, samples, H_n, lambda, subdivisions)
   h_est <- H_n[which.min(res_tuple$risk)]
 }

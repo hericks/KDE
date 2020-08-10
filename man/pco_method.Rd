@@ -4,7 +4,7 @@
 \alias{pco_method}
 \title{Penalized Comparison to Overfitting}
 \usage{
-pco_method(kernel, samples, H_n = NULL, lambda = 1)
+pco_method(kernel, samples, H_n = NULL, lambda = 1, subdivisions = 100L)
 }
 \description{
 Penalized Comparison to Overfitting

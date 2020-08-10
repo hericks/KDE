@@ -91,8 +91,8 @@
 #' @include integrable_function.R
 #'
 #' @export
-Kernel <- function(fun, support = NULL) {
-  kern <- new_Kernel(fun, support)
+Kernel <- function(fun, support = NULL, subdivisions=100L) {
+  kern <- new_Kernel(fun, support, subdivisions)
   validate_Kernel(kern)
   kern
 }
@@ -139,13 +139,13 @@ validate_Kernel <- function(x){
   object <- x$fun
   lower <- x$support[1]
   upper <- x$support[2]
+  subdivisions = x$subdivisions
   stopifnot("The integral of a density over its support has to be one"=
-              isTRUE(all.equal(integrate(object, lower = lower, upper = upper)[[1]], 1)))
+              isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivisions)[[1]], 1)))
   invisible(x)
 }
 
 #' @include integrable_function.R
-new_Kernel <- function(fun, support, ..., subclass=NULL){
-
-  new_IntegrableFunction(fun,support, subclass=c(subclass,"Kernel"))
+new_Kernel <- function(fun, support, subdivisions=100L, ..., subclass=NULL){
+  new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Kernel"))
 }

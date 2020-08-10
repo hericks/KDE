@@ -52,8 +52,8 @@
 #' Density.
 #'
 #' @export
-IntegrableFunction <- function(fun, support=NULL){
-  func <- new_IntegrableFunction(fun, support)
+IntegrableFunction <- function(fun, support=NULL, subdivisions=100L){
+  func <- new_IntegrableFunction(fun, support, subdivisions)
   validate_IntegrableFunction(func)
   func
 }
@@ -96,6 +96,7 @@ validate_IntegrableFunction <- function(x){
   stopifnot("Object must be a list"=is.list(x))
   stopifnot("Object must contain entry 'fun'"="fun" %in% names(x))
   stopifnot("Object must contain entry 'support'"="support" %in% names(x))
+  stopifnot("Object must contain entry 'subdivisions'"="subdivisions" %in% names(x))
 
   # to test the structure of 'fun' entry
   fun <- x$fun
@@ -111,11 +112,16 @@ validate_IntegrableFunction <- function(x){
   testing_values <- c(fun(max(support[1],-1e10) - offsets), fun(min(support[2], 1e10) + offsets))
   stopifnot("Entry 'fun' has to be zero outside of support"=all(sapply(testing_values, function(x) isTRUE(all.equal(x, 0)))))
 
-  # to test the the integrability on the given support
+  # to test the structure of the 'subdivisions' entry
+  subdivisions <- x$subdivisions
+  stopifnot("Entry 'subdivisions' must be numeric"=is.numeric(subdivisions))
+  stopifnot("Entry 'subdivisions' must be positive"=subdivisions > 0)
+
+  # to test the the integrability over the given support using the given number of subdivisions
   tryCatch({
-    integration_value <- integrate(function(x) abs(fun(x)), support[1], support[2])[[1]]
+    integration_value <- integrate(function(x) abs(fun(x)), support[1], support[2], subdivisions=subdivisions)[[1]]
   }, error=function(cond) {
-    stop(paste("Failed to integrate the function:", cond))
+    stop(paste0("Failed to integrate the function. Increasing the number of subdivisions (currently ", subdivisions, ") may help: ", cond))
   })
 
   stopifnot("The integral of the absolute function must integrate to a finite value"=is.finite(integration_value))
@@ -126,7 +132,7 @@ validate_IntegrableFunction <- function(x){
 # constructor and private subclass constructors. Always followed by a call of
 # validate_IntegrableFunction (maybe inside a subclass validator). Further
 # checking is done by validate_IntegrableFunction.
-new_IntegrableFunction <- function(fun, support=NULL, ..., subclass=NULL){
+new_IntegrableFunction <- function(fun, support=NULL, subdivisions=100L, ..., subclass=NULL){
   stopifnot("class of fun has to be function"=is.function(fun))
 
   if(is.null(support)){
@@ -134,7 +140,7 @@ new_IntegrableFunction <- function(fun, support=NULL, ..., subclass=NULL){
   }
 
   structure(
-    list("fun"=fun, "support"=support),
+    list("fun"=fun, "support"=support, "subdivisions"=subdivisions),
     ...,
     class=c(subclass, "IntegrableFunction")
   )

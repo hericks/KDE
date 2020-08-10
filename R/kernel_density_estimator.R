@@ -17,7 +17,7 @@
 #' [validate_kernel()] to validate cusotm kernel functions.
 #'
 #' @export
-kernel_density_estimator <- function(kernel, samples, bandwidth=1) {
+kernel_density_estimator <- function(kernel, samples, bandwidth=1, subdivisions=100L) {
   # Kernel conditions
   tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
 
@@ -44,7 +44,7 @@ kernel_density_estimator <- function(kernel, samples, bandwidth=1) {
 
   support <- c(bandwidth*kernel$support[1] + min(samples), bandwidth*kernel$support[2] + max(samples))
 
-  IntegrableFunction(estimator_eval, support)
+  IntegrableFunction(estimator_eval, support, subdivisions=subdivisions)
 }
 
 

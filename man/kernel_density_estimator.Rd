@@ -4,7 +4,7 @@
 \alias{kernel_density_estimator}
 \title{Construct a kernel density estimator}
 \usage{
-kernel_density_estimator(kernel, samples, bandwidth = 1)
+kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 100L)
 }
 \arguments{
 \item{kernel}{The (vectorised) kernel function to use for the construction of

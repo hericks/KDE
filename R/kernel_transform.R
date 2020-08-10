@@ -28,7 +28,7 @@
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
 #' @export
-kernel_transform <- function(kernel, sample, h) {
+kernel_transform <- function(kernel, sample, h, subdivisions=100L) {
   # Kernel conditions
   tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
 
@@ -41,6 +41,6 @@ kernel_transform <- function(kernel, sample, h) {
   stopifnot(length(h) == 1)
   stopifnot(h > 0)
 
-  Kernel(function(x) kernel$fun((x-sample)/h)/h, h*kernel$support + sample)
+  Kernel(function(x) kernel$fun((x-sample)/h)/h, h*kernel$support + sample, subdivisions=subdivisions)
 }
 
