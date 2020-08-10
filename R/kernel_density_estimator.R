@@ -37,9 +37,9 @@ kernelDensityEstimator <- function(kernel, samples, bandwidth = 1, subdivisions 
 
     ret <- numeric(length(x))
     for (x0 in samples) {
-      ret <- ret + kernel_eval((x - x0)/bandwidth)/bandwidth
+      ret <- ret + kernel_eval((x - x0)/bandwidth)
     }
-    ret/length(samples)
+    ret/(bandwidth*length(samples))
   }
 
   support <- c(bandwidth*kernel$support[1] + min(samples), bandwidth*kernel$support[2] + max(samples))
