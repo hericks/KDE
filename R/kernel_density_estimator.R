@@ -35,21 +35,20 @@ kernelDensityEstimator <- function(kernel, samples, bandwidth = 1, subdivisions 
   estimator_eval <- function(x) {
     stopifnot("input has to be numeric"=is.numeric(x))
 
-    ret <- numeric(length(x))
-    for (x0 in samples) {
-      ret <- ret + kernel_eval((x - x0)/bandwidth)
+    # TODO: Use better condition to differentiate between cases
+    if (length(x)*length(samples) > 50000) {
+      ret <- numeric(length(x))
+      for (x0 in samples) {
+        ret <- ret + kernel_eval((x - x0)/bandwidth)
+      }
+      return(ret/(bandwidth*length(samples)))
+    } else {
+      return(apply(kernel_eval(outer(x, samples, `-`)/bandwidth), 1, sum)/(bandwidth*length(samples)))
     }
-    ret/(bandwidth*length(samples))
+
   }
 
   support <- c(bandwidth*kernel$support[1] + min(samples), bandwidth*kernel$support[2] + max(samples))
 
   IntegrableFunction(estimator_eval, support, subdivisions)
 }
-
-
-
-
-
-
-
