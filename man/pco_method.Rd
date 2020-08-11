@@ -14,9 +14,9 @@ pco_method(kernel, samples, H_n = NULL, lambda = 1, subdivisions = 100L)
 \arguments{
 \item{kernel}{kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.}
 
-\item{samples}{A numerical vector of observations to base the construction of the estimator.}
+\item{samples}{A numerical vector of observations.}
 
-\item{H_n}{The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The pco_methdod function will try to set up a suitable bandwidth set if \code{NULL} is passed.}
+\item{H_n}{The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set if \code{NULL} is passed.}
 
 \item{lambda}{A tuning parameter. It has to be a numerical value with length 1. The criterion blows up for lambda < 0, therefore the optimal value for lambda is a positiv real number. The recommendation is to set lambda = 1.}
 
@@ -37,8 +37,8 @@ a given bandwith and the desired density that is matching the distibution of the
 are trying to estimate with the KDE).
 By applying this method the risk will be decomposed into a bias and a variance term, where the
 bias term needs to be estimated, because it includes a dependency of the real function that we are
-trying to estimate with the KDE. The variance term is simply the variance of the KDE (created with a
-bandwith \code{h}).\cr
+trying to estimate with the KDE. The variance term is simply a bound for the variance of the KDE (created with a
+bandwith \code{h}), which is tuned by a parameter \code{lambda}.\cr
 The bias term will be estimated by a comparison of the KDE of a bandwidth \code{h} to the KDE of the
 smallest bandwidth \code{h_min} out of the given bandwidth set \code{H_n}. \cr
 A penalty term consisting of the sum of the two variance terms is introduced, including the variance from the risk decomposition and the one from

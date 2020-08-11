@@ -55,6 +55,8 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
 #'
 #' @seealso \code{\link[KDE:pco_method]{pco_method}} for more information about the PCO method.
 #'
+#'#' @include kernel.R
+#'
 #' @export
 pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
   # conditions for kernel
@@ -140,8 +142,8 @@ pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
 #'                                                                                           are trying to estimate with the KDE).
 #' By applying this method the risk will be decomposed into a bias and a variance term, where the
 #' bias term needs to be estimated, because it includes a dependency of the real function that we are
-#' trying to estimate with the KDE. The variance term is simply the variance of the KDE (created with a
-#' bandwith \code{h}).\cr
+#' trying to estimate with the KDE. The variance term is simply a bound for the variance of the KDE (created with a
+#' bandwith \code{h}), which is tuned by a parameter \code{lambda}.\cr
 #' The bias term will be estimated by a comparison of the KDE of a bandwidth \code{h} to the KDE of the
 #' smallest bandwidth \code{h_min} out of the given bandwidth set \code{H_n}. \cr
 #' A penalty term consisting of the sum of the two variance terms is introduced, including the variance from the risk decomposition and the one from
@@ -165,6 +167,7 @@ pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
 #' @source \href{https://arxiv.org/abs/1607.05091v2}{Lacour `[`2017`]`}
 #' @source \href{https://arxiv.org/abs/1902.01075}{Varet `[`2019`]`}
 #'
+#' @include kernel.R
 #' @export
 pco_method <- function(kernel,
                        samples,

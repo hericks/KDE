@@ -28,4 +28,6 @@ For more information about the Penalized Comparison to Overfitting method, see \
 }
 \seealso{
 \code{\link[KDE:pco_method]{pco_method}} for more information about the PCO method.
+
+#' @include kernel.R
 }

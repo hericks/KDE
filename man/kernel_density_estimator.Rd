@@ -3,30 +3,43 @@
 \name{kernel_density_estimator}
 \alias{kernel_density_estimator}
 \title{Construct a kernel density estimator}
+\source{
+\itemize{Nonparametric Estimation, Comte \code{[}2017\verb{]}, ISBN: 978-2-36693-030-6}
+}
 \usage{
 kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 100L)
 }
 \arguments{
-\item{kernel}{The (vectorised) kernel function to use for the construction of
-the estimator satisfying \link{is_kernel}.}
+\item{kernel}{A S3 object of the class \link[KDE:Kernel]{Kernel}.}
 
-\item{samples}{A numerical vector to base the construction of the estimator
-on.}
+\item{samples}{A numerical vector of observations.}
 
 \item{bandwidth}{A non-negative numeric value to use as the bandwidth for the
 kernel.}
+
+\item{subdivisions}{A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}.}
 }
 \value{
-The constructed kernel density estimator. Therefore a function
-vectorised in its evaluation point returning the estimator at these points.
+A S3 object of class \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}.
 }
 \description{
-The kernelDensityEstimator function factory takes observations,
-returning the corresponding kernel density estimator.
+The \code{kernel_density_estimator} function that approximates a probability density function from given sampels.
+}
+\details{
+{
+\itemize{
+\item \strong{\code{kernel}} Kernels in this package are S3 objects of the class \link[KDE:Kernel]{Kernel}.\cr
+See \link[KDE:Kernel]{Kernel} for more informations on kernels.
+\item \strong{\code{subdivisions}} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
+The subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
+The default value is set to 100L. Be aware that too large numbers can cause long runtimes!
+}
+
+For more information about kernel density estimaton, see "Nonparametric Estimation" by Fabienne Comte.
+}
 }
 \seealso{
-\itemize{
-\item \code{\link[=kernels]{kernels()}} for a list of already implemented kernels. *
-\code{\link[=validate_kernel]{validate_kernel()}} to validate cusotm kernel functions.
-}
+\code{\link[KDE:Kernel]{Kernel}}
+\code{\link[KDE:validate_Kernel]{validate_Kernel}}
+\code{\link[KDE:Kernel]{IntegrableFunction}}
 }

@@ -6,7 +6,7 @@
 #' @param kernel a kernel object.
 #' @param sample the observation/coefficient as a numerical scalar.
 #' @param h the bandwidth as a numerical scalar.
-#' @param subdivisions a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.
+#' @param subdivisions a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats:integrate]{integrate}} in \code{\link[KDE:Kernel]{Kernel}}.
 #'
 #' @return The transformed (shifted and scaled) kernel as valid S3 object of
 #'   class \code{Kernel}.
