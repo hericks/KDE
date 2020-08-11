@@ -237,7 +237,7 @@ gaussian_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-gaussian <- Kernel(gaussian_function, c(-Inf,Inf), subdivisions = 10L)
+gaussian <- Kernel(gaussian_function, c(-15,15), subdivisions = 10L)
 
 cosine_function <- function(u){
   check_kernel_conditions(u)
@@ -302,7 +302,7 @@ logistic_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-logistic <- Kernel(logistic_function, c(-Inf,Inf), subdivisions = 10L)
+logistic <- Kernel(logistic_function, subdivisions = 10L)
 
 sigmoid_function <- function(u){
   check_kernel_conditions(u)

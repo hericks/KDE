@@ -146,7 +146,7 @@ validate_Kernel <- function(x){
   lower <- x$support[1]
   upper <- x$support[2]
   subdivisions = x$subdivisions
-  stopifnot("The integral of a density over its support has to be one"=
+  stopifnot("The integral of a kernel over its support has to be one"=
               isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivisions)[[1]], 1)))
   invisible(x)
 }
