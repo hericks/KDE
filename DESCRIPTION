@@ -20,6 +20,7 @@ Collate:
     'builtin_kernels.R'
     'cross_validation.R'
     'density.R'
+    'goldenschluger_lepski.R'
     'kernel_density_estimator.R'
     'kernel_transform.R'
     'pco_method.R'
