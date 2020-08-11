@@ -1,3 +1,15 @@
+#' Penalized-Comparison-to-Overfitting-Method (PCO)
+#'
+#' @description The penalty term is essential to estimate the variance, it will be used in
+#'
+#' @param kernel The (vectorised) kernel function to use for the construction of
+#'   the estimator satisfying [is_kernel].
+#' @param samples A numerical vector to base the construction of the estimator
+#' @param h_min The minimum of the bandwidths grid. It must be a numerical vector with length one.
+#' @param h The bandwith we want to be evaluated for the penalty term (?). It also must be a numerical vetor, with lenghth one.
+#' @param lambda A tuning parameter. It has to be a numerical value with length 1. The risk blows up for lambda < 0, therefor the optimal value for lambda is a positiv real number. The recommendation is to set lambda=1.
+#'
+#' @export
 penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L) {
   n <- length(samples)
   ker_h_min <- kernel_transform(kernel, 0, h_min, subdivisions)
