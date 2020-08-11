@@ -8,7 +8,8 @@
 An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
 \itemize{
 \item biweight function \code{fun}
-\item support = \code{c(-1,1)}.
+\item support = \code{c(-1,1)}
+\item subdivisions = \code{100L}.
 }
 }
 \usage{

@@ -3,9 +3,56 @@
 \name{pco_method}
 \alias{pco_method}
 \title{Penalized Comparison to Overfitting}
+\source{
+\href{https://arxiv.org/abs/1607.05091v2}{Lacour \code{[}2017\verb{]}}
+
+\href{https://arxiv.org/abs/1902.01075}{Varet \code{[}2019\verb{]}}
+}
 \usage{
 pco_method(kernel, samples, H_n = NULL, lambda = 1, subdivisions = 100L)
 }
+\arguments{
+\item{kernel}{kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.}
+
+\item{samples}{A numerical vector of observations to base the construction of the estimator.}
+
+\item{H_n}{The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The pco_methdod function will try to set up a suitable bandwidth set if \code{NULL} is passed.}
+
+\item{lambda}{A tuning parameter. It has to be a numerical value with length 1. The criterion blows up for lambda < 0, therefore the optimal value for lambda is a positiv real number. The recommendation is to set lambda = 1.}
+
+\item{subdivisions}{A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}.}
+}
+\value{
+A numerical vector of length 1 containing the bandwidth with minimal risk according to the PCO criterion, given by \code{\link[pco_crit]{pco_crit}}.
+}
 \description{
-Penalized Comparison to Overfitting
+The PCO method is used to estimate a optimal bandwidth for kernel density estimation from a given set of bandwidths.
+}
+\details{
+pco_method uses \code{\link[KDE:pco_crit]{pco_crit}} to calculate the PCO criterion value, approximating the risk.
+For each bandwidth given in \code{H_n}, the method selects the bandwidth with the minimal associated risk.
+
+The risk function is given by the expected value of the integrated square error of the KDE with
+a given bandwith and the desired density that is matching the distibution of the samples (which we
+are trying to estimate with the KDE).
+By applying this method the risk will be decomposed into a bias and a variance term, where the
+bias term needs to be estimated, because it includes a dependency of the real function that we are
+trying to estimate with the KDE. The variance term is simply the variance of the KDE (created with a
+bandwith \code{h}).\cr
+The bias term will be estimated by a comparison of the KDE of a bandwidth \code{h} to the KDE of the
+smallest bandwidth \code{h_min} out of the given bandwidth set \code{H_n}. \cr
+A penalty term consisting of the sum of the two variance terms is introduced, including the variance from the risk decomposition and the one from
+the bias term estimation.
+The PCO criterion is given by the sum of the comparison to overfitting and the penalty term.
+Now it is comprehensible why this method is called Penalized Comparison to Overfitting. \cr
+In the end the method compares the KDE of each bandwidth in \code{H_n} to the KDE of the smallest bandwidth out
+of the given bandwidth collection. Finally the bandwidth with minimal associated risk will be returned. \cr
+For more information see the linked papers below.
+}
+\seealso{
+\itemize{\code{\link[KDE:pco_crit]{pco_crit}} for getting the associated criterion values.}
+\itemize{\code{\link[KDE:goldenshluger_lepski_method]{Goldenshluger-Lepski method}},
+\code{\link[KDE:cross_validation]{Cross-Validation method}} to see other methods for estimating bandwidths.}
+\itemize{\code{\link[KDE:Kernel]{Kernel}} to see the definiotion of a kernel.}
+\itemize{\code{\link[KDE:kernel_density_estimator]{Kernel Density Estimator}} to see the functionality of the Kernel density estimation.}
 }

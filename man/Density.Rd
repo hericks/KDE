@@ -14,6 +14,8 @@ returning a numeric vector of the same length: see 'Details'.}
 upperbound in the first and second entry respectively.
 \code{Density} will try to find bounds on the support itself if
 \code{NULL} is passed.}
+
+\item{subdivisions}{a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.}
 }
 \description{
 The S3 Class \code{Density} tries to ensure some of the properties of densities
@@ -50,6 +52,10 @@ the \code{support} entry. Using \code{integrate} over its support should evaluat
 and upperbound for the support of the function stored in \code{fun} in its
 first and second entry respectively. In particular the values \code{-Inf}
 and \code{Inf} are allowed.
+\item \strong{\code{subdivisions}} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
+The function \code{fun} is needed to be integrated using \code{\link[stats:integrate]{integrate}}.
+Because of that, the subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
+The default value is set to 100L. Be aware that too large numbers can cause long runtimes!
 }
 
 The constructor \code{Density} tries to construct a valid

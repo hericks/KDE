@@ -20,7 +20,9 @@ rectangular_function <- function(u){
 #'
 #' * rectangular function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -53,7 +55,9 @@ triangular_function <- function(u){
 #'
 #' * triangular function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -87,7 +91,9 @@ epanechnikov_function <- function(u){
 #'
 #' * epanechnikov function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -120,7 +126,9 @@ biweight_function <- function(u){
 #'
 #' * biweight function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -152,7 +160,9 @@ triweight_function <- function(u){
 #'
 #' * triweight function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -182,7 +192,9 @@ tricube_function <- function(u){
 #'
 #' * tricube function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -212,7 +224,9 @@ gaussian_function <- function(u){
 #'
 #' * gaussian function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}.
+#' * support = \code{c(-Inf,Inf)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -242,7 +256,9 @@ cosine_function <- function(u){
 #'
 #' * cosine function \code{fun}
 #'
-#' * support = \code{c(-1,1)}.
+#' * support = \code{c(-1,1)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -273,7 +289,9 @@ logistic_function <- function(u){
 #'
 #' * logistic function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}.
+#' * support = \code{c(-Inf,Inf)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -304,7 +322,9 @@ sigmoid_function <- function(u){
 #'
 #' * sigmoid function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}.
+#' * support = \code{c(-Inf,Inf)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'
@@ -335,7 +355,9 @@ silverman_function <- function(u){
 #'
 #' * silverman function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}.
+#' * support = \code{c(-Inf,Inf)}
+#'
+#' * subdivisions = \code{100L}.
 #'
 #' @param u vector of numerical values
 #'

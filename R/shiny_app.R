@@ -42,9 +42,9 @@ ui <- fluidPage(
       "Normal distribution" = "dnorm",
       #"Poisson distribution" = "dpois"
       #"Student's t distribution" = "dt",
-      "Uniform distribution" = "dunif"
+      "Uniform distribution" = "dunif",
       #"Weibull distribution" = "dweibull"
-      #"Custom Density" = "custom_dens"
+      "Custom Density" = "custom_dens"
     )
   ),
   fluidRow(

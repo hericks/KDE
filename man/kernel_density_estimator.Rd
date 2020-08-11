@@ -4,11 +4,7 @@
 \alias{kernel_density_estimator}
 \title{Construct a kernel density estimator}
 \usage{
-<<<<<<< HEAD:man/kernel_density_estimator.Rd
 kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 100L)
-=======
-kernelDensityEstimator(kernel, samples, bandwidth = 1, subdivisions = 100L)
->>>>>>> a7c5c7e660f21bf35bcfb1099b84cd402624bd48:man/kernelDensityEstimator.Rd
 }
 \arguments{
 \item{kernel}{The (vectorised) kernel function to use for the construction of

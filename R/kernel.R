@@ -38,6 +38,11 @@
 #'   first and second entry respectively. In particular the values \code{-Inf}
 #'   and \code{Inf} are allowed.
 #'
+#'   * \strong{`subdivisions`} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
+#'   The function \code{fun} is needed to be integrated using \code{\link[stats:integrate]{integrate}}.
+#'   Because of that, the subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
+#'   The default value is set to 100L. Be aware that too large numbers can cause long runtimes!
+#'
 #'   The constructor \code{Kernel} tries to construct a valid
 #'   \code{Kernel} object based on the passed arguments. Returned
 #'   objects are guaranteed to pass the validator [validate_Kernel]
@@ -66,6 +71,7 @@
 #'   upperbound in the first and second entry respectively.
 #'   \code{Kernel} will try to find bounds on the support itself if
 #'   \code{NULL} is passed.
+#' @param subdivisions a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.
 #'
 #' @examples
 #' rectangular_function <- function(u){

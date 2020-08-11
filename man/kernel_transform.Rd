@@ -12,6 +12,8 @@ kernel_transform(kernel, sample, h, subdivisions = 100L)
 \item{sample}{the observation/coefficient as a numerical scalar.}
 
 \item{h}{the bandwidth as a numerical scalar.}
+
+\item{subdivisions}{a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.}
 }
 \value{
 The transformed (shifted and scaled) kernel as valid S3 object of
@@ -37,4 +39,9 @@ legend("topright",
        legend=c("gaussian", "shifted_gaussian","stretched_gaussian"),
        col=c("black","red", "blue"), lty=1, cex=0.8)
 
+}
+\seealso{
+\code{\link[KDE:Kernel]{Kernel}}
+\code{\link[KDE:validate_Kernel]{validate_Kernel}}
+\code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
 }

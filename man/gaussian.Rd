@@ -8,7 +8,8 @@
 An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
 \itemize{
 \item gaussian function \code{fun}
-\item support = \code{c(-Inf,Inf)}.
+\item support = \code{c(-Inf,Inf)}
+\item subdivisions = \code{100L}.
 }
 }
 \usage{
