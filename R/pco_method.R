@@ -51,6 +51,18 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
   penalty <- h_var_term - bias_term
 }
 
+
+#'
+#' @description pco_run creates a set of bandwidths with its associated risk.
+#'
+#' @param kernel same as in penalty_term
+#' @param samples same as in penalty_term
+#' @param lambda same as in penalty_term
+#' @param H_n The set of bandwidths. The minimum size for the set is a single bandwith. Furthermore all values must be numerical sclars and between the reciprocal of the sample length and 1.
+#'
+#' @return
+#'
+#' @export
 pco_run <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
   res <- c()
   h_min <- min(H_n)
@@ -90,8 +102,23 @@ pco_run <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
 
 
 #' Penalized Comparison to Overfitting
+#' @description This is the main function to estimate a proper bandwith for a well performing kernel density estimation.
+#' pco_method uses pco_run to get a selection of bandwitdth, which will be mimimized to choose the actual optimal bandwitdth of the given selection.
 #'
-#'@export
+#' @param kernel same as in pco_run
+#' @param samples same as in pco_run
+#' @param H_n same as in pco_run
+#' @param lambda same as in pco_run
+#' @param subdivisions
+#'
+#' @return the optimal bandwidth out of the given bandwith set
+#'
+#' @seealso * \code{\link[KDE:Goldenshluger_Lepski_Method]{Goldenshluger-Lepski-Method}},
+#' \code{\link[KDE:cross_validation]{Cross-Validation}} to see other methods for estimating bandwidths.
+#' * \code{\link[KDE:kernel]{Kernel}}to see the definiotion of a kernel.
+#' *\code{\link[KDE:kernle_density-estimator]{Kernle-Density-Estimator}}  to see the functioning of the Kernel density estimation.
+#'
+#' @export
 pco_method <- function(kernel,
                        samples,
                        H_n = NULL,
