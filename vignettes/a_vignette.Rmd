@@ -1,0 +1,62 @@
+---
+title: "Kernel-Density-Estimation and Bandwidth Estimation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{a_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## General
+Load the package with: 
+```{r setup}
+library(KDE)
+```
+
+## Sampling
+
+## Kernel-Density-Estimation
+```
+kernel_density_estimator(kernel, samples, bandwidth=1, subdivisions=100L)
+```
+## Bandwidth Estimation
+
+Explenation/Purpose of 
+
+* Kernel 
+* Samples
+* Bandwidths
+* kappa/lambda
+* subdivisions
+
+### Cross-Validation
+
+```
+cross_validation(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 100L)
+```
+
+### Goldenshluger-Lepski Method
+
+```
+goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L)
+```
+
+### Penalized-Comparison-to-Overfitting Method
+
+To get the optimal bandwidth from the given bandwidth set
+```
+pco_method <- function(kernel, samples, bandwidths = NULL, lambda = 1, subdivisions = 100L)
+```
+
+To get a list of the bandwidths and their associated risk values
+
+```
+pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L)    ```                 
