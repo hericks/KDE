@@ -14,7 +14,6 @@ goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 10
   stopifnot(is.numeric(bandwidths))
   stopifnot(length(bandwidths) > 0)
   stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
-  #stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
   stopifnot(isTRUE(all(bandwidths > 0)))
 
   # conditions for kappa

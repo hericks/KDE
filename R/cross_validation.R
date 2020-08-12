@@ -1,5 +1,5 @@
 #' @export
-cross_validation <- function(kernel, samples, bandwidths = NULL, subdivisions = 100L) {
+cross_validation <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 100L) {
   if (is.null(bandwidths)) {
     num_samples <- length(samples)
     bandwidths <- log(1 - seq(1, 1/num_samples, length.out=20))/log(1 - 1/num_samples)
