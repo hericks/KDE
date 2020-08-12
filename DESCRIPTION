@@ -27,3 +27,7 @@ Collate:
     'pco_method.R'
     'rejection_sampling.R'
     'shiny_app.R'
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
