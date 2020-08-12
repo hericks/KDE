@@ -7,7 +7,7 @@
 pco_crit(
   kernel,
   samples,
-  H_n = logarithmic_bandwidth_set(1/length(samples), 1, 10),
+  bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10),
   lambda = 1,
   subdivisions = 100L
 )
@@ -17,7 +17,7 @@ pco_crit(
 
 \item{samples}{A numerical vector of observations to base the construction of the estimator.}
 
-\item{H_n}{The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The pco_methdod function will try to set up a suitable bandwidth set if \code{NULL} is passed.}
+\item{bandwidths}{The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The pco_methdod function will try to set up a suitable bandwidth set if \code{NULL} is passed.}
 
 \item{lambda}{A tuning parameter. It has to be a numerical value with length 1. The criterion blows up for lambda < 0, therefore the optimal value for lambda is a positiv real number. The recommendation is to set lambda = 1.}
 
