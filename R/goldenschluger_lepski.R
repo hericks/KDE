@@ -1,5 +1,29 @@
+#' Goldenshluger-Lepski Method
+#'
+#' @description The Goldenshluger-Lepski Method is used to estimate a optimal bandwidth for kernel density estimation from a given set of bandwidths.
+#'
+#' @param kernel kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.
+#' @param samples A numerical vector of observations.
+#' @param bandwidths The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set if \code{NULL} is passed.
+#' @param kappa A tuning parameter. It has to be a numerical value with length 1. The minimal admissible value is 1. The recommendation is to set kappa = 1.2.
+#' @param subdivisions A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}. The default value is set to 100L.
+#'
+#' @return A numerical vector of length 1 containing the bandwidth with minimal risk.
+#'
+#' @details Ein Roman.
+#'
+#' @seealso
+#' \itemize{\code{\link[KDE:pco_method]{PCO Method}},
+#' \code{\link[KDE:cross_validation]{Cross-Validation Method}} to see other methods for estimating bandwidths.}
+#' \itemize{\code{\link[KDE:Kernel]{Kernel}} to see the definiotion of a kernel.}
+#' \itemize{\code{\link[KDE:kernel_density_estimator]{Kernel Density Estimator}} to see the functionality of the Kernel density estimation.}
+#'
+#' @source \href{https://spartacus-idh.com/030.html}{Comte `[`2017`]`}
+#'
+#' @include kernel.R
+#'
 #' @export
-goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1, subdivisions = 100L) {
+goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)
