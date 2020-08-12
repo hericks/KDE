@@ -1,5 +1,5 @@
 #' @export
-goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 100L) {
+goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1, subdivisions = 100L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)
@@ -10,16 +10,16 @@ goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 10
   stopifnot(length(samples) > 0)
 
   # conditions for H_n
-  stopifnot("samplesize has to be greater or equal to M" = length(samples) >= length(bandwidths))
+  stopifnot("samplesize has to be greater or equal to the length of the bandwidth collection" = length(samples) >= length(bandwidths))
   stopifnot(is.numeric(bandwidths))
   stopifnot(length(bandwidths) > 0)
   stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
   stopifnot(isTRUE(all(bandwidths > 0)))
 
   # conditions for kappa
-  #stopifnot(is.numeric(kappa))
-  #stopifnot(length(kappa) == 1)
-  #stopifnot("kappa has to be greater or equal to 1" = kappa >= 1)
+  stopifnot(is.numeric(kappa))
+  stopifnot(length(kappa) == 1)
+  stopifnot("kappa has to be greater or equal to 1" = kappa >= 1)
 
   # conditions for subdivisions
   stopifnot(is.integer(subdivisions))
@@ -31,20 +31,20 @@ goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 10
 
   penalties <- numeric(0)
   for (h in bandwidths) {
-    A <- A(kernel, samples, bandwidths, h, subdivisions, squared_l1_norm_kernel, squared_l2_norm_kernel)
+    A <- A(kernel, samples, bandwidths, h, kappa, subdivisions, squared_l1_norm_kernel, squared_l2_norm_kernel)
     V <- squared_l1_norm_kernel*squared_l2_norm_kernel/(length(samples)*h)
-    penalties[length(penalties) + 1] <- A + 2*V
+    penalties[length(penalties) + 1] <- A + 2*kappa*V
   }
 
   bandwidths[which.min(penalties)]
 }
 
-A <- function(kernel, samples, bandwidths, h, subdivisions = 100L, squared_l1_norm_kernel, squared_l2_norm_kernel) {
+A <- function(kernel, samples, bandwidths, h, kappa, subdivisions = 100L, squared_l1_norm_kernel, squared_l2_norm_kernel) {
   # Stretched kernel
   k_h <- kernel_transform(kernel, 0, h)
 
   # Calculate content of supremum for each bandwidth h2
-  ret <- -Inf
+  ret <- 0
   for(h2 in bandwidths) {
     kde_h2 <- kernel_density_estimator(kernel, samples, h2, subdivisions = subdivisions)
     k_h2 <- kernel_transform(kernel, 0, h2)
@@ -74,7 +74,7 @@ A <- function(kernel, samples, bandwidths, h, subdivisions = 100L, squared_l1_no
 
     V_h2 <- squared_l1_norm_kernel*squared_l2_norm_kernel/(length(samples)*h2)
 
-    ret <- max(ret, squared_l2_norm - V_h2)
+    ret <- max(ret, squared_l2_norm - kappa*V_h2)
   }
 
   ret

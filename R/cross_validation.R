@@ -16,7 +16,7 @@ cross_validation <- function(kernel, samples, bandwidths = logarithmic_bandwidth
   stopifnot(length(samples) > 0)
 
   # conditions for H_n
-  stopifnot("samplesize has to be greater or equal to M" = length(samples) >= length(bandwidths))
+  stopifnot("samplesize has to be greater or equal to the length of the bandwidth collection" = length(samples) >= length(bandwidths))
   stopifnot(is.numeric(bandwidths))
   stopifnot(length(bandwidths) > 0)
   stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))

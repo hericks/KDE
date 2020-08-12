@@ -4,7 +4,13 @@
 \alias{pco_crit}
 \title{Penalized Comparison To Overfitting criterion calculation}
 \usage{
-pco_crit(kernel, samples, H_n, lambda, subdivisions = 100L)
+pco_crit(
+  kernel,
+  samples,
+  H_n = logarithmic_bandwidth_set(1/length(samples), 1, 10),
+  lambda = 1,
+  subdivisions = 100L
+)
 }
 \arguments{
 \item{kernel}{kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.}

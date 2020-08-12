@@ -45,7 +45,7 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
 #'
 #' @param kernel kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.
 #' @param samples A numerical vector of observations to base the construction of the estimator.
-#' @param H_n The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The pco_methdod function will try to set up a suitable bandwidth set if \code{NULL} is passed.
+#' @param bandwidths The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The pco_methdod function will try to set up a suitable bandwidth set if \code{NULL} is passed.
 #' @param lambda A tuning parameter. It has to be a numerical value with length 1. The criterion blows up for lambda < 0, therefore the optimal value for lambda is a positiv real number. The recommendation is to set lambda = 1.
 #' @param subdivisions A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}.
 #'
@@ -58,7 +58,7 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
 #'#' @include kernel.R
 #'
 #' @export
-pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L) {
+pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)
@@ -68,13 +68,13 @@ pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(s
   stopifnot(is.numeric(samples))
   stopifnot(length(samples) > 0)
 
-  # conditions for H_n
-  stopifnot("samplesize has to be greater or equal to M" = length(samples) >= length(H_n))
-  stopifnot(is.numeric(H_n))
-  stopifnot(length(H_n) > 0)
-  stopifnot(all(H_n <= 1) & all(H_n >= 1 / length(samples)))
+  # conditions for bandwidths
+  stopifnot("samplesize has to be greater or equal to the length of the bandwidth collection" = length(samples) >= length(bandwidths))
+  stopifnot(is.numeric(bandwidths))
+  stopifnot(length(bandwidths) > 0)
+  stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
   #stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
-  stopifnot(isTRUE(all(H_n > 0)))
+  stopifnot(isTRUE(all(bandwidths > 0)))
 
 
   # conditions for lambda
@@ -86,10 +86,10 @@ pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(s
   stopifnot(length(subdivisions) == 1)
 
   res <- c()
-  h_min <- min(H_n)
+  h_min <- min(bandwidths)
   f_h_min_est <- kernel_density_estimator(kernel, samples, h_min, subdivisions)
 
-  for (h in H_n) {
+  for (h in bandwidths) {
     f_h_est <- kernel_density_estimator(kernel, samples, h, subdivisions=subdivisions)
     if (f_h_min_est$support[2] < f_h_est$support[1] |
         f_h_est$support[2] < f_h_min_est$support[1]) {
@@ -118,7 +118,7 @@ pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(s
     l_pco <- bias_estim + pen_function
     res <- c(res, l_pco)
   }
-  list(bandwidth_set = H_n, risk = res)
+  list(bandwidth_set = bandwidths, risk = res)
 }
 
 
@@ -128,14 +128,14 @@ pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(s
 #'
 #' @param kernel kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.
 #' @param samples A numerical vector of observations.
-#' @param H_n The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set if \code{NULL} is passed.
+#' @param bandwidths The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set if \code{NULL} is passed.
 #' @param lambda A tuning parameter. It has to be a numerical value with length 1. The criterion blows up for lambda < 0, therefore the optimal value for lambda is a positiv real number. The recommendation is to set lambda = 1.
 #' @param subdivisions A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}.
 #'
 #' @return A numerical vector of length 1 containing the bandwidth with minimal risk according to the PCO criterion, given by \code{\link[pco_crit]{pco_crit}}.
 #'
 #' @details pco_method uses \code{\link[KDE:pco_crit]{pco_crit}} to calculate the PCO criterion value, approximating the risk.
-#' For each bandwidth given in \code{H_n}, the method selects the bandwidth with the minimal associated risk.
+#' For each bandwidth given in \code{bandwidths}, the method selects the bandwidth with the minimal associated risk.
 #'
 #' The risk function is given by the expected value of the integrated square error of the KDE with
 #' a given bandwith and the desired density that is matching the distibution of the samples (which we
@@ -145,12 +145,12 @@ pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(s
 #' trying to estimate with the KDE. The variance term is simply a bound for the variance of the KDE (created with a
 #' bandwith \code{h}), which is tuned by a parameter \code{lambda}.\cr
 #' The bias term will be estimated by a comparison of the KDE of a bandwidth \code{h} to the KDE of the
-#' smallest bandwidth \code{h_min} out of the given bandwidth set \code{H_n}. \cr
+#' smallest bandwidth \code{h_min} out of the given bandwidth set \code{bandwidths}. \cr
 #' A penalty term consisting of the sum of the two variance terms is introduced, including the variance from the risk decomposition and the one from
 #' the bias term estimation.
 #' The PCO criterion is given by the sum of the comparison to overfitting and the penalty term.
 #' Now it is comprehensible why this method is called Penalized Comparison to Overfitting. \cr
-#' In the end the method compares the KDE of each bandwidth in \code{H_n} to the KDE of the smallest bandwidth out
+#' In the end the method compares the KDE of each bandwidth in \code{bandwidths} to the KDE of the smallest bandwidth out
 #' of the given bandwidth collection. Finally the bandwidth with minimal associated risk will be returned. \cr
 #' For more information see the linked papers below.
 #'
@@ -171,18 +171,18 @@ pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(s
 #' @export
 pco_method <- function(kernel,
                        samples,
-                       H_n = NULL,
+                       bandwidths = NULL,
                        lambda = 1,
                        subdivisions = 100L) {
-  if (is.null(H_n)) {
+  if (is.null(bandwidths)) {
     num_samples <- length(samples)
-    H_n <- log(1 - seq(1, 1/num_samples, length.out=20))/log(1 - 1/num_samples)
-    H_n <- H_n[is.finite(H_n)] - min(H_n)
-    H_n <- 1/num_samples + (1 - 1/num_samples)*H_n/max(H_n)
+    bandwidths <- log(1 - seq(1, 1/num_samples, length.out=20))/log(1 - 1/num_samples)
+    bandwidths <- bandwidths[is.finite(bandwidths)] - min(bandwidths)
+    bandwidths <- 1/num_samples + (1 - 1/num_samples)*bandwidths/max(bandwidths)
   }
 
   # Argchecks are being made in pco_crit, hence the pco_crit function can be used without pco_method, but not the other way around.
 
-  res_tuple <- pco_crit(kernel, samples, H_n, lambda, subdivisions)
-  h_est <- H_n[which.min(res_tuple$risk)]
+  res_tuple <- pco_crit(kernel, samples, bandwidths, lambda, subdivisions)
+  h_est <- bandwidths[which.min(res_tuple$risk)]
 }
