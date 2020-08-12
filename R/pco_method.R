@@ -58,7 +58,7 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
 #'#' @include kernel.R
 #'
 #' @export
-pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
+pco_crit <- function(kernel, samples, H_n = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)

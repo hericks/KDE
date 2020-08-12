@@ -1,5 +1,5 @@
 #' @export
-goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 100L) {
+goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 100L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)
@@ -9,18 +9,12 @@ goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 10
   stopifnot(is.numeric(samples))
   stopifnot(length(samples) > 0)
 
-  # conditions for H_n
-  stopifnot("samplesize has to be greater or equal to M" = length(samples) >= length(H_n))
-  stopifnot(is.numeric(H_n))
-  stopifnot(length(H_n) > 0)
-  stopifnot(all(H_n <= 1) & all(H_n >= 1 / length(samples)))
-  #stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
-  stopifnot(isTRUE(all(H_n > 0)))
-
-
-  # conditions for lambda
-  stopifnot(is.numeric(lambda))
-  stopifnot(length(lambda) == 1)
+  # conditions for the bandwidth set
+  stopifnot("the sample-size has to be greater than or equal to the number of tested bandwidths" = length(samples) >= length(bandwidths))
+  stopifnot(is.numeric(bandwidths))
+  stopifnot(length(bandwidths) > 0)
+  stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
+  stopifnot(isTRUE(all(bandwidths > 0)))
 
   # conditions for subdivisions
   stopifnot(is.integer(subdivisions))
