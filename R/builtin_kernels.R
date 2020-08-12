@@ -224,7 +224,8 @@ gaussian_function <- function(u){
 #'
 #' * gaussian function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}
+#' * support = \code{c(-15,15)}.
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -289,7 +290,8 @@ logistic_function <- function(u){
 #'
 #' * logistic function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}
+#' * support = \code{c(-37,37)}.
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -322,7 +324,8 @@ sigmoid_function <- function(u){
 #'
 #' * sigmoid function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}
+#' * support = \code{c(-20,20)}
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -335,7 +338,7 @@ sigmoid_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-sigmoid <- Kernel(sigmoid_function, c(-Inf,Inf), subdivisions = 10L)
+sigmoid <- Kernel(sigmoid_function, c(-20,20), subdivisions = 10L)
 
 silverman_function <- function(u){
   check_kernel_conditions(u)
@@ -355,7 +358,8 @@ silverman_function <- function(u){
 #'
 #' * silverman function \code{fun}
 #'
-#' * support = \code{c(-Inf,Inf)}
+#' * support = \code{c(-20,20)}
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -368,7 +372,7 @@ silverman_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-silverman <- Kernel(silverman_function, c(-Inf,Inf), subdivisions = 20L)
+silverman <- Kernel(silverman_function, c(-40,40), subdivisions = 30L)
 
 
 

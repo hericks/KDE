@@ -35,9 +35,10 @@ ui <- fluidPage(
       "Normal distribution" = "dnorm",
       #"Poisson distribution" = "dpois"
       #"Student's t distribution" = "dt",
-      "Uniform distribution" = "dunif"
+      "Uniform distribution" = "dunif",
       #"Weibull distribution" = "dweibull"
       #"Custom Density" = "custom_dens"
+      "Custom Density 1" = "custom_density_1"
     )
   ),
   fluidRow(
@@ -136,16 +137,23 @@ server <- function(input, output, session) {
       "dunif" = c(input$dunif_min, input$dunif_max),
       "dnorm" = NULL,
       "dbeta" = c(0,1),
-      "dexp" = NULL
+      "dexp" = NULL,
+      "custom_density_1" = c(0,1)
     )
+  }
+  reactive_density$custom_density_1 <- function(x){
+    ret <- 1 + sin(2*pi*x)
+    ret[x < 0 | 1 < x] <- 0
+    ret
   }
   reactive_density$fun <- function(x) {
     switch(
       input$density,
       "dunif" = dunif(x, input$dunif_min, input$dunif_max),
       "dnorm" = dnorm(x, input$dnorm_mean, input$dnorm_sd),
-      "dbeta" = dbeta(x, max(c(0.3,input$dbeta_alpha), na.rm=TRUE), max(c(0.3,input$dbeta_beta), na.rm=TRUE)),
-      "dexp" = dexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE))
+      "dbeta" = dbeta(x, max(c(0.3, input$dbeta_alpha), na.rm=TRUE), max(c(0.3, input$dbeta_beta), na.rm=TRUE)),
+      "dexp" = dexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE)),
+      "custom_density_1" = reactive_density$custom_density_1(x)
     )
   }
   reactive_density$object <-
@@ -165,19 +173,23 @@ server <- function(input, output, session) {
         "dunif" = runif(x, input$dunif_min, input$dunif_max),
         "dnorm" = rnorm(x, input$dnorm_mean, input$dnorm_sd),
         "dbeta" = rbeta(x, max(c(0.3,input$dbeta_alpha), na.rm=TRUE), max(c(0.3,input$dbeta_beta), na.rm=TRUE)),
-        "dexp" = rexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE))
+        "dexp" = rexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE)),
+        "custom_density_1" = runif(x,min=0, max=1)
       )
     }
 
-    if (input$density == 'custom_dens') {
-      M <- input$M
+    if (input$density == 'custom_density_1') {
+      M <- 2
+      helper_density <- Density(dunif, support=c(0,1))
     }
     else{
       M <- 1
+      helper_density <- reactive_density$object()
+
     }
 
     sampler <- rejection_sampling(reactive_density$object(),
-                                  reactive_density$object(),
+                                  helper_density,
                                   sampler_fun,
                                   M)
     sampler(num_of_samples)
@@ -227,7 +239,6 @@ server <- function(input, output, session) {
   input_density_parameters$params <- function(){c(input$dunif_min, input$dunif_max,
                                                   input$dnorm_mean, input$dnorm_sd,
                                                   input$dbeta_alpha, input$dbeta_beta,
-                                                  input$dcauchy_location, input$dcauchy_scale,
                                                   input$dexp_rate)}
 
   observeEvent(input_density_parameters$params(), {

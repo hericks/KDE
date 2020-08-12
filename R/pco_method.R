@@ -90,7 +90,7 @@ pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
   f_h_min_est <- kernel_density_estimator(kernel, samples, h_min, subdivisions)
 
   for (h in H_n) {
-    f_h_est <- kernel_density_estimator(kernel, samples, h, subdivisions)
+    f_h_est <- kernel_density_estimator(kernel, samples, h, subdivisions=subdivisions)
     if (f_h_min_est$support[2] < f_h_est$support[1] |
         f_h_est$support[2] < f_h_min_est$support[1]) {
       z1 <-
