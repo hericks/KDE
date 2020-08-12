@@ -4,13 +4,21 @@
 #'
 #' @param kernel kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.
 #' @param samples A numerical vector of observations.
-#' @param bandwidths The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set if \code{NULL} is passed.
+#' @param bandwidths The bandwidth set from which the bandwidth with the least risk will be selected. The \code{goldenshluger_lepski} function will try to set up a suitable bandwidth set using \code{\link[KDE:logarthmic_bandwidth_set]{logarithmic_bandwidth_set}} if \code{NULL} is passed.
 #' @param kappa A tuning parameter. It has to be a numerical value with length 1. The minimal admissible value is 1. The recommendation is to set kappa = 1.2.
 #' @param subdivisions A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}. The default value is set to 100L.
 #'
 #' @return A numerical vector of length 1 containing the bandwidth with minimal risk.
 #'
-#' @details Ein Roman.
+#' @details This method is an implementation of the Goldenshluger-Lepski method for bandwith estimation. The aim is to minimize the risk of a kernel density estimator (KDE).
+#' The risk function is given by the expected value of the integrated square error of the KDE with a given bandwith and the desired density that is matching the distibution of the samples (which we are trying to estimate with the KDE). \cr
+#' By applying this method the risk will be decomposed into a bias and a variance term, where the
+#' bias term needs to be estimated, because it includes a dependency of the real function that we are
+#' trying to estimate with the KDE. The variance term is simply a bound for the variance of the KDE (created with a
+#' bandwith \code{h}), which is tuned by a parameter \code{kappa}.
+#' The bias term will be estimated by using a double kernel approach.
+#' The method then selects the bandwidth with the minimal associated risk. \cr
+#' For further information about the Goldenshluger-Lepski method for bandwidth estimation, see "Nonparametric Estimation" by Fabienne Comte.
 #'
 #' @seealso
 #' \itemize{\code{\link[KDE:pco_method]{PCO Method}},
@@ -18,12 +26,15 @@
 #' \itemize{\code{\link[KDE:Kernel]{Kernel}} to see the definiotion of a kernel.}
 #' \itemize{\code{\link[KDE:kernel_density_estimator]{Kernel Density Estimator}} to see the functionality of the Kernel density estimation.}
 #'
-#' @source \href{https://spartacus-idh.com/030.html}{Comte `[`2017`]`}
+#' @source
+#' \itemize{\href{https://spartacus-idh.com/030.html}{Nonparametric Estimation}, Comte `[`2017`]`, ISBN: 978-2-36693-030-6}
 #'
 #' @include kernel.R
+#' @include kernel_density_estimator.R
+#' @include logarithmic_bandwidth_set.R
 #'
 #' @export
-goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L) {
+goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)

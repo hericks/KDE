@@ -266,7 +266,7 @@ shiny_kde <- function(){
                   # bandwidth estimations
                   cv_suggestion <- cross_validation(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
                   pco_suggestion <- pco_method(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
-                  gl_suggestion <- goldenschluger_lepski(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
+                  gl_suggestion <- goldenshluger_lepski(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
 
                   lines(x_grid(),
                         reactive_kde$fun(x_grid(), samples, input$bandwidth), col = "black")
