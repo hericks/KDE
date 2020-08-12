@@ -4,42 +4,44 @@
 \alias{kernel_density_estimator}
 \title{Construct a kernel density estimator}
 \source{
-\itemize{Nonparametric Estimation, Comte \code{[}2017\verb{]}, ISBN: 978-2-36693-030-6}
+Nonparametric Estimation, Comte [2017], ISBN: 978-2-36693-030-6
 }
 \usage{
 kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 100L)
 }
 \arguments{
-\item{kernel}{A S3 object of the class \link[KDE:Kernel]{Kernel}.}
+\item{kernel}{a kernel as S3 object of the class \link{Kernel}.}
 
-\item{samples}{A numerical vector of observations.}
+\item{samples}{a numerical vector of observations.}
 
-\item{bandwidth}{A non-negative numeric value to use as the bandwidth for the
-kernel.}
+\item{bandwidth}{a non-negative numeric value to use as the bandwidth for the
+estimator.}
 
-\item{subdivisions}{A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}.}
+\item{subdivisions}{a integer vector of length 1 used for the subdivisions
+parameter of the builtin R-function \code{\link{integrate}}.}
 }
 \value{
-A S3 object of class \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}.
+The estimator is returned as S3 object of class
+\code{\link{IntegrableFunction}}.
 }
 \description{
-The \code{kernel_density_estimator} function that approximates a probability density function from given sampels.
+The \code{kernel_density_estimator} function builds a kernel
+density estimator using the provided kernel, bandwidth and samples.
 }
 \details{
-{
-\itemize{
-\item \strong{\code{kernel}} Kernels in this package are S3 objects of the class \link[KDE:Kernel]{Kernel}.\cr
-See \link[KDE:Kernel]{Kernel} for more informations on kernels.
-\item \strong{\code{subdivisions}} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
-The subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
-The default value is set to 100L. Be aware that too large numbers can cause long runtimes!
-}
+The validation of the returned estimator as
+\code{\link{IntegrableFunction}} relies on the builtin function
+\code{\link{integrate}}, which requires a \code{subdivisions} argument.
+Integration using a larger number of subdivisions will increase the
+runtime. In contrast too few subdivisions may result in a runtime error.
 
-For more information about kernel density estimaton, see "Nonparametric Estimation" by Fabienne Comte.
-}
+For more information about kernel density estimaton, see "Nonparametric
+Estimation" by Fabienne Comte.
 }
 \seealso{
-\code{\link[KDE:Kernel]{Kernel}}
-\code{\link[KDE:validate_Kernel]{validate_Kernel}}
-\code{\link[KDE:Kernel]{IntegrableFunction}}
+\code{\link{Kernel}} for more information about kernels,
+\code{\link[KDE:pco_method]{PCO}},
+\code{\link[KDE:cross_validation]{Cross-Validation}} and
+\code{\link[KDE:goldenschluger_lepski]{Goldenschluger-Lepski}} for
+automatic bandwidth-selection algorithms.
 }
