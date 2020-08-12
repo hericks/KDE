@@ -1,5 +1,4 @@
 library(shiny)
-library(ggplot2)
 
 withConsoleRedirect <- function(containerId, expr) {
   # Change type="output" to type="message" to catch stderr
@@ -16,8 +15,6 @@ withConsoleRedirect <- function(containerId, expr) {
 }
 # withConsoleRedirect("console", {print(sampler(reactive_density))})
 
-
-
 ui <- fluidPage(
   pre(id = "console"),
   #Density selection
@@ -27,24 +24,20 @@ ui <- fluidPage(
     "density",
     "Choose a density:",
     c(
-      #"Beta distribution" = "dbeta",
-      #"Binomial distribution" = "dbinom",
-      #"Cauchy distribution" = "dcauchy",
+      "Beta distribution" = "dbeta",
       #"Chi-squared distribution" = "dchisq"
-      #"Exponential distribution" = "dexp",
+      "Exponential distribution" = "dexp",
       #"F distribution" = "df",
       #"Gamma distribution" = "dgamma",
       #"Geometric distribution" = "dgeom"
       #"Hypergeometric distribution" = "dhyper",
       #"Log-normal distribution" = "dlnorm",
-      #"Multinomial distribution" = "dmultinom",
-      #"Negative binomial distribution" = "dnbinom",
       "Normal distribution" = "dnorm",
       #"Poisson distribution" = "dpois"
       #"Student's t distribution" = "dt",
-      "Uniform distribution" = "dunif",
+      "Uniform distribution" = "dunif"
       #"Weibull distribution" = "dweibull"
-      "Custom Density" = "custom_dens"
+      #"Custom Density" = "custom_dens"
     )
   ),
   fluidRow(
@@ -69,18 +62,18 @@ ui <- fluidPage(
       conditionalPanel(condition = "input.density == 'dnorm'", numericInput("dnorm_sd", "sd", "1"))
     )
   ),
-
-  conditionalPanel(
-    condition = "input.density == 'custom_dens'",
-    textInput("custom density term", "custom_density_term")
+  fluidRow(
+    column(
+      width = 2,
+      conditionalPanel(condition = "input.density == 'dbeta'", numericInput("dbeta_alpha", "alpha", "0.5", min=1e-5))
+    ),
+    column(
+      width = 2,
+      offset = 0,
+      conditionalPanel(condition = "input.density == 'dbeta'", numericInput("dbeta_beta", "beta", "0.5", min=1e-5))
+    )
   ),
-  conditionalPanel(condition = "input.density == 'custom_dens'", textInput("helper density term", "helper_density")),
-  conditionalPanel(
-    condition = "input.density == 'custom_dens'",
-    textInput("helper density sampler", "helper_density_sampler")
-  ),
-  conditionalPanel(condition = "input.density == 'custom_dens'", numericInput("condition parameter", "M", "1")),
-
+  conditionalPanel(condition = "input.density == 'dexp'", numericInput("dexp_rate", "rate", "1")),
 
 
   # Kernel selection
@@ -136,44 +129,29 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  dens <- reactive({
-    dens_fun <- function(x) {
-      switch(
-        input$density,
-        "dunif" = dunif(x, input$dunif_min, input$dunif_max),
-        "dnorm" = dnorm(x, input$dnorm_mean, input$dnorm_sd)
-      )
-    }
-  })
-
-  dens_fun <- function(x) {
-    switch(
-      input$density,
-      "dunif" = dunif(x, input$dunif_min, input$dunif_max),
-      "dnorm" = dnorm(x, input$dnorm_mean, input$dnorm_sd)
-    )
-  }
-
   reactive_density <- reactiveValues()
   reactive_density$support <- function() {
     switch(
       input$density,
       "dunif" = c(input$dunif_min, input$dunif_max),
-      "dnorm" = NULL
+      "dnorm" = NULL,
+      "dbeta" = c(0,1),
+      "dexp" = NULL
     )
   }
   reactive_density$fun <- function(x) {
     switch(
       input$density,
       "dunif" = dunif(x, input$dunif_min, input$dunif_max),
-      "dnorm" = dnorm(x, input$dnorm_mean, input$dnorm_sd)
+      "dnorm" = dnorm(x, input$dnorm_mean, input$dnorm_sd),
+      "dbeta" = dbeta(x, max(c(0.3,input$dbeta_alpha), na.rm=TRUE), max(c(0.3,input$dbeta_beta), na.rm=TRUE)),
+      "dexp" = dexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE))
     )
   }
   reactive_density$object <-
     function() {
       Density(reactive_density$fun, reactive_density$support())
     }
-
 
   reactive_samples <- reactiveValues()
   reactive_samples$values <- function() {
@@ -185,7 +163,9 @@ server <- function(input, output, session) {
       switch(
         input$density,
         "dunif" = runif(x, input$dunif_min, input$dunif_max),
-        "dnorm" = rnorm(x, input$dnorm_mean, input$dnorm_sd)
+        "dnorm" = rnorm(x, input$dnorm_mean, input$dnorm_sd),
+        "dbeta" = rbeta(x, max(c(0.3,input$dbeta_alpha), na.rm=TRUE), max(c(0.3,input$dbeta_beta), na.rm=TRUE)),
+        "dexp" = rexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE))
       )
     }
 
@@ -243,68 +223,76 @@ server <- function(input, output, session) {
         length.out = 1000
       )
     })
-  observeEvent(input$density, {
-    observeEvent(input$num_samples, {
-      samples <- isolate(reactive_samples$values())
-      observeEvent(input$show_kernel, {
+  input_density_parameters <- reactiveValues()
+  input_density_parameters$params <- function(){c(input$dunif_min, input$dunif_max,
+                                                  input$dnorm_mean, input$dnorm_sd,
+                                                  input$dbeta_alpha, input$dbeta_beta,
+                                                  input$dcauchy_location, input$dcauchy_scale,
+                                                  input$dexp_rate)}
+
+  observeEvent(input_density_parameters$params(), {
+    observeEvent(input$density, {
+      observeEvent(input$num_samples, {
+        samples <- isolate(reactive_samples$values())
         observeEvent(input$show_kernel, {
-          output$plot <- renderPlot({
-            plot(
-              x_grid(),
-              reactive_density$fun(x_grid()),
-              xlim = c(input$xlim_1, input$xlim_2),
-              ylim = c(input$ylim_1, input$ylim_2),
-              main = "graphic representation",
-              xlab = "",
-              ylab = "",
-              col = "dark red",
-              type = "l",
-              lwd = 2
+          observeEvent(input$show_kernel, {
+            output$plot <- renderPlot({
+              plot(
+                x_grid(),
+                reactive_density$fun(x_grid()),
+                xlim = c(input$xlim_1, input$xlim_2),
+                ylim = c(input$ylim_1, input$ylim_2),
+                main = "graphic representation",
+                xlab = "",
+                ylab = "",
+                col = "dark red",
+                type = "l",
+                lwd = 2
 
-            )
-            legend("topleft", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
+              )
+              legend("topleft", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
 
-            if (input$show_kernel) {
-              lines(x_grid(), reactive_kernel$fun(x_grid()))
-            }
-            if (input$suggestions) {
-              # bandwidth estimations
-              pco_suggestion <- pco_method(reactive_kernel$object(), samples, subdivisions=input$subdivisions)
-              #TODO: cv and goldenshluger algorithms!!
-              cv_suggestion <- cross_validation(reactive_kernel$object(), samples, subdivisions=input$subdivisions)
-              gl_suggestion <- 1
+              if (input$show_kernel) {
+                lines(x_grid(), reactive_kernel$fun(x_grid()))
+              }
+              if (input$suggestions) {
+                # bandwidth estimations
+                cv_suggestion <- cross_validation(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
+                pco_suggestion <- pco_method(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
+                gl_suggestion <- goldenschluger_lepski(reactive_kernel$object(), samples, c(1,0.5,0.25), subdivisions=as.integer(input$subdivisions))
 
-              lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, input$bandwidth), col = "black")
-              lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, pco_suggestion), col = "dark green")
-              lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, cv_suggestion), col = "violet")
-              lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, gl_suggestion), col = "steelblue2")
-              points(samples,
-                     integer(length(samples)),
-                     pch = ".",
-                     col = "blue")
+                lines(x_grid(),
+                      reactive_kde$fun(x_grid(), samples, input$bandwidth), col = "black")
+                lines(x_grid(),
+                      reactive_kde$fun(x_grid(), samples, pco_suggestion), col = "dark green")
+                lines(x_grid(),
+                      reactive_kde$fun(x_grid(), samples, cv_suggestion), col = "violet")
+                lines(x_grid(),
+                      reactive_kde$fun(x_grid(), samples, gl_suggestion), col = "steelblue2")
+                points(samples,
+                       integer(length(samples)),
+                       pch = ".",
+                       col = "blue")
 
-              bandwidth_tb <-
-                data.frame(
-                  "pco_method" = pco_suggestion,
-                  "crossvalidation_method" = cv_suggestion,
-                  "goldenshluger_lepski_method" = gl_suggestion
-                )
-              output$bandwidth_table <- renderTable(bandwidth_tb)
-              legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
-            }
-            else {
-              lines(x_grid(),
-                    reactive_kde$fun(x_grid(), samples, input$bandwidth))
-              points(samples,
-                     integer(length(samples)),
-                     pch = ".",
-                     col = "blue")
+                bandwidth_tb <-
+                  data.frame(
+                    "pco_method" = pco_suggestion,
+                    "crossvalidation_method" = cv_suggestion,
+                    "goldenshluger_lepski_method" = gl_suggestion
+                  )
+                output$bandwidth_table <- renderTable(bandwidth_tb)
+                legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
+              }
+              else {
+                lines(x_grid(),
+                      reactive_kde$fun(x_grid(), samples, input$bandwidth))
+                points(samples,
+                       integer(length(samples)),
+                       pch = ".",
+                       col = "blue")
 
-            }
+              }
+            })
           })
         })
       })

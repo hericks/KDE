@@ -96,11 +96,11 @@ pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
       z1 <-
         integrate(function(x) {
           f_h_min_est$fun(x) ^ 2
-        }, f_h_min_est$support[1], f_h_min_est$support[2])
+        }, f_h_min_est$support[1], f_h_min_est$support[2], subdivisions=subdivisions)
       z2 <-
         integrate(function(x) {
           f_h_est$fun(x) ^ 2
-        }, f_h_est$support[1], f_h_est$support[2])
+        }, f_h_est$support[1], f_h_est$support[2], subdivisions=subdivisions)
       bias_estim <- z1[[1]] + z2[[1]]
     }
     else{
@@ -110,7 +110,7 @@ pco_crit <- function(kernel, samples, H_n, lambda, subdivisions = 100L) {
             (f_h_min_est$fun(x) - f_h_est$fun(x)) ^ 2
           },
           lower = min(f_h_min_est$support[1], f_h_est$support[1]),
-          upper = max(f_h_min_est$support[2], f_h_est$support[2])
+          upper = max(f_h_min_est$support[2], f_h_est$support[2]), subdivisions=subdivisions
         )
       bias_estim <- bias_estim[[1]]
     }

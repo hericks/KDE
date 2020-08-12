@@ -1,4 +1,31 @@
+#' @export
 goldenschluger_lepski <- function(kernel, samples, bandwidths, subdivisions = 100L) {
+  # conditions for kernel
+  tryCatch({
+    validate_Kernel(kernel)
+  }, error = "the kernel has to be valid")
+
+  # conditions for samples
+  stopifnot(is.numeric(samples))
+  stopifnot(length(samples) > 0)
+
+  # conditions for H_n
+  stopifnot("samplesize has to be greater or equal to M" = length(samples) >= length(H_n))
+  stopifnot(is.numeric(H_n))
+  stopifnot(length(H_n) > 0)
+  stopifnot(all(H_n <= 1) & all(H_n >= 1 / length(samples)))
+  #stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
+  stopifnot(isTRUE(all(H_n > 0)))
+
+
+  # conditions for lambda
+  stopifnot(is.numeric(lambda))
+  stopifnot(length(lambda) == 1)
+
+  # conditions for subdivisions
+  stopifnot(is.integer(subdivisions))
+  stopifnot(length(subdivisions) == 1)
+
   # Used for calculation of V(h)
   squared_l1_norm_kernel <- integrate(function(x) abs(kernel$fun(x)), lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)[[1]]**2
   squared_l2_norm_kernel <- integrate(function(x) kernel$fun(x)^2, lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)[[1]]
