@@ -9,7 +9,7 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
       ker_h$fun(x) ^ 2
     },
     lower = ker_h$support[1],
-    upper = ker_h$support[2])
+    upper = ker_h$support[2], subdivisions=subdivisions)
   h_var_term <- lambda * l2_h_kernel[[1]] / n
 
   if (ker_h_min$support[2] < ker_h$support[1] |

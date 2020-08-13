@@ -1,6 +1,6 @@
 # Settings
 num_samples <- 50
-kernel <- gaussian
+kernel <- epanechnikov
 
 # Custom density
 f_den_eval <- function(x) {
@@ -19,7 +19,7 @@ custom_sampler <- rejection_sampling(f_den, g_den, runif, 2)
 samples <- custom_sampler(num_samples)
 
 # Calculate cross validation bandwidth
-bandwidth <- cross_validation(kernel, samples, subdivisions = 300L)
+bandwidth <- cross_validation(kernel, samples, subdivisions = 250L)
 
 # Plot the density in red
 x <- seq(-3, 3, by=0.005)
@@ -29,7 +29,7 @@ plot(x, f_den_eval(x), col="red", type="l", ylim=c(0,2.5), xlim=c(-0.5,1.5))
 points(samples, integer(length(samples)), pch=".", col="blue")
 
 # Plot best estimator
-lines(x, kernelDensityEstimator(kernel, samples, bandwidth)$fun(x))
+lines(x, kernel_density_estimator(kernel, samples, bandwidth)$fun(x))
 
 # Print optimal bandwidth
 paste0("The optimal bandwidth (chosen by cross-validation) is ", bandwidth)
