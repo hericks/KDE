@@ -19,6 +19,7 @@
 #'
 #' @export
 logarithmic_bandwidth_set <- function(from, to, length.out) {
+  print(length.out)
   # Conditions on 'from' argument
   stopifnot("from must be numeric"=is.numeric(from))
   stopifnot("from must be of length 1"=isTRUE(all.equal(length(from), 1)))
@@ -34,8 +35,8 @@ logarithmic_bandwidth_set <- function(from, to, length.out) {
   # Conditions on 'length.out' argument
   stopifnot("length.out must be numeric"=is.numeric(length.out))
   stopifnot("length.out must be of length 1"=isTRUE(all.equal(length(length.out), 1)))
-  stopifnot("length.out must be strictly positive"=isTRUE(length.out))
-  stopifnot("length.out must be finite"=is.finite(length.otu))
+  stopifnot("length.out must be strictly positive"=isTRUE(length.out > 0))
+  stopifnot("length.out must be finite"=is.finite(length.out))
 
   exp(seq(log(from), log(to), length.out = ceiling(length.out)))
 }

@@ -1,5 +1,5 @@
 # Settings
-num_samples <- 100
+num_samples <- 1000
 bandwidth_set <- c(0.5, 0.001)
 kernel <- gaussian
 bandwidth_set_2 <- c()
@@ -23,7 +23,7 @@ custom_sampler <- rejection_sampling(f_den, dens_unif, runif, 2)
 samples <- custom_sampler(num_samples)
 
 # pco bandwidth estimation
-bandwidth <- pco_method(kernel, samples, subdivisions=250L)
+bandwidth <- goldenshluger_lepski(kernel, samples, bandwidth_set, subdivisions=250L)
 print(bandwidth)
 
 # Create KDE
