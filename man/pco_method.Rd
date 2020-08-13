@@ -9,7 +9,13 @@
 \href{https://arxiv.org/abs/1902.01075}{Varet \code{[}2019\verb{]}}
 }
 \usage{
-pco_method(kernel, samples, bandwidths = NULL, lambda = 1, subdivisions = 100L)
+pco_method(
+  kernel,
+  samples,
+  bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10),
+  lambda = 1,
+  subdivisions = 100L
+)
 }
 \arguments{
 \item{kernel}{kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.}

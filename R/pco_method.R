@@ -146,11 +146,8 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
     }
     pen_function <- penalty_term(kernel, samples, h_min, h, lambda)
     l_pco <- bias_estim + pen_function
-    print(l_pco)
-
     res <- c(res, l_pco)
   }
-  print(res)
   list(bandwidth_set = bandwidths, risk = res)
 }
 

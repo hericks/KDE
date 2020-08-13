@@ -22,7 +22,7 @@ Collate:
     'kernel_density_estimator.R'
     'cross_validation.R'
     'density.R'
-    'goldenschluger_lepski.R'
+    'goldenshluger_lepski.R'
     'kernel_transform.R'
     'pco_method.R'
     'rejection_sampling.R'

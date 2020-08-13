@@ -19,7 +19,6 @@
 #'
 #' @export
 logarithmic_bandwidth_set <- function(from, to, length.out) {
-  print(length.out)
   # Conditions on 'from' argument
   stopifnot("from must be numeric"=is.numeric(from))
   stopifnot("from must be of length 1"=isTRUE(all.equal(length(from), 1)))

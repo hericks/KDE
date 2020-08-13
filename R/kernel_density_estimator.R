@@ -27,7 +27,7 @@
 #' @seealso \code{\link{Kernel}} for more information about kernels,
 #'   \code{\link[KDE:pco_method]{PCO}},
 #'   \code{\link[KDE:cross_validation]{Cross-Validation}} and
-#'   \code{\link[KDE:goldenschluger_lepski]{Goldenschluger-Lepski}} for
+#'   \code{\link[KDE:goldenshluger_lepski]{Goldenshluger-Lepski}} for
 #'   automatic bandwidth-selection algorithms.
 #'
 #' @export
