@@ -25,16 +25,15 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
     bias_term_pre <- z1[[1]] + z2[[1]]
   }
   else{
-    #z <- integrate(
-    #  function(x) {
-    #    (ker_h_min$fun(x) - ker_h$fun(x)) ^ 2
-    #  },
-    #  lower = min(ker_h_min$support[1], ker_h$support[1]),
-    #  upper = max(ker_h_min$support[2], ker_h$support[2]),
-    #  subdivisions = subdivisions
-    #)
-
-    z1 <- integrate(
+    z <- tryCatch({integrate(
+      function(x) {
+        (ker_h_min$fun(x) - ker_h$fun(x)) ^ 2
+      },
+      lower = min(ker_h_min$support[1], ker_h$support[1]),
+      upper = max(ker_h_min$support[2], ker_h$support[2]),
+      subdivisions = subdivisions
+    )},
+    error = function(e) {z1 <- integrate(
       function(x) {
         ker_h_min$fun(x)^2
       },
@@ -61,8 +60,7 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
       subdivisions = subdivisions
     )
 
-    z <- z1[[1]] - 2*z2[[1]] + z3[[1]]
-
+    z1[[1]] - 2*z2[[1]] + z3[[1]]})
 
     bias_term_pre <- z[[1]]
   }
