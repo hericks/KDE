@@ -17,11 +17,11 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
     z1 <-
       integrate(function(x) {
         ker_h_min$fun(x) ^ 2
-      }, ker_h_min$support[1], ker_h_min$support[2])
+      }, ker_h_min$support[1], ker_h_min$support[2], subdivisions = subdivisions)
     z2 <-
       integrate(function(x) {
         ker_h$fun(x) ^ 2
-      }, ker_h$support[1], ker_h$support[2])
+      }, ker_h$support[1], ker_h$support[2], subdivisions = subdivisions)
     bias_term_pre <- z1[[1]] + z2[[1]]
   }
   else{
@@ -30,7 +30,8 @@ penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L)
         (ker_h_min$fun(x) - ker_h$fun(x)) ^ 2
       },
       lower = min(ker_h_min$support[1], ker_h$support[1]),
-      upper = max(ker_h_min$support[2], ker_h$support[2])
+      upper = max(ker_h_min$support[2], ker_h$support[2]),
+      subdivisions = subdivisions
     )
     bias_term_pre <- z[[1]]
   }
@@ -116,8 +117,11 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
     }
     pen_function <- penalty_term(kernel, samples, h_min, h, lambda)
     l_pco <- bias_estim + pen_function
+    print(l_pco)
+
     res <- c(res, l_pco)
   }
+  print(res)
   list(bandwidth_set = bandwidths, risk = res)
 }
 
