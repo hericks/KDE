@@ -59,7 +59,9 @@ kde_cv_gaussian <- kernel_density_estimator(gaussian_kernel, samples, cv_gaussia
 kde_gl_gaussian <- kernel_density_estimator(gaussian_kernel, samples, gl_gaussian, subdivisions=100L)
 kde_pco_gaussian <- kernel_density_estimator(gaussian_kernel, samples, pco_gaussian, subdivisions=100L)
 
-
+kde_cv_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, cv_epanechnikov, subdivisions=200L)
+kde_gl_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, gl_epanechnikov, subdivisions=200L)
+kde_pco_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, pco_epanechnikov, subdivisions=200L)
 
 # plotting KDE and functionx_lim
 x_lim_lower <- -0.5
