@@ -132,13 +132,14 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
 #'
 #' @param kernel kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.
 #' @param samples A numerical vector of observations.
-#' @param bandwidths The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set if \code{NULL} is passed.
+#' @param bandwidths The bandwidth set from which the bandwidth with the least risk according to the PCO criterion will be derived. The \code{pco_method} function will try to set up a suitable bandwidth set using \code{\link[KDE:logarthmic_bandwidth_set]{logarithmic_bandwidth_set}} if \code{NULL} is passed.
 #' @param lambda A tuning parameter. It has to be a numerical value with length 1. The criterion blows up for lambda < 0, therefore the optimal value for lambda is a positiv real number. The recommendation is to set lambda = 1.
 #' @param subdivisions A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}.
 #'
 #' @return A numerical vector of length 1 containing the bandwidth with minimal risk according to the PCO criterion, given by \code{\link[pco_crit]{pco_crit}}.
 #'
-#' @details pco_method uses \code{\link[KDE:pco_crit]{pco_crit}} to calculate the PCO criterion value, approximating the risk.
+#' @details This method is an implementation of the penalized comparison to overfitting method for bandwith estimation. The aim is to minimize the risk of a kernel density estimator (KDE). \cr
+#' pco_method uses \code{\link[KDE:pco_crit]{pco_crit}} to calculate the PCO criterion value, approximating the risk.
 #' For each bandwidth given in \code{bandwidths}, the method selects the bandwidth with the minimal associated risk.
 #'
 #' The risk function is given by the expected value of the integrated square error of the KDE with
@@ -163,7 +164,7 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
 #'
 #' @seealso
 #' \itemize{\code{\link[KDE:pco_crit]{pco_crit}} for getting the associated criterion values.}
-#' \itemize{\code{\link[KDE:goldenshluger_lepski_method]{Goldenshluger-Lepski method}},
+#' \itemize{\code{\link[KDE:goldenshluger_lepski]{Goldenshluger-Lepski method}},
 #' \code{\link[KDE:cross_validation]{Cross-Validation method}} to see other methods for estimating bandwidths.}
 #' \itemize{\code{\link[KDE:Kernel]{Kernel}} to see the definiotion of a kernel.}
 #' \itemize{\code{\link[KDE:kernel_density_estimator]{Kernel Density Estimator}} to see the functionality of the Kernel density estimation.}
@@ -172,6 +173,8 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
 #' @source \href{https://arxiv.org/abs/1902.01075}{Varet `[`2019`]`}
 #'
 #' @include kernel.R
+#' @include kernel_density_estimator.R
+#' @include logarithmic_bandwidth_set.R
 #' @export
 pco_method <- function(kernel,
                        samples,
