@@ -27,7 +27,7 @@ print(epanechnikov_kernel)
 
 # Create sampler from custom density
 g_den <- Density(dunif, c(0,1))
-custom_sampler <- rejection_sampling(f_den, g_den, runif, 2)
+custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
 # Sample from custom sampler
 num_samples <- 25
 samples <- custom_sampler(num_samples)
