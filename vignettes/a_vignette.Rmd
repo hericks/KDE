@@ -1,8 +1,8 @@
 ---
-title: "Kernel-Density-Estimation and Bandwidth Estimation"
+title: "Introduction to KDE"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{a_vignette}
+  %\VignetteIndexEntry{Introduction to KDE}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,30 +14,48 @@ knitr::opts_chunk$set(
 )
 ```
 
+wat is dat
 
-## General
-Load the package with: 
+## Getting started
+To load the package with: 
 ```{r setup}
 library(KDE)
 ```
 
-## Sampling
+## General
 
-## Kernel-Density-Estimation
+### Sampling 
+
+### Base structure
+Hier kommt eine Erklärung zur S3 struktur
+
+
+## Kernel Density Estimation
+
+### Builtin Kernels
+
+### The KDE function
 ```
 kernel_density_estimator(kernel, samples, bandwidth=1, subdivisions=100L)
 ```
 ## Bandwidth Estimation
 
-Explenation/Purpose of 
+Bandwidth estimation is used to choose a bandwidth $\mathcal{h}$ from a given set $\mathcal{H}_n$ to minimize the maximal risk $\mathbb{E}(||\hat{f_h}-f||^2)$, where $\hat{f_h}$ is the KDE with bandwidth $\mathcal{h}$ and $f$ the density estimated. Hence $f$ is unknown it is not possible to calculate the risk directly. Therefore this package provides three methods for choosing the optimal bandwitdth. 
 
-* Kernel 
-* Samples
-* Bandwidths
-* kappa/lambda
-* subdivisions
+### Logarithmic Bandwidth Set
 
-### Cross-Validation
+The function `logarithmic_bandwidth_set` helps choosing a admissible bandwidth set in a given range.  
+```{r}
+samples <- 1:10
+```
+```{r}
+bandwidths <- logarithmic_bandwidth_set(1/length(samples), 1, 10)
+print(bandwidths)
+```
+Note that for the bandwidth estimations `length.out` has to be less than or equal to `length(samples)`.
+
+
+### Cross Validation
 
 ```
 cross_validation(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 100L)
@@ -49,7 +67,7 @@ cross_validation(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/lengt
 goldenschluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L)
 ```
 
-### Penalized-Comparison-to-Overfitting Method
+### Penalized Comparison to Overfitting
 
 To get the optimal bandwidth from the given bandwidth set
 ```
@@ -59,4 +77,17 @@ pco_method <- function(kernel, samples, bandwidths = NULL, lambda = 1, subdivisi
 To get a list of the bandwidths and their associated risk values
 
 ```
-pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L)    ```                 
+pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L)    
+```
+
+## Shiny App
+
+## References
+
+## Index
+
+* Kernel 
+* Samples
+* Bandwidths
+* kappa/lambda
+* subdivisions
