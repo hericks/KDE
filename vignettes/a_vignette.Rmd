@@ -1,16 +1,16 @@
 ---
-<<<<<<< HEAD
-title: "Kernel-Density-Estimation and Bandwidth Estimation"
-date: "`r Sys.Date()`"
-=======
+knitr::opts_chunk$set(fig.width=200, fig.height=8, fig.align = "center") 
+---
+---
 title: "Introduction to KDE"
->>>>>>> dbe13106db7072264cda85fd74cf80a9646d8e28
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to KDE}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  
 ---
+
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -18,8 +18,22 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+(Erster Satz (vor dem ":") vllt umformulieren?)
+The question for which this package tries to give an answer is the following: given $n$ (numeric) samples,
+which are distributed according to a cumulative distribution function $F$ and density $f$ (with respect to the Lebesgue measure), how can we estimate the density function $f$?
 
-wat is dat
+In this package kernel density estimation is used to solve this problem and our estimator for the desired density function $f$ with samples $x_1,...,x_n$ will be the
+function
+\begin{align}
+\hat{f_h}(x) = \frac{1}{hn} \sum\limits^{n}_{i=0} K(\frac{x_i-x}{h})
+\end{align} 
+which is called the "kernel density estimator" (KDE).
+The KDE depends on a real number $\mathcal{h}$, the so called "bandwidth" and an integrable function $K: \mathbb{R} \rightarrow \mathbb{R}$ such 
+that $\int\limits^{\infty}_{-\infty}K(x)dx=1$, which is called "kernel".
+The package is equipped with the function `kernel_density_estimator`, which is an implementation of the function described above. 
+
+With the three bandwidth estimation functions: `cross_validation`, `goldenshluger_lepski` and `pco_method` the package focuses 
+on solving the problem by estimating the optimal bandwidth for a given kernel.
 
 ## Getting started
 To load the package with: 
@@ -27,31 +41,52 @@ To load the package with:
 library(KDE)
 ```
 
-## General
+## Base structure
+### Density
+Hier kommt eine Erklärung zur S3 struktur, 1. Density, 2. Kernel, 3. builtin kernels
+```{r}
+# Custom density
+f_dens <- function(x) {
+  ret <- 1 + sin(2*pi*x)
+  ret[x < 0 | 1 < x] <- 0
+  ret
+}
+support_density <- c(0,1)
+# constructing the Density object
+dens <- Density(f_dens, support_density, subdivisions=100L)
+print(dens)
+
+```
+
+### Kernel
+```{r}
+# or build a Kernel object yourself: this is the epanechnikov function
+f_ker <- function(x){
+  return(3/4 * (1 - x^2) * (abs(x) <= 1))
+}
+support_epanechnikov <- c(-1,1)
+# constructing the Kernel object
+epanechnikov_kernel <- Kernel(f_ker, support_epanechnikov, subdivisions=10L)
+print(epanechnikov_kernel)
+```
+### Builtin Kernels
+```{r}
+# using a builtin Kernel
+gaussian_kernel <- gaussian
+print(gaussian_kernel)
+
+```
 
 ### Sampling 
-
-### Base structure
-Hier kommt eine Erklärung zur S3 struktur
-
-
-## Kernel Density Estimation
-
-### Builtin Kernels
-
-<<<<<<< HEAD
-## Kernel-Density-Estimation
-### Builtin Kernels
-
 ```{r}
+# Create sampler from custom density
+g_den <- Density(dunif, c(0,1))
+custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
+# Sample from custom sampler
+num_samples <- 25
+samples <- custom_sampler(num_samples)
+```
 
-#kernel_density_estimator(kernel, samples, bandwidth=1, subdivisions=100L)
-=======
-### The KDE function
-```
-kernel_density_estimator(kernel, samples, bandwidth=1, subdivisions=100L)
->>>>>>> dbe13106db7072264cda85fd74cf80a9646d8e28
-```
 ## Bandwidth Estimation
 
 Bandwidth estimation is used to choose a bandwidth $\mathcal{h}$ from a given set $\mathcal{H}_n$ to minimize the maximal risk $\mathbb{E}(||\hat{f_h}-f||^2)$, where $\hat{f_h}$ is the KDE with bandwidth $\mathcal{h}$ and $f$ the density estimated. Hence $f$ is unknown it is not possible to calculate the risk directly. Therefore this package provides three methods for choosing the optimal bandwitdth. 
@@ -60,39 +95,113 @@ Bandwidth estimation is used to choose a bandwidth $\mathcal{h}$ from a given se
 
 The function `logarithmic_bandwidth_set` helps choosing a admissible bandwidth set in a given range.  
 ```{r}
-samples <- 1:10
-```
-```{r}
-bandwidths <- logarithmic_bandwidth_set(1/length(samples), 1, 10)
-print(bandwidths)
+# setting up bandwidth sets
+bandwidth_set <- logarithmic_bandwidth_set(from=1/length(samples), to=1, length.out=10)
 ```
 Note that for the bandwidth estimations `length.out` has to be less than or equal to `length(samples)`.
 
 
 ### Cross Validation
 
-```
-cross_validation(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 100L)
+```{r}
+# cross-validation method
+cv_gaussian <- cross_validation(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
+cv_epanechnikov <- cross_validation(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=500L)
+cat("bandwidth for gaussian kernel: ", cv_gaussian, "\nbandwidth for epanechnikov kernel: ", cv_epanechnikov)
 ```
 
 ### Goldenshluger-Lepski Method
 
-```
-goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L)
+```{r}
+# goldenshluger-lepski method
+gl_gaussian <- goldenshluger_lepski(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
+gl_epanechnikov <- goldenshluger_lepski(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=200L)
+cat("bandwidth for gaussian kernel: ", gl_gaussian, "\nbandwidth for epanechnikov kernel: ", gl_epanechnikov)
 ```
 
 ### Penalized Comparison to Overfitting
 
-To get the optimal bandwidth from the given bandwidth set
-```
-pco_method <- function(kernel, samples, bandwidths = NULL, lambda = 1, subdivisions = 100L)
+```{r}
+# Penalized Comparison to Overfitting
+pco_gaussian <- pco_method(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
+pco_epanechnikov <- pco_method(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=250L)
+cat("bandwidth for gaussian kernel: ", pco_gaussian, "\nbandwidth for epanechnikov kernel: ", pco_epanechnikov)
 ```
 
-To get a list of the bandwidths and their associated risk values
+
+## Kernel-Density-Estimation
+### Calculating the KDE function
+```{r}
+kde_cv_gaussian <- kernel_density_estimator(gaussian_kernel, samples, cv_gaussian, subdivisions=100L)
+kde_gl_gaussian <- kernel_density_estimator(gaussian_kernel, samples, gl_gaussian, subdivisions=100L)
+kde_pco_gaussian <- kernel_density_estimator(gaussian_kernel, samples, pco_gaussian, subdivisions=100L)
+
+kde_cv_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, cv_epanechnikov, subdivisions=200L)
+kde_gl_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, gl_epanechnikov, subdivisions=200L)
+kde_pco_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, pco_epanechnikov, subdivisions=200L)
+```
+
+## Kernel and bandwidth comparison 
+```{r}
+# plotting KDE and functionx_lim
+x_lim_lower <- -0.5
+x_lim_upper<- 1.5
+x <- seq(from = x_lim_lower, to = x_lim_upper, length.out=1000)
+plot(x, dens$fun(x),
+     xlim = c(x_lim_lower, x_lim_upper),
+     ylim = c(-0.5, 2.5),
+     main = "KDE using the gaussian kernel",
+     xlab = "",
+     ylab = "",
+     col = "dark red",
+     type = "l",
+     lwd = 2
+
+)
+legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(1,1,1,1,1), lwd = c(2,1,2,1,1), cex = 0.75)
+lines(x,
+      kde_cv_gaussian$fun(x), col = "violet")
+lines(x,
+      kde_gl_gaussian$fun(x), col = "steelblue2")
+lines(x,
+      kde_pco_gaussian$fun(x), col = "dark green")
+points(samples,
+       integer(length(samples)),
+       pch = ".",
+       col = "blue")
+
+
+
 
 ```
-pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), lambda = 1, subdivisions = 100L)    
+
+
+```{r}
+plot(x, dens$fun(x),
+     xlim = c(x_lim_lower, x_lim_upper),
+     ylim = c(-0.5, 2.5),
+     main = "KDE using the epanechnikov kernel",
+     xlab = "",
+     ylab = "",
+     col = "dark red",
+     type = "l",
+     lwd = 2
+)
+legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(1,1,1,1,1), lwd = c(2,1,2,1,1), cex = 0.75)
+lines(x,
+      kde_cv_epanechnikov$fun(x), col = "violet")
+lines(x,
+      kde_gl_epanechnikov$fun(x), col = "steelblue2")
+lines(x,
+      kde_pco_epanechnikov$fun(x), col = "dark green")
+points(samples,
+       integer(length(samples)),
+       pch = ".",
+       col = "blue")
+
 ```
+
+
 
 ## Shiny App
 

@@ -1,4 +1,7 @@
-# print integrable function?????????????
+# besser funktionierenden Kern nehmen
+# 3 plots mit rectangular  verschiedene bandweiten/sample sizes (1x sehr wenig samples (4), 1x 25 samples, 1x 150 samples)
+# bandbreitenwahl nochmal 3 plots mit verschiedenen bandbreiten (1x over 1x under und 1x relativ gut)
+# rest schreiben
 
 # Custom density
 f_dens <- function(x) {
@@ -11,9 +14,6 @@ support_density <- c(0,1)
 dens <- Density(f_dens, support_density, subdivisions=100L)
 print(dens)
 
-# using a builtin Kernel
-gaussian_kernel <- gaussian
-print(gaussian_kernel)
 
 # or build a Kernel object yourself: this is the epanechnikov function
 f_ker <- function(x){
@@ -24,6 +24,10 @@ support_epanechnikov <- c(-1,1)
 epanechnikov_kernel <- Kernel(f_ker, support_epanechnikov, subdivisions=10L)
 print(epanechnikov_kernel)
 
+
+# using a builtin Kernel
+gaussian_kernel <- gaussian
+print(gaussian_kernel)
 
 # Create sampler from custom density
 g_den <- Density(dunif, c(0,1))
@@ -38,15 +42,15 @@ bandwidth_set <- logarithmic_bandwidth_set(from=1/length(samples), to=1, length.
 # bandwidth estimation
 # cross-validation method
 cv_gaussian <- cross_validation(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
-cv_epanechnikov <- cross_validation(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=225L)
+cv_epanechnikov <- cross_validation(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=500L)
 cat("bandwidth for gaussian kernel: ", cv_gaussian, "\nbandwidth for epanechnikov kernel: ", cv_epanechnikov)
 
-#  goldenshluger-lepski method
+# goldenshluger-lepski method
 gl_gaussian <- goldenshluger_lepski(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
 gl_epanechnikov <- goldenshluger_lepski(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=200L)
 cat("bandwidth for gaussian kernel: ", gl_gaussian, "\nbandwidth for epanechnikov kernel: ", gl_epanechnikov)
 
-#  Penalized Comparison to Overfitting
+# Penalized Comparison to Overfitting
 pco_gaussian <- pco_method(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
 pco_epanechnikov <- pco_method(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=200L)
 cat("bandwidth for gaussian kernel: ", pco_gaussian, "\nbandwidth for epanechnikov kernel: ", pco_epanechnikov)
@@ -69,7 +73,7 @@ x_lim_upper<- 1.5
 x <- seq(from = x_lim_lower, to = x_lim_upper, length.out=1000)
 plot(x, dens$fun(x),
      xlim = c(x_lim_lower, x_lim_upper),
-     ylim = c(-0.5, 2),
+     ylim = c(-0.5, 2.5),
      main = "KDE using the gaussian kernel",
      xlab = "",
      ylab = "",
@@ -93,7 +97,7 @@ points(samples,
 
 plot(x, dens$fun(x),
      xlim = c(x_lim_lower, x_lim_upper),
-     ylim = c(-0.5, 2),
+     ylim = c(-0.5, 2.5),
      main = "KDE using the epanechnikov kernel",
      xlab = "",
      ylab = "",
