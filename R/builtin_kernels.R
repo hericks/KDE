@@ -358,7 +358,7 @@ silverman_function <- function(u){
 #'
 #' * silverman function \code{fun}
 #'
-#' * support = \code{c(-20,20)}
+#' * support = \code{c(-40,40)}
 #' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.

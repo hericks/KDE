@@ -1,7 +1,4 @@
 ---
-knitr::opts_chunk$set(fig.width=200, fig.height=8, fig.align = "center") 
----
----
 title: "Introduction to KDE"
 output: rmarkdown::html_vignette
 vignette: >
@@ -67,14 +64,14 @@ To see the requirements for constructing a Density object use `?Density`.
 ### Kernel
 This package gives You the possibility to build your own custom kernels:
 ```{r}
-# or build a Kernel object yourself: this is the epanechnikov function
+# or build a Kernel object yourself: this is the sigmoid function
 f_ker <- function(x){
-  return(3/4 * (1 - x^2) * (abs(x) <= 1))
+  return(2/pi * (1/(exp(x) + exp(-x))))
 }
-support_epanechnikov <- c(-1,1)
+support_sigmoid <- c(-20,20)
 # constructing the Kernel object
-epanechnikov_kernel <- Kernel(f_ker, support_epanechnikov, subdivisions=10L)
-print(epanechnikov_kernel)
+sigmoid_kernel <- Kernel(f_ker, support_sigmoid, subdivisions=10L)
+print(sigmoid_kernel)
 ```
 To see the requirements for constructing a Kernel object use `?Kernel`.
 
@@ -95,7 +92,7 @@ The KDE package provides a built-in rejection sampling method to create a set of
 g_den <- Density(dunif, c(0,1))
 custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
 # Sample from custom sampler
-num_samples <- 25
+num_samples <- 100
 samples <- custom_sampler(num_samples)
 ```
 Now that we have choosen our kernel and a set of samples, we have to determine another suitable parameter for a good estimation:
@@ -119,8 +116,8 @@ The first method to estimate a bandwidth is called *cross-validation* or *leave-
 ```{r}
 # cross-validation method
 cv_gaussian <- cross_validation(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
-cv_epanechnikov <- cross_validation(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=500L)
-cat("bandwidth for gaussian kernel: ", cv_gaussian, "\nbandwidth for epanechnikov kernel: ", cv_epanechnikov)
+cv_sigmoid <- cross_validation(sigmoid_kernel, samples, bandwidths=bandwidth_set, subdivisions=500L)
+cat("bandwidth for gaussian kernel: ", cv_gaussian, "\nbandwidth for sigmoid kernel: ", cv_sigmoid)
 ```
 
 ### Goldenshluger-Lepski Method
@@ -128,8 +125,8 @@ The second method is a implementation of the *Goldenshluger-Lepski method*.
 ```{r}
 # goldenshluger-lepski method
 gl_gaussian <- goldenshluger_lepski(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
-gl_epanechnikov <- goldenshluger_lepski(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=200L)
-cat("bandwidth for gaussian kernel: ", gl_gaussian, "\nbandwidth for epanechnikov kernel: ", gl_epanechnikov)
+gl_sigmoid <- goldenshluger_lepski(sigmoid_kernel, samples, bandwidths=bandwidth_set, subdivisions=200L)
+cat("bandwidth for gaussian kernel: ", gl_gaussian, "\nbandwidth for sigmoid kernel: ", gl_sigmoid)
 ```
 
 ### Penalized Comparison to Overfitting
@@ -137,8 +134,8 @@ The third approach for estimating a bandwidth is called *Penalized Comparison to
 ```{r}
 # Penalized Comparison to Overfitting
 pco_gaussian <- pco_method(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
-pco_epanechnikov <- pco_method(epanechnikov_kernel, samples, bandwidths=bandwidth_set, subdivisions=250L)
-cat("bandwidth for gaussian kernel: ", pco_gaussian, "\nbandwidth for epanechnikov kernel: ", pco_epanechnikov)
+pco_sigmoid <- pco_method(sigmoid_kernel, samples, bandwidths=bandwidth_set, subdivisions=250L)
+cat("bandwidth for gaussian kernel: ", pco_gaussian, "\nbandwidth for sigmoid kernel: ", pco_sigmoid)
 ```
 
 
@@ -151,15 +148,33 @@ kde_cv_gaussian <- kernel_density_estimator(gaussian_kernel, samples, cv_gaussia
 kde_gl_gaussian <- kernel_density_estimator(gaussian_kernel, samples, gl_gaussian, subdivisions=100L)
 kde_pco_gaussian <- kernel_density_estimator(gaussian_kernel, samples, pco_gaussian, subdivisions=100L)
 
-kde_cv_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, cv_epanechnikov, subdivisions=200L)
-kde_gl_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, gl_epanechnikov, subdivisions=200L)
-kde_pco_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, pco_epanechnikov, subdivisions=200L)
+kde_cv_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, cv_sigmoid, subdivisions=200L)
+kde_gl_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, gl_sigmoid, subdivisions=200L)
+kde_pco_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, pco_sigmoid, subdivisions=200L)
 ```
 Note that the  `kernel_density_estimator` returns a `IntegrableFunction` object. 
 
 ## Kernel and bandwidth comparison 
-All three methods evaluate different bandwidths, even though 
+Note that some bandwidth estimators can choose the same bandwidth and therefore, their KDE will be the same. For a little comparison of our calculated estimators, we will use the following ISE function:
 ```{r}
+# comparing the ISE
+ISE <- function(kde, dens, subdivisions=100L){
+  support <- range(kde$support, dens$support)
+  integrate(function(x){(kde$fun(x)-dens$fun(x))^2}, 
+                   lower=support[1], upper=support[2], 
+                   subdivisions=subdivisions)$value
+}
+```
+
+```{r,echo=FALSE} 
+
+# ISE for the gaussian kernel
+cat("ISE for cross validation on the gaussian kernel: ", ISE(kde_cv_gaussian, dens))
+cat("ISE for Goldenshluger-Lepski method on the gaussian kernel: ", ISE(kde_gl_gaussian, dens))
+cat("ISE for PCO method on the gaussian kernel: ", ISE(kde_pco_gaussian, dens))
+
+```
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
 # plotting KDE and functionx_lim
 x_lim_lower <- -0.5
 x_lim_upper<- 1.5
@@ -175,7 +190,7 @@ plot(x, dens$fun(x),
      lwd = 2
 
 )
-legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(1,1,1,1,1), lwd = c(2,1,2,1,1), cex = 0.75)
+legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(1,1,1,1,1), lwd = c(2,1,1,1,1), cex = 0.75)
 lines(x,
       kde_cv_gaussian$fun(x), col = "violet")
 lines(x,
@@ -192,42 +207,55 @@ points(samples,
 
 ```
 
+```{r,echo=FALSE} 
+# ISE for the sigmoid kernel
+cat("ISE for cross validation method on the sigmoid kernel: ", ISE(kde_cv_sigmoid, dens))
+cat("ISE for Goldenshluger-Lepski method method on the sigmoid kernel: ", ISE(kde_gl_sigmoid, dens))
+cat("ISE for PCO method method on the sigmoid kernel: ", ISE(kde_pco_sigmoid, dens))
 
-```{r}
+```
+
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
 plot(x, dens$fun(x),
      xlim = c(x_lim_lower, x_lim_upper),
      ylim = c(-0.5, 2.5),
-     main = "KDE using the epanechnikov kernel",
+     main = "KDE using the sigmoid kernel",
      xlab = "",
      ylab = "",
      col = "dark red",
      type = "l",
      lwd = 2
 )
-legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(1,1,1,1,1), lwd = c(2,1,2,1,1), cex = 0.75)
+legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(1,1,1,1,1), lwd = c(2,1,1,1,1), cex = 0.75)
 lines(x,
-      kde_cv_epanechnikov$fun(x), col = "violet")
+      kde_cv_sigmoid$fun(x), col = "violet")
 lines(x,
-      kde_gl_epanechnikov$fun(x), col = "steelblue2")
+      kde_gl_sigmoid$fun(x), col = "steelblue2")
 lines(x,
-      kde_pco_epanechnikov$fun(x), col = "dark green")
+      kde_pco_sigmoid$fun(x), col = "dark green")
 points(samples,
        integer(length(samples)),
        pch = ".",
        col = "blue")
 
 ```
+At last, a little side by side comparison of the ISE:
+```{r, echo=FALSE}
+table <- data.frame(method=c("cross_validation ISE", "goldenshluger_lepski ISE", "pco_method ISE"),
+                    gaussian=c(ISE(kde_cv_gaussian, dens), ISE(kde_gl_gaussian, dens), ISE(kde_pco_gaussian, dens)),
+                    sigmoid=c(ISE(kde_cv_sigmoid, dens), ISE(kde_gl_sigmoid, dens),  ISE(kde_pco_sigmoid, dens)))
 
-
+knitr::kable(table)
+```
 
 ## Shiny App
+This package provides a small web application, built with the shiny package.
+To use the shiny app call `shiny_kde()`.
 
 ## References
+1. Estimator selection: a new method with applications to kernel density estimation C. Lacour, P. Massart, V. Rivoirard [2017]: <https://arxiv.org/abs/1607.05091v2>
+1. Numerical performance of Penalized Comparison to Overfitting for multivariate kernel density estimation S. Varet, C. Lacour, P. Massart, V. Rivoirard [2019]: <https://arxiv.org/abs/1902.01075>
+1. "Nonparametric Estimation" by Comte [2017], ISBN: 978-2-36693-030-6 
 
-## Index
 
-* Kernel 
-* Samples
-* Bandwidths
-* kappa/lambda
-* subdivisions
+

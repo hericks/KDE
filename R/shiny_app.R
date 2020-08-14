@@ -288,7 +288,7 @@ shiny_kde <- function(){
                       "goldenshluger_lepski_method" = gl_suggestion
                     )
                   output$bandwidth_table <- renderTable(bandwidth_tb)
-                  legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
+                  legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
                 }
                 else {
                   lines(x_grid(),
