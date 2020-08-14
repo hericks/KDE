@@ -11,11 +11,11 @@ Kernel(fun, support = NULL, subdivisions = 100L)
 returning a numeric vector of the same length: see 'Details'.}
 
 \item{support}{a numerical vector of length 2 containing the lower- and
-upperbound in the first and second entry respectively.
-\code{Kernel} will try to find bounds on the support itself if
-\code{NULL} is passed.}
+upperbound in the first and second entry respectively. \code{Kernel} will
+try to find bounds on the support itself if \code{NULL} is passed.}
 
-\item{subdivisions}{a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.}
+\item{subdivisions}{a integer vector of length 1, used for the subdivisions
+parameter for the function \code{\link[stats::integrate]{integrate}}.}
 }
 \description{
 The kernels are the core of the KDE package.
@@ -64,19 +64,19 @@ objects are guaranteed to pass the validator \link{validate_Kernel}
 (\bold{Attention:} This does not guarantee the conditions in the first
 'Details' paragraph: see \link{validate_Kernel}.).
 
-\describe{
 \strong{List of built-in kernels functions:}
-\item{\code{\link[KDE:rectangular]{rectangular}}}
-\item{\code{\link[KDE:triangular]{triangular}}}
-\item{\code{\link[KDE:epanechnikov]{epanechnikov}}}
-\item{\code{\link[KDE:biweight]{biweight}}}
-\item{\code{\link[KDE:triweight]{triweight}}}
-\item{\code{\link[KDE:tricube]{tricube}}}
-\item{\code{\link[KDE:gaussian]{gaussian}}}
-\item{\code{\link[KDE:cosine]{cosine}}}
-\item{\code{\link[KDE:logistic]{logistic}}}
-\item{\code{\link[KDE:sigmoidFunction]{sigmoidFunction}}}
-\item{\code{\link[KDE:silverman]{silverman}}}
+\describe{
+\item{\code{\link{rectangular}}}{}
+\item{\code{\link{triangular}}}{}
+\item{\code{\link{epanechnikov}}}{}
+\item{\code{\link{biweight}}}{}
+\item{\code{\link{triweight}}}{}
+\item{\code{\link{tricube}}}{}
+\item{\code{\link{gaussian}}}{}
+\item{\code{\link{cosine}}}{}
+\item{\code{\link{logistic}}}{}
+\item{\code{\link{sigmoidFunction}}}{}
+\item{\code{\link{silverman}}}{}
 }
 }
 }
