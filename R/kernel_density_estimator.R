@@ -61,7 +61,7 @@ kernel_density_estimator <- function(kernel, samples, bandwidth=1, subdivisions=
     ret/length(samples)
   }
 
-  support <- c(bandwidth*kernel$support[1] + min(samples), bandwidth*kernel$support[2] + max(samples))
+  support <- bandwidth*kernel$support + range(samples)
 
   IntegrableFunction(estimator_eval, support, subdivisions=subdivisions)
 }
