@@ -42,8 +42,13 @@ library(KDE)
 ```
 
 ## Base structure
+
+In order to secure consistency and fulfillment of the requirements for each of the elements used in solving the KDE problem, this package works on S3 classes for densities and kernels.
+Both classes inherit from the class `?IntegrableFunction`.
+First of all, we need to construct our Objects.
+
 ### Density
-Hier kommt eine Erklärung zur S3 struktur, 1. Density, 2. Kernel, 3. builtin kernels
+The density function we want to sample from, is a sine curve on the interval $[0,1]$. If samples are already given, this step will not be necessary.
 ```{r}
 # Custom density
 f_dens <- function(x) {
@@ -55,10 +60,12 @@ support_density <- c(0,1)
 # constructing the Density object
 dens <- Density(f_dens, support_density, subdivisions=100L)
 print(dens)
-
 ```
+As one can see, the density is a object of class Density. In addition to the function, the object is holding the support and a subdivisions parameter. This is needed for the `stats::integrate` function to work properly.
+To see the requirements for constructing a Density object use `?Density`.
 
 ### Kernel
+This package gives You the possibility to build your own custom kernels:
 ```{r}
 # or build a Kernel object yourself: this is the epanechnikov function
 f_ker <- function(x){
@@ -69,15 +76,20 @@ support_epanechnikov <- c(-1,1)
 epanechnikov_kernel <- Kernel(f_ker, support_epanechnikov, subdivisions=10L)
 print(epanechnikov_kernel)
 ```
+To see the requirements for constructing a Kernel object use `?Kernel`.
+
 ### Builtin Kernels
+This package also provides a selection of various built-in kernels:
 ```{r}
 # using a builtin Kernel
 gaussian_kernel <- gaussian
 print(gaussian_kernel)
 
 ```
+Run `?Kernel` to see the full list of the built-in kernels.
 
 ### Sampling 
+The KDE package provides a built-in rejection sampling method to create a set of samples from Density objects: 
 ```{r}
 # Create sampler from custom density
 g_den <- Density(dunif, c(0,1))
@@ -86,6 +98,7 @@ custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
 num_samples <- 25
 samples <- custom_sampler(num_samples)
 ```
+Now that we have choosen our kernel and a set of samples, we have to determine another suitable parameter for a good estimation:
 
 ## Bandwidth Estimation
 
@@ -102,7 +115,7 @@ Note that for the bandwidth estimations `length.out` has to be less than or equa
 
 
 ### Cross Validation
-
+The first method to estimate a bandwidth is called *cross-validation* or *leave-one-out*. 
 ```{r}
 # cross-validation method
 cv_gaussian <- cross_validation(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
@@ -111,7 +124,7 @@ cat("bandwidth for gaussian kernel: ", cv_gaussian, "\nbandwidth for epanechniko
 ```
 
 ### Goldenshluger-Lepski Method
-
+The second method is a implementation of the *Goldenshluger-Lepski method*.
 ```{r}
 # goldenshluger-lepski method
 gl_gaussian <- goldenshluger_lepski(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
@@ -120,7 +133,7 @@ cat("bandwidth for gaussian kernel: ", gl_gaussian, "\nbandwidth for epanechniko
 ```
 
 ### Penalized Comparison to Overfitting
-
+The third approach for estimating a bandwidth is called *Penalized Comparison to Overfitting (PCO)*
 ```{r}
 # Penalized Comparison to Overfitting
 pco_gaussian <- pco_method(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
@@ -130,6 +143,8 @@ cat("bandwidth for gaussian kernel: ", pco_gaussian, "\nbandwidth for epanechnik
 
 
 ## Kernel-Density-Estimation
+Now that we have some suggestions for our bandwidth $h$ we can finally estimate our density function $f$ using the kernel density estimator.
+
 ### Calculating the KDE function
 ```{r}
 kde_cv_gaussian <- kernel_density_estimator(gaussian_kernel, samples, cv_gaussian, subdivisions=100L)
@@ -140,8 +155,10 @@ kde_cv_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, cv
 kde_gl_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, gl_epanechnikov, subdivisions=200L)
 kde_pco_epanechnikov <- kernel_density_estimator(epanechnikov_kernel, samples, pco_epanechnikov, subdivisions=200L)
 ```
+Note that the  `kernel_density_estimator` returns a `IntegrableFunction` object. 
 
 ## Kernel and bandwidth comparison 
+All three methods evaluate different bandwidths, even though 
 ```{r}
 # plotting KDE and functionx_lim
 x_lim_lower <- -0.5
