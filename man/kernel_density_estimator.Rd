@@ -7,7 +7,7 @@
 Nonparametric Estimation, Comte [2017], ISBN: 978-2-36693-030-6
 }
 \usage{
-kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 100L)
+kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 1000L)
 }
 \arguments{
 \item{kernel}{a kernel as S3 object of the class \link{Kernel}.}

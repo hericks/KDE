@@ -11,7 +11,7 @@ cross_validation(
   kernel,
   samples,
   bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10),
-  subdivisions = 100L
+  subdivisions = 1000L
 )
 }
 \arguments{

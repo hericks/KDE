@@ -4,7 +4,7 @@
 \alias{Density}
 \title{Density}
 \usage{
-Density(fun, support = NULL, subdivisions = 100L)
+Density(fun, support = NULL, subdivisions = 1000L)
 }
 \arguments{
 \item{fun}{an \code{R} function taking a single numeric argument and
@@ -55,7 +55,7 @@ and \code{Inf} are allowed.
 \item \strong{\code{subdivisions}} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
 The function \code{fun} is needed to be integrated using \code{\link[stats:integrate]{integrate}}.
 Because of that, the subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
-The default value is set to 100L. Be aware that too large numbers can cause long runtimes!
+The default value is set to 1000L. Be aware that too large numbers can cause long runtimes!
 }
 
 The constructor \code{Density} tries to construct a valid

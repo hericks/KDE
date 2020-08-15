@@ -1,69 +1,28 @@
-penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 100L) {
+penalty_term <- function(kernel, samples, h_min, h, lambda, subdivisions = 1000L) {
   n <- length(samples)
   ker_h_min <- kernel_transform(kernel, 0, h_min, subdivisions)
   ker_h <- kernel_transform(kernel, 0, h, subdivisions)
 
   # calculate the variance term
   l2_h_kernel <-
-    integrate(function(x) {
+    integrate_primitive(function(x) {
       ker_h$fun(x) ^ 2
     },
     lower = ker_h$support[1],
-    upper = ker_h$support[2], subdivisions=subdivisions)
-  h_var_term <- lambda * l2_h_kernel[[1]] / n
+    upper = ker_h$support[2], subdivisions=subdivisions)$value
+  h_var_term <- lambda * l2_h_kernel / n
 
-  if (ker_h_min$support[2] < ker_h$support[1] |
-      ker_h$support[2] < ker_h_min$support[1]) {
-    z1 <-
-      integrate(function(x) {
-        ker_h_min$fun(x) ^ 2
-      }, ker_h_min$support[1], ker_h_min$support[2], subdivisions = subdivisions)
-    z2 <-
-      integrate(function(x) {
-        ker_h$fun(x) ^ 2
-      }, ker_h$support[1], ker_h$support[2], subdivisions = subdivisions)
-    bias_term_pre <- z1[[1]] + z2[[1]]
-  }
-  else{
-    z <- tryCatch({integrate(
-      function(x) {
-        (ker_h_min$fun(x) - ker_h$fun(x)) ^ 2
-      },
-      lower = min(ker_h_min$support[1], ker_h$support[1]),
-      upper = max(ker_h_min$support[2], ker_h$support[2]),
-      subdivisions = subdivisions
-    )},
-    error = function(e) {z1 <- integrate(
-      function(x) {
-        ker_h_min$fun(x)^2
-      },
-      lower = min(ker_h_min$support[1], ker_h$support[1]),
-      upper = max(ker_h_min$support[2], ker_h$support[2]),
-      subdivisions = subdivisions
-    )
 
-    z2 <- integrate(
-      function(x) {
-        (ker_h_min$fun(x) * ker_h$fun(x))
-      },
-      lower = min(ker_h_min$support[1], ker_h$support[1]),
-      upper = max(ker_h_min$support[2], ker_h$support[2]),
-      subdivisions = subdivisions
-    )
+  z <- integrate_primitive(
+    function(x) {
+      (ker_h_min$fun(x) - ker_h$fun(x)) ^ 2
+    },
+    lower = min(ker_h_min$support[1], ker_h$support[1]),
+    upper = max(ker_h_min$support[2], ker_h$support[2]),
+    subdivisions = subdivisions
+  )$value
 
-    z3 <- integrate(
-      function(x) {
-        ker_h$fun(x)^2
-      },
-      lower = min(ker_h_min$support[1], ker_h$support[1]),
-      upper = max(ker_h_min$support[2], ker_h$support[2]),
-      subdivisions = subdivisions
-    )
-
-    z1[[1]] - 2*z2[[1]] + z3[[1]]})
-
-    bias_term_pre <- z[[1]]
-  }
+  bias_term_pre <- z
   bias_term <- bias_term_pre / n
 
   penalty <- h_var_term - bias_term
@@ -124,25 +83,25 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
     if (f_h_min_est$support[2] < f_h_est$support[1] |
         f_h_est$support[2] < f_h_min_est$support[1]) {
       z1 <-
-        integrate(function(x) {
+        integrate_primitive(function(x) {
           f_h_min_est$fun(x) ^ 2
-        }, f_h_min_est$support[1], f_h_min_est$support[2], subdivisions=subdivisions)
+        }, f_h_min_est$support[1], f_h_min_est$support[2], subdivisions=subdivisions)$value
       z2 <-
-        integrate(function(x) {
+        integrate_primitive(function(x) {
           f_h_est$fun(x) ^ 2
-        }, f_h_est$support[1], f_h_est$support[2], subdivisions=subdivisions)
-      bias_estim <- z1[[1]] + z2[[1]]
+        }, f_h_est$support[1], f_h_est$support[2], subdivisions=subdivisions)$value
+      bias_estim <- z1 + z2
     }
     else{
       bias_estim <-
-        integrate(
+        integrate_primitive(
           function(x) {
             (f_h_min_est$fun(x) - f_h_est$fun(x)) ^ 2
           },
           lower = min(f_h_min_est$support[1], f_h_est$support[1]),
           upper = max(f_h_min_est$support[2], f_h_est$support[2]), subdivisions=subdivisions
-        )
-      bias_estim <- bias_estim[[1]]
+        )$value
+      bias_estim <- bias_estim
     }
     pen_function <- penalty_term(kernel, samples, h_min, h, lambda)
     l_pco <- bias_estim + pen_function

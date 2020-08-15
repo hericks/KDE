@@ -57,6 +57,5 @@ test_that("the subdivision parameter has to work properly", {
   dens_unif <- Density(dunif)
   custom_sampler <- rejection_sampling(f_den, dens_unif, runif, 2)
   samples <- custom_sampler(num_samples)
-  expect_error(kernel_density_estimator(kernel, samples, 1, 100L))
   expect_output(print(kernel_density_estimator(kernel, samples, 1, 1000L)))
 })

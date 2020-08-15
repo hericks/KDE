@@ -34,7 +34,7 @@
 #' @include logarithmic_bandwidth_set.R
 #'
 #' @export
-goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 100L) {
+goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 1000L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)
@@ -61,8 +61,8 @@ goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandw
   stopifnot(length(subdivisions) == 1)
 
   # Used for calculation of V(h)
-  squared_l1_norm_kernel <- integrate(function(x) abs(kernel$fun(x)), lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)[[1]]**2
-  squared_l2_norm_kernel <- integrate(function(x) kernel$fun(x)^2, lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)[[1]]
+  squared_l1_norm_kernel <- integrate_primitive(function(x) abs(kernel$fun(x)), lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)$value**2
+  squared_l2_norm_kernel <- integrate_primitive(function(x) kernel$fun(x)^2, lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)$value
 
   penalties <- numeric(0)
   for (h in bandwidths) {
@@ -100,12 +100,12 @@ A <- function(kernel, samples, bandwidths, h, kappa, subdivisions = 100L, square
 
     f_h_h2_support <- range(discrete_conv$x) + range(samples)
 
-    squared_l2_norm <- integrate(function(x) {
+    squared_l2_norm <- integrate_primitive(function(x) {
         (f_h_h2(x) - kde_h2$fun(x))^2
       },
       lower = min(f_h_h2_support, kde_h2$support),
       upper = max(f_h_h2_support, kde_h2$support),
-      subdivisions = subdivisions)[[1]]
+      subdivisions = subdivisions)$value
 
     V_h2 <- squared_l1_norm_kernel*squared_l2_norm_kernel/(length(samples)*h2)
 

@@ -78,14 +78,13 @@ test_that("validate_IntegrableFunction has to recognize a Integrable function",{
     return(1/2 * (abs(u) <= 1))
   }
   ker <- Kernel(rectangular_function, c(-1,1))
-  den <- Density(dnorm, c(-Inf,Inf))
+  den <- Density(dnorm, c(-15,15))
   expect_equal(ker, validate_IntegrableFunction(ker))
   expect_equal(den, validate_IntegrableFunction(den))
 })
 
-test_that("the subdivisions parameter has to be a integer value",{
+test_that("the subdivisions parameter has to be a positive numeric value",{
   rec_fun <- rectangular$fun
-  expect_error(IntegrableFunction(rec_fun, c(-1,1), subdivisions=1.5))
   expect_error(IntegrableFunction(rec_fun, c(-1,1), subdivisions="1.5"))
   expect_error(IntegrableFunction(rec_fun, c(-1,1), subdivisions=c(1,4,5)))
   expect_output(print(IntegrableFunction(rec_fun, c(-1,1), subdivisions=150L)))
