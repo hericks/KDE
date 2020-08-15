@@ -7,8 +7,8 @@
 validate_Kernel(x)
 }
 \arguments{
-\item{x}{an \code{R} object to validate as object of S3 class
-\code{[Kernel]}.}
+\item{x}{a \code{R} object to validate as an object of S3 class
+\code{\link{Kernel}}.}
 }
 \description{
 This function serves as a validator for the S3 class
@@ -18,29 +18,29 @@ potential flaws.
 \details{
 The validator \code{validate_Kernel} can be used to
 verify objects as formally correct S3 objects of class
-\link{Kernel}. In particular the formal structure is ensured and it makes use of the \link{validate_IntegrableFunction}.
+\code{\link{Kernel}}. In particular the formal structure is ensured and it makes use of the \link{validate_IntegrableFunction}.
 Additionally this function \emph{tries to} (see 'Special Attention')
-validate the additional conditions of valid integrable functions (as
-specified in the first 'Details'-paragraph of \link{Kernel}).
+validate the additional conditions of valid kernel functions (as
+specified in the first 'Details'-paragraph of \code{Kernel}).
 }
 \section{Special Attention}{
 
 
 Like all numerical routines, \code{validate_Kernel} can
-evaluate the represented function on a finite set of points only. If the
+evaluate the represented function on a finite set of points. If the
 represented function returns valid results over nearly all its range, it is
-possible that this function misses unexpected/wrong return values. Thus,
-using \link{Kernel} or \link{validate_Kernel} to construct
-and validate objects representing integrable functions is \emph{not}
-sufficient to ensure the properties [1-4] listed in the first
-'Details'-paragraph of \link{Kernel}, but serves more as a
+possible that the validator misses unexpected/wrong return values. Thus,
+using \code{Kernel} or \code{validate_Kernel} to construct
+and validate objects representing kernels is \emph{not}
+sufficient to ensure the properties listed in the first
+'Details'-paragraph of \code{Kernel}, but serves more as a
 sanity-check.
 }
 
 \seealso{
-\itemize{
-\item \link{Kernel} for more information about kernel functions and the S3 class \code{Kernel}.
-\item \link{IntegrableFunction} for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
-\item \link{validate_IntegrableFunction} for more information about the IntegrableFunction validator.
-}
+\code{\link{Kernel}} for more information about kernel functions and the S3
+class \code{Kernel}, \code{\link{IntegrableFunction}} for more information about
+integrable functions and the S3 class \code{IntegrableFunction},
+\code{\link{validate_IntegrableFunction}} for more information about the
+\code{IntegrableFunction} validator.
 }

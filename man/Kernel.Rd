@@ -18,7 +18,7 @@ upperbound in the first and second entry respectively.
 
 \item{subdivisions}{a positive numeric vector of length 1, used for the
 subdivisions parameter for the function
-\code{\link[stats::integrate]{integrate}}.}
+\code{\link{integrate}}.}
 }
 \description{
 The kernels are the core of the KDE package.
@@ -44,7 +44,7 @@ basic properties of kernel functions. The class is build on \code{\link{Integrab
 
 The constructor \code{Kernel} tries to construct a valid
 \code{Kernel} object based on the passed arguments. Returned
-objects are guaranteed to pass the validator \code{\link{[validate_Kernel]}}.
+objects are guaranteed to pass the validator \code{\link{validate_Kernel}}.
 
 \bold{Attention:} This does not guarantee the conditions in the first
 'Details' paragraph: see \code{validate_Kernel}.
@@ -81,6 +81,7 @@ lines(x, rectangular_ker$fun(x), col="blue")
 legend("topright",
        legend=c("gaussian", "triangular","rectangular"),
        col=c("black","red", "blue"), lty=1, cex=0.8)
+
 
 }
 \seealso{
