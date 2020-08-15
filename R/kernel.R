@@ -81,7 +81,7 @@
 #' @include integrable_function.R
 #'
 #' @export
-Kernel <- function(fun, support = NULL, subdivisions=100L) {
+Kernel <- function(fun, support = NULL, subdivisions=1000L) {
   kern <- new_Kernel(fun, support, subdivisions)
   validate_Kernel(kern)
   kern
@@ -133,12 +133,12 @@ validate_Kernel <- function(x){
   upper <- x$support[2]
   subdivisions = x$subdivisions
   stopifnot("The integral of a kernel over its support has to be one"=
-              isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivisions)[[1]], 1)))
+              isTRUE(abs(integrate_primitive(object, lower = lower, upper = upper, subdivisions = subdivisions)$value-1) < 0.01))
   invisible(x)
 }
 
 #' @include integrable_function.R
-new_Kernel <- function(fun, support, subdivisions=100L, ..., subclass=NULL){
+new_Kernel <- function(fun, support, subdivisions=1000L, ..., subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Kernel"))
 }
 

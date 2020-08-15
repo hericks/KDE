@@ -19,7 +19,7 @@ print(dens)
 f_ker <- function(x){
   return(2/pi * (1/(exp(x) + exp(-x))))
 }
-# A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+# A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
 # We need to chose a finite Interval as support for some bandwidth estimators to work properly.
 support_sigmoid <- c(-20,20)
 # constructing the Kernel object

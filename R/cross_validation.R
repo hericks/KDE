@@ -28,7 +28,7 @@
 #' @include kernel_density_estimator.R
 #' @include logarithmic_bandwidth_set.R
 #' @export
-cross_validation <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 100L) {
+cross_validation <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), subdivisions = 1000L) {
   # conditions for kernel
   tryCatch({
     validate_Kernel(kernel)
@@ -54,19 +54,19 @@ cross_validation <- function(kernel, samples, bandwidths = logarithmic_bandwidth
   bandwidths[which.min(errors)]
 }
 
-cross_validation_error <- function(kernel, samples, bandwidth, subdivisions = 100L) {
+cross_validation_error <- function(kernel, samples, bandwidth, subdivisions = 1000L) {
 
   density_estimator <- kernel_density_estimator(kernel, samples, bandwidth, subdivisions)
 
   # TODO: Usable error if integration fails (increase number of subdivisions)
   squared_l2_norm_estimate <-
-    integrate(
+    integrate_primitive(
       function(x)
         density_estimator$fun(x) ^ 2,
       lower = density_estimator$support[1],
       upper = density_estimator$support[2],
       subdivisions = subdivisions
-    )[[1]]
+    )$value
 
   num_samples <- length(samples)
 

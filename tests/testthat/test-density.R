@@ -1,6 +1,6 @@
 test_that("a density should be built correctly",{
-  dens_norm <- Density(dnorm, c(-Inf, Inf))
-  dens_unif <- Density(dunif, c(-Inf, Inf))
+  dens_norm <- Density(dnorm, c(-15, 15))
+  dens_unif <- Density(dunif, c(0, 1))
   custom_den <- function(x) {
     ret <- 1 + sin(2*pi*x)
     ret[x < 0 | 1 < x] <- 0
@@ -11,8 +11,8 @@ test_that("a density should be built correctly",{
   expect_equal(dens_norm$fun, dnorm)
   expect_equal(dens_unif$fun, dunif)
   expect_equal(dens_custom$fun, custom_den)
-  expect_equal(dens_norm$support, c(-Inf, Inf))
-  expect_equal(dens_unif$support, c(-Inf, Inf))
+  expect_equal(dens_norm$support, c(-15, 15))
+  expect_equal(dens_unif$support, c(0, 1))
   expect_equal(dens_custom$support, c(0,1))
   expect_true(inherits(dens_norm, "Density"))
   expect_true(inherits(dens_unif, "Density"))

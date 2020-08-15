@@ -1,75 +1,72 @@
-library(shiny)
+
 
 #' @export
 shiny_kde <- function(){
+  library(shiny)
   ui <- fluidPage(
+    fluidRow(
+      style="margin-top: 15px;",
+      # Settings Column
+      column(align="center",
+        width = 4,
     #Density selection
-    selectInput(
+    wellPanel(selectInput(
       "density",
       "Choose a density:",
       c(
-        "Beta distribution" = "dbeta",
-        #"Chi-squared distribution" = "dchisq"
-        "Exponential distribution" = "dexp",
-        #"F distribution" = "df",
-        #"Gamma distribution" = "dgamma",
-        #"Geometric distribution" = "dgeom"
-        #"Hypergeometric distribution" = "dhyper",
-        #"Log-normal distribution" = "dlnorm",
         "Normal distribution" = "dnorm",
-        #"Poisson distribution" = "dpois"
-        #"Student's t distribution" = "dt",
+        "Beta distribution" = "dbeta",
+        "Exponential distribution" = "dexp",
         "Uniform distribution" = "dunif",
-        #"Weibull distribution" = "dweibull"
         "Custom Density 1" = "custom_density_1",
         "Custom Density 2" = "custom_density_2"
       )
     ),
     fluidRow(
       column(
-        width = 2,
+        width = 6,
         conditionalPanel(condition = "input.density == 'dunif'", numericInput("dunif_min", "Min", "0"))
       ),
       column(
-        width = 2,
+        width = 6,
         offset = 0,
         conditionalPanel(condition = "input.density == 'dunif'", numericInput("dunif_max", "Max", "1"))
       )
     ),
     fluidRow(
       column(
-        width = 2,
+        width = 6,
         conditionalPanel(condition = "input.density == 'dnorm'", numericInput("dnorm_mean", "mean", "0"))
       ),
       column(
-        width = 2,
+        width = 6,
         offset = 0,
         conditionalPanel(condition = "input.density == 'dnorm'", numericInput("dnorm_sd", "sd", "1"))
       )
     ),
     fluidRow(
       column(
-        width = 2,
+        width = 6,
         conditionalPanel(condition = "input.density == 'dbeta'", numericInput("dbeta_alpha", "alpha", "0.5", min=1e-5))
       ),
       column(
-        width = 2,
+        width = 6,
         offset = 0,
         conditionalPanel(condition = "input.density == 'dbeta'", numericInput("dbeta_beta", "beta", "0.5", min=1e-5))
       )
     ),
     conditionalPanel(condition = "input.density == 'dexp'", numericInput("dexp_rate", "rate", "1")),
-
+    ),
 
     # Kernel selection
-    selectInput(
+    wellPanel(selectInput(
       "kernel",
       "Choose a kernel:",
       c(
+        "Gaussian" = "gaussian",
         "Biweight" = "biweight",
         "Cosine" = "cosine",
         "Epanechnikov" = "epanechnikov",
-        "Gaussian" = "gaussian",
         "Logistic" = "logistic",
         "Rectangular" = "rectangular",
         "Sigmoid" = "sigmoid" ,
@@ -80,37 +77,40 @@ shiny_kde <- function(){
       )
     ),
     checkboxInput("show_kernel", "Plot kernel", 0),
-
-    numericInput("subdivisions", "Number subdivisions for integration:", value = 100L),
+    ),
+    wellPanel(fluidRow(
+      numericInput("subdivisions", "Number subdivisions for integration:", value = 100L)),
 
     # parameter tweaking
+    fluidRow(
     numericInput("num_samples", "Number of samples:", value = 25L),
-    sliderInput("bandwidth", "Choose a bandwidth:", 0.001, 1, 0.5, 0.01),
+    sliderInput("bandwidth", "Choose a bandwidth:", 0.001, 1, 0.5, 0.01)),
 
     # bandwidth estimation
-    actionButton("suggestions", "get bandwidth suggestions"),
-    tableOutput("bandwidth_table"),
-
-    plotOutput("plot"),
-
     fluidRow(
-      column(width = 2,
-             numericInput("xlim_1", "x lower limit:", value = -5L)),
-      column(
-        width = 2,
-        offset = 0,
-        numericInput("xlim_2", "x upper limit:", value = 5L)
-      )
-    ),
-    fluidRow(
-      column(width = 2,
-             numericInput("ylim_1", "y lower limit:", value = 0L)),
-      column(
-        width = 2,
-        offset = 0,
-        numericInput("ylim_2", "y upper limit:", value = 1L)
-      )
-    )
+    actionButton("suggestions", "get bandwidth suggestions", style='padding:4px; font-size:80%')),
+
+    fluidRow(tableOutput("bandwidth_table"))),
+      ),
+    # Plotting Column
+    column(width = 8,
+           plotOutput("plot"),
+
+           wellPanel(fluidRow(
+             column(width = 3,
+                    numericInput("xlim_1", "x lower limit:", value = -5L)),
+             column(
+               width = 3,
+               numericInput("xlim_2", "x upper limit:", value = 5L)
+             ),
+
+             column(width = 3,
+                    numericInput("ylim_1", "y lower limit:", value = 0L)),
+             column(
+               width = 3,
+               numericInput("ylim_2", "y upper limit:", value = 1L)
+             )
+           ))))
   )
 
   server <- function(input, output, session) {
@@ -234,14 +234,12 @@ shiny_kde <- function(){
                                                     input$dbeta_alpha, input$dbeta_beta,
                                                     input$dexp_rate)}
 
-
       observeEvent(input$density, {
-        observeEvent(input$num_samples, {
+        observeEvent(c(input_density_parameters$params(),input$num_samples), {
           #get new samples
           samples <- reactive_samples$values()
 
           observeEvent(input$show_kernel, {
-            observeEvent(input_density_parameters$params(), {
             observeEvent(input$show_kernel, {
               output$plot <- renderPlot({
                 plot(
@@ -262,14 +260,16 @@ shiny_kde <- function(){
                 if (input$show_kernel) {
                   lines(x_grid(), reactive_kernel$fun(x_grid()))
                 }
+                if(input$bandwidth){
+                lines(x_grid(),
+                      reactive_kde$fun(x_grid(), samples, input$bandwidth), col = "black")}
                 if (input$suggestions) {
                   # bandwidth estimations
                   cv_suggestion <- cross_validation(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
                   pco_suggestion <- pco_method(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
                   gl_suggestion <- goldenshluger_lepski(reactive_kernel$object(), samples, subdivisions=as.integer(input$subdivisions))
 
-                  lines(x_grid(),
-                        reactive_kde$fun(x_grid(), samples, input$bandwidth), col = "black")
+
                   lines(x_grid(),
                         reactive_kde$fun(x_grid(), samples, pco_suggestion), col = "dark green")
                   lines(x_grid(),
@@ -283,16 +283,13 @@ shiny_kde <- function(){
 
                   bandwidth_tb <-
                     data.frame(
-                      "pco_method" = pco_suggestion,
-                      "crossvalidation_method" = cv_suggestion,
-                      "goldenshluger_lepski_method" = gl_suggestion
+                      "method" = c("pco_method", "cross_validation", "goldenshluger_lepski"),
+                       "value" = c(pco_suggestion, cv_suggestion,gl_suggestion)
                     )
                   output$bandwidth_table <- renderTable(bandwidth_tb)
                   legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
                 }
                 else {
-                  lines(x_grid(),
-                        reactive_kde$fun(x_grid(), samples, input$bandwidth))
                   points(samples,
                          integer(length(samples)),
                          pch = ".",
@@ -300,7 +297,6 @@ shiny_kde <- function(){
 
                 }
               })
-            })
             })
           })
         })

@@ -65,8 +65,10 @@
 #' @seealso \code{\link[KDE:Kernel]{Kernel}} for more information about kernels,
 #'   \code{\link[KDE:Density]{Density}} for more information about densities.
 #'
+#' @include integrate_primitive.R
+#'
 #' @export
-IntegrableFunction <- function(fun, support=NULL, subdivisions=100L){
+IntegrableFunction <- function(fun, support=NULL, subdivisions=1000L){
   func <- new_IntegrableFunction(fun, support, subdivisions)
   validate_IntegrableFunction(func)
   func
@@ -103,7 +105,9 @@ IntegrableFunction <- function(fun, support=NULL, subdivisions=100L){
 #' @seealso
 #' \code{\link{IntegrableFunction}} for more information about integrable functions and the S3 class \code{IntegrableFunction}.
 #'
-#'@export
+#' @include integrate_primitive.R
+#'
+#' @export
 validate_IntegrableFunction <- function(x){
   # to test the basic structure
   stopifnot("Object must inherit 'IntegrableFunction'"=inherits(x, "IntegrableFunction"))
@@ -129,14 +133,11 @@ validate_IntegrableFunction <- function(x){
   # to test the structure of the 'subdivisions' entry
   subdivisions <- x$subdivisions
   stopifnot("Entry 'subdivisions' must be numeric"=is.numeric(subdivisions))
+  stopifnot("Entry 'subdivisions' must be of length 1"=length(subdivisions) == 1)
   stopifnot("Entry 'subdivisions' must be positive"=subdivisions > 0)
 
   # to test the the integrability over the given support using the given number of subdivisions
-  tryCatch({
-    integration_value <- integrate(function(x) abs(fun(x)), support[1], support[2], subdivisions=subdivisions)[[1]]
-  }, error=function(cond) {
-    stop(paste0("Failed to integrate the function. Increasing the number of subdivisions (currently ", subdivisions, ") may help: ", cond))
-  })
+  integration_value <- integrate_primitive(function(x) abs(fun(x)), support[1], support[2], subdivisions = subdivisions)$value
 
   stopifnot("The integral of the absolute function must integrate to a finite value"=is.finite(integration_value))
   invisible(x)
@@ -146,7 +147,7 @@ validate_IntegrableFunction <- function(x){
 # constructor and private subclass constructors. Always followed by a call of
 # validate_IntegrableFunction (maybe inside a subclass validator). Further
 # checking is done by validate_IntegrableFunction.
-new_IntegrableFunction <- function(fun, support=NULL, subdivisions=100L, ..., subclass=NULL){
+new_IntegrableFunction <- function(fun, support=NULL, subdivisions=1000L, ..., subclass=NULL){
   stopifnot("class of fun has to be function"=is.function(fun))
 
   if(is.null(support)){

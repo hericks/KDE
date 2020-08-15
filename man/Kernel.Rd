@@ -4,7 +4,7 @@
 \alias{Kernel}
 \title{Kernel}
 \usage{
-Kernel(fun, support = NULL, subdivisions = 100L)
+Kernel(fun, support = NULL, subdivisions = 1000L)
 }
 \arguments{
 \item{fun}{a \code{R} function taking a single numeric argument and returning

@@ -1,26 +1,29 @@
+#' @export
 integrate_primitive <- function(integrand,
                                 lower,
                                 upper,
-                                stepsize,
-                                max_length,
-                                fixed = NULL) {
+                                subdivisions = 1000L,
+                                check = FALSE) {
   # TODO: Conditions
   integration_length <- upper - lower
 
-  if (!is.null(fixed)) {
-    eval_points <- seq(from=lower, to=upper, length.out = fixed)
-  } else {
-    max_length <- ceiling(max_length)
-    num_steps <- ceiling(integration_length/stepsize + 1)
-    if (num_steps <= max_length) {
-      eval_points <- seq(from=lower, to=upper, by=stepsize)
-    } else {
-      eval_points <- seq(from=lower, to=upper, length.out = max_length)
-      used_step_size <- ifelse(max_length == 1, Inf, eval_points[2] - eval_points[1])
-      warning(paste0("Warning (primitive_integrate): Had to increase step size from ", stepsize, " to ", used_step_size, "."), call. = FALSE)
-    }
+  eval_points <- seq(from=lower, to=upper, length.out = subdivisions)
+  eval_values <- integrand(eval_points)
+  eval_values <- eval_values[!is.infinite(eval_values)]
+
+  integral <- sum(eval_values)*integration_length/length(eval_points)
+  rel_error <- NULL
+
+  if (check) {
+    eval_points <- seq(from=lower, to=upper, length.out = ceiling(subdivisions/2))
+    eval_values <- integrand(eval_points)
+    eval_values <- eval_values[!is.infinite(eval_values)]
+
+    approx_integral <- sum(eval_values)*integration_length/length(eval_points)
+
+    abs_error <- abs(integral - approx_integral)
+    rel_error <- ifelse(all.equal(abs_error, 0), 0, abs_error/abs(integral))
   }
 
-  eval_values <- integrand(eval_points)
-  sum(eval_values)*integration_length/length(eval_points)
+  return(list(value=integral, relError=rel_error))
 }

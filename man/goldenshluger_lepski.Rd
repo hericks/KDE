@@ -12,7 +12,7 @@ goldenshluger_lepski(
   samples,
   bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10),
   kappa = 1.2,
-  subdivisions = 100L
+  subdivisions = 1000L
 )
 }
 \arguments{

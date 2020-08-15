@@ -12,7 +12,7 @@ test_that("kernel must be a valid kernel",{
 })
 
 test_that("samples must be numeric with length greater than 0",{
-  kernel <- Kernel(epanechnikov_function, c(-1,1), subdivisions=10L)
+  kernel <- Kernel(epanechnikov_function, c(-1,1))
   H_n <- c(0.5, 0.8)
   lambda <- 1
   subdivisions = 10L
@@ -29,7 +29,7 @@ test_that("samples must be numeric with length greater than 0",{
 })
 
 test_that("H_n must be numeric and within 1/length(samples) and 1",{
-  kernel <- Kernel(epanechnikov_function, c(-1,1), subdivisions=10L)
+  kernel <- Kernel(epanechnikov_function, c(-1,1))
   samples <- c(1, 2, 3, 4)
   lambda <- 1
   subdivisions = 10L
@@ -72,7 +72,7 @@ test_that("H_n must be numeric and within 1/length(samples) and 1",{
 })
 
 test_that("lambda has to be numerical scalar",{
-  kernel <- Kernel(epanechnikov_function, c(-1,1), subdivisions=10L)
+  kernel <- Kernel(epanechnikov_function, c(-1,1))
   samples <- c(1, 2, 3, 4)
   H_n <- c(0.5, 0.8)
   subdivisions <- 10L
@@ -94,7 +94,7 @@ test_that("lambda has to be numerical scalar",{
 })
 
 test_that("subdivisions must be a single integer",{
-  kernel <- Kernel(epanechnikov_function, c(-1,1), subdivisions=10L)
+  kernel <- Kernel(epanechnikov_function, c(-1,1))
   samples <- c(1, 2, 3, 4)
   H_n <- c(0.5, 0.8)
   lambda <- 1
