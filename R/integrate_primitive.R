@@ -45,7 +45,24 @@ integrate_primitive <- function(integrand,
                                 upper,
                                 subdivisions = 1000L,
                                 check = FALSE) {
-  # TODO: Conditions
+  # Checks for integrand
+  stopifnot("The parameter 'integrand' has to be a function."=is.function(integrand))
+
+  # Checks for support
+  stopifnot("The support parameters ('upper'/'lower') have to be numerical."=is.numeric(lower) & is.numeric(upper))
+  stopifnot("The support parameters ('upper'/'lower') have to be of length 1."=all.equal(length(lower), 1) && all.equal(length(upper), 1))
+  stopifnot("The 'lower' parameter has to be smaller than the 'upper' parameter."=lower < upper)
+
+  # Checks for subdivisions
+  stopifnot("The 'subdivisions' parameter has to be numerical."=is.numeric(subdivisions))
+  stopifnot("The 'subdivisions' parameter has to be of length 1."=all.equal(length(subdivisions), 1))
+  stopifnot("The 'subdivisions' parameter has to be positive."=subdivisions > 0)
+  subdivisions <- ceiling(subdivisions)
+
+  # Checks for check
+  stopifnot("The 'check' parameter has to be logial."=is.logical(check))
+  stopifnot("The 'check' parameter has to be of length 1."=all.equal(length(check), 1))
+
   integration_length <- upper - lower
 
   eval_points <- seq(from=lower, to=upper, length.out = subdivisions)
