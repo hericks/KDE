@@ -83,7 +83,7 @@ shiny_kde <- function(){
 
     # parameter tweaking
     fluidRow(
-      numericInput("num_samples", "Number of samples:", value = 25L)),
+      numericInput("num_samples", "Number of samples:", value = 100L)),
     fluidRow(class="row_refresh_button",
     actionButton("refresh_samples", "refresh data"),
     tags$head(tags$style("
