@@ -18,27 +18,25 @@ potential flaws.
 \details{
 The validator \code{validate_IntegrableFunction} can be used to
 verify objects as formally correct S3 objects of class
-\link{IntegrableFunction}. In particular the formal structure is ensured.
+\code{\link{IntegrableFunction}}. In particular the formal structure is ensured.
 Additionally this function \emph{tries to} (see 'Special Attention')
-validate the additional conditions of valid integrable functions (as
-specified in the first 'Details'-paragraph of \link{IntegrableFunction}).
+validate the additional conditions of valid integrable functions as
+specified in the first 'Details'-paragraph of \code{IntegrableFunction}.
 }
 \section{Special Attention}{
 
 
 Like all numerical routines, \code{validate_IntegrableFunction} can
-evaluate the represented function on a finite set of points only. If the
+evaluate the represented function on a finite set of points. If the
 represented function returns valid results over nearly all its range, it is
-possible that this function misses unexpected/wrong return values. Thus,
-using \link{IntegrableFunction} or \link{validate_IntegrableFunction} to construct
+possible that the validator misses unexpected/wrong return values. Thus,
+using \code{IntegrableFunction} or \code{validate_IntegrableFunction} to construct
 and validate objects representing integrable functions is \emph{not}
-sufficient to ensure the properties [1-3] listed in the first
-'Details'-paragraph of \link{IntegrableFunction}, but serves more as a
+sufficient to ensure the properties listed in the first
+'Details'-paragraph of \code{IntegrableFunction}, but serves more as a
 sanity-check.
 }
 
 \seealso{
-\itemize{
-\item \link{IntegrableFunction} for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
-}
+\code{\link{IntegrableFunction}} for more information about integrable functions and the S3 class \code{IntegrableFunction}.
 }
