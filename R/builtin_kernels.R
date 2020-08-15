@@ -225,7 +225,7 @@ gaussian_function <- function(u){
 #' * gaussian function \code{fun}
 #'
 #' * support = \code{c(-15,15)}.
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -291,7 +291,7 @@ logistic_function <- function(u){
 #' * logistic function \code{fun}
 #'
 #' * support = \code{c(-37,37)}.
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -325,7 +325,7 @@ sigmoid_function <- function(u){
 #' * sigmoid function \code{fun}
 #'
 #' * support = \code{c(-20,20)}
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -359,7 +359,7 @@ silverman_function <- function(u){
 #' * silverman function \code{fun}
 #'
 #' * support = \code{c(-40,40)}
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'

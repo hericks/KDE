@@ -79,21 +79,27 @@ shiny_kde <- function(){
     checkboxInput("show_kernel", "Plot kernel", 0),
     ),
     wellPanel(fluidRow(
-      numericInput("subdivisions", "Number subdivisions for integration:", value = 100L)),
+      numericInput("subdivisions", "Number subdivisions for integration:", value = 1000L)),
 
     # parameter tweaking
     fluidRow(
-    numericInput("num_samples", "Number of samples:", value = 25L),
-    sliderInput("bandwidth", "Choose a bandwidth:", 0.001, 1, 0.5, 0.01)),
+      numericInput("num_samples", "Number of samples:", value = 25L)),
+    fluidRow(class="row_refresh_button",
+    actionButton("refresh_samples", "refresh data"),
+    tags$head(tags$style("
+      .row_refresh_button{height:45px;}"
+    ))),
+    fluidRow(
+      sliderInput("bandwidth", "Choose a bandwidth:", 0.001, 1, 0.5, 0.01)),
 
     # bandwidth estimation
     fluidRow(
-    actionButton("suggestions", "get bandwidth suggestions", style='padding:4px; font-size:80%')),
+      checkboxInput("suggestions", "get bandwidth suggestions")),
 
     fluidRow(tableOutput("bandwidth_table"))),
       ),
     # Plotting Column
-    column(width = 8,
+    column(width = 8,align = "center",
            plotOutput("plot"),
 
            wellPanel(fluidRow(
@@ -234,8 +240,9 @@ shiny_kde <- function(){
                                                     input$dbeta_alpha, input$dbeta_beta,
                                                     input$dexp_rate)}
 
+
       observeEvent(input$density, {
-        observeEvent(c(input_density_parameters$params(),input$num_samples), {
+        observeEvent(c(input_density_parameters$params(),input$num_samples, input$refresh_samples), {
           #get new samples
           samples <- reactive_samples$values()
 
@@ -281,12 +288,6 @@ shiny_kde <- function(){
                          pch = ".",
                          col = "blue")
 
-                  bandwidth_tb <-
-                    data.frame(
-                      "method" = c("pco_method", "cross_validation", "goldenshluger_lepski"),
-                       "value" = c(pco_suggestion, cv_suggestion,gl_suggestion)
-                    )
-                  output$bandwidth_table <- renderTable(bandwidth_tb)
                   legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
                 }
                 else {
@@ -294,8 +295,16 @@ shiny_kde <- function(){
                          integer(length(samples)),
                          pch = ".",
                          col = "blue")
-
                 }
+
+                output$bandwidth_table <- renderTable({
+                  if (input$suggestions)
+                      data.frame(
+                        "method" = c("pco_method", "cross_validation", "goldenshluger_lepski"),
+                        "value" = c(pco_suggestion, cv_suggestion,gl_suggestion)
+                      )
+
+                })
               })
             })
           })
