@@ -70,7 +70,7 @@ triangular_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-triangular <- Kernel(triangular_function, c(-1,1), subdivisions=10L)
+triangular <- Kernel(triangular_function, c(-1,1))
 
 
 epanechnikov_function <- function(u){
@@ -106,7 +106,7 @@ epanechnikov_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-epanechnikov <- Kernel(epanechnikov_function, c(-1,1), subdivisions=10L)
+epanechnikov <- Kernel(epanechnikov_function, c(-1,1))
 
 biweight_function <- function(u){
   check_kernel_conditions(u)
@@ -141,7 +141,7 @@ biweight_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-biweight <- Kernel(biweight_function, c(-1,1), subdivisions = 10L)
+biweight <- Kernel(biweight_function, c(-1,1))
 
 triweight_function <- function(u){
   check_kernel_conditions(u)
@@ -173,7 +173,7 @@ triweight_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-triweight <- Kernel(triweight_function, c(-1,1), subdivisions=10L)
+triweight <- Kernel(triweight_function, c(-1,1))
 
 tricube_function <- function(u){
   check_kernel_conditions(u)
@@ -205,7 +205,7 @@ tricube_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-tricube <- Kernel(tricube_function, c(-1,1), subdivisions = 10L)
+tricube <- Kernel(tricube_function, c(-1,1))
 
 gaussian_function <- function(u){
   check_kernel_conditions(u)
@@ -225,7 +225,7 @@ gaussian_function <- function(u){
 #' * gaussian function \code{fun}
 #'
 #' * support = \code{c(-15,15)}.
-#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -238,7 +238,7 @@ gaussian_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-gaussian <- Kernel(gaussian_function, c(-15,15), subdivisions = 10L)
+gaussian <- Kernel(gaussian_function, c(-15,15))
 
 cosine_function <- function(u){
   check_kernel_conditions(u)
@@ -270,7 +270,7 @@ cosine_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-cosine <- Kernel(cosine_function, c(-1,1), subdivisions = 10L)
+cosine <- Kernel(cosine_function, c(-1,1))
 
 logistic_function <- function(u){
   check_kernel_conditions(u)
@@ -291,7 +291,7 @@ logistic_function <- function(u){
 #' * logistic function \code{fun}
 #'
 #' * support = \code{c(-37,37)}.
-#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -304,7 +304,7 @@ logistic_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-logistic <- Kernel(logistic_function, subdivisions = 10L)
+logistic <- Kernel(logistic_function)
 
 sigmoid_function <- function(u){
   check_kernel_conditions(u)
@@ -325,7 +325,7 @@ sigmoid_function <- function(u){
 #' * sigmoid function \code{fun}
 #'
 #' * support = \code{c(-20,20)}
-#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -338,7 +338,7 @@ sigmoid_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-sigmoid <- Kernel(sigmoid_function, c(-20,20), subdivisions = 10L)
+sigmoid <- Kernel(sigmoid_function, c(-20,20))
 
 silverman_function <- function(u){
   check_kernel_conditions(u)
@@ -359,7 +359,7 @@ silverman_function <- function(u){
 #' * silverman function \code{fun}
 #'
 #' * support = \code{c(-40,40)}
-#' A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
+#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 #'
 #' * subdivisions = \code{100L}.
 #'
@@ -372,7 +372,7 @@ silverman_function <- function(u){
 #'
 #' @include kernel.R
 #' @export
-silverman <- Kernel(silverman_function, c(-40,40), subdivisions = 30L)
+silverman <- Kernel(silverman_function, c(-40,40))
 
 
 
