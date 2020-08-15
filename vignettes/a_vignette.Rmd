@@ -1,5 +1,5 @@
 ---
-title: "Introduction to KDE"
+title: "Introduction to kernel density estimation"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to KDE}
@@ -22,12 +22,12 @@ Kernel density estimation is the chosen method that should provide us with a sol
 \begin{align}
 \hat{f_h}(x) = \frac{1}{hn} \sum\limits^{n}_{i=0} K(\frac{x-x_i}{h})
 \end{align} 
-which is called the $\textit{kernel density estimator}$ (KDE).
-It depends on a real number $\mathcal{h}$, the so called $\textit{bandwidth}$ and an integrable function $K \colon \mathbb{R} \rightarrow \mathbb{R}$ such 
-that $\int\limits^{\infty}_{-\infty}K(x) \ dx=1$, which is called $\textit{kernel}$. \
+which is called the *kernel density estimator* (KDE).
+It depends on a real number $\mathcal{h}$, the so called *bandwidth* and an integrable function $K \colon \mathbb{R} \rightarrow \mathbb{R}$ such 
+that $\int\limits^{\infty}_{-\infty}K(x) \ dx=1$, which is called *kernel*. \
 The package is equipped with the function `kernel_density_estimator`, which is an implementation of the function described above. 
 
-With the three bandwidth estimation functions: `cross_validation`, `goldenshluger_lepski` and `pco_method` the package focuses 
+With the three bandwidth estimation functions `cross_validation`, `goldenshluger_lepski` and `pco_method` the package focuses 
 on solving the problem by estimating the optimal bandwidth for a given kernel.
 
 
@@ -39,12 +39,12 @@ library(KDE)
 
 ## Base structure
 
-In order to secure consistency and fulfillment of the requirements for each element used in solving the KDE problem, this package works on S3 classes for densities and kernels.
+In order to secure consistency and fulfillment of the requirements for each element used in solving the above problem with a KDE, this package works on S3 classes for densities and kernels.
 Both classes inherit from the class `IntegrableFunction` (for more information see `?IntegrableFucntion`).
 First of all, we need to construct our objects.
 
 ### Density
-The density function we want to sample from, is a sine curve on the interval $[0,1]$. If samples are already given, this step will not be necessary.
+The density function we want to sample from is a sine curve on the interval $[0,1]$. If samples are already given, the reader might skip this part.
 ```{r}
 # Custom density
 f_dens <- function(x) {
@@ -57,18 +57,18 @@ support_density <- c(0,1)
 dens <- Density(f_dens, support_density, subdivisions=100L)
 print(dens)
 ```
-Now we can see that the density is an object of the class `Density`. In addition to the function, the object is equipped with a support and subdivisions parameter. This is needed for the `stats::integrate` function to work properly.
+Now we can see that the density is an object of the class `Density`. In addition to the function, the object is equipped with a support and subdivisions parameter. Both are needed for the `stats::integrate` function to work properly.
 To see the requirements for constructing a `Density` object use `?Density`.
 
 ### Kernel
 This package gives you the possibility to build your own custom kernels:
 ```{r}
-# or build a Kernel object yourself: this is the sigmoid function
+# build a Kernel object yourself: this is the sigmoid function
 f_ker <- function(x){
   return(2/pi * (1/(exp(x) + exp(-x))))
 }
 support_sigmoid <- c(-20,20)
-# constructing the Kernel object
+# constructing a Kernel object
 sigmoid_kernel <- Kernel(f_ker, support_sigmoid, subdivisions=10L)
 print(sigmoid_kernel)
 ```
@@ -80,7 +80,7 @@ To see the requirements for constructing a Kernel object use `?Kernel`.
 ### Builtin Kernels
 This package also provides a selection of various built-in kernels:
 ```{r}
-# using a builtin Kernel
+# using a built-in Kernel
 gaussian_kernel <- gaussian
 print(gaussian_kernel)
 
@@ -88,7 +88,7 @@ print(gaussian_kernel)
 Run `?Kernel` to see the full list of the built-in kernels.
 
 ### Sampling 
-The KDE package provides a built-in rejection sampling method to create a set of samples from Density objects: 
+In case you don't already have a set of samples, you can use a built-in rejection sampling method to create a set of samples from Density objects: 
 ```{r}
 # Create sampler from custom density
 g_den <- Density(dunif, c(0,1))
@@ -97,33 +97,37 @@ custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
 num_samples <- 100
 samples <- custom_sampler(num_samples)
 ```
-Now that we have chosen our kernel and a set of samples, we have to determine another suitable parameter for a good estimation.
+Now that we have chosen our kernel and a set of samples, it is time to choose a suitable bandwidth to finally bild the KDE.
 
 ## Bandwidth Estimation
 
-Bandwidth estimation is used to choose a bandwidth $\mathcal{h}$ from a given set $\mathcal{H}_n$ to minimize the maximal risk $\mathbb{E}(||\hat{f_h}-f||^2)$, where $\hat{f_h}$ is the KDE with bandwidth $\mathcal{h}$ and $f$ the density estimated. Hence $f$ is unknown it is not possible to calculate the risk directly. Therefore this package provides three methods for choosing the optimal bandwitdth. 
+The general idea behind all following bandwidth estimation methods is that the optimal bandwidth $\mathcal{h}$ is the one that minimizes the maximal risk 
+\begin{align}
+\mathbb{E}(||\hat{f_h}-f||^2)
+\end{align} where $\hat{f_h}$ is the KDE with bandwidth $\mathcal{h}$ and $f$ the density we like to estimate. Note that to realize this idea, each method chooses the optimal bandwidth from a given finite collection $\mathcal{H}_n$. \
+Now the problem lies in the fact that $f$ is unknown, so we can't calculate the risk directly, therefore this package provides three different approaches to solve that and to estimate the most suitable bandwidth from a given collection $\mathcal{H}_n$.
 
 ### Logarithmic Bandwidth Set
 
-The function `logarithmic_bandwidth_set` helps choosing a admissible bandwidth set in a given range.  
+In case you don't already have a bandwidth collection to work with, you can use the function `logarithmic_bandwidth_set` which provides you with an admissible bandwidth set in a given range.  
 ```{r}
 # setting up bandwidth sets
 bandwidth_set <- logarithmic_bandwidth_set(from=1/length(samples), to=1, length.out=10)
 ```
-Note that for the bandwidth estimations `length.out` has to be less than or equal to `length(samples)`.
+Note that for the bandwidth estimation methods `length.out` has to be less than or equal to `length(samples)`.
 
 
 ### Cross Validation
-The first method to estimate a bandwidth is called *cross-validation* or *leave-one-out*. 
+The first method to estimate a bandwidth is called *cross-validation* or *leave-one-out*. For more information run `?cross_validation`.
 ```{r}
-# cross-validation method
+# cross validation method
 cv_gaussian <- cross_validation(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
 cv_sigmoid <- cross_validation(sigmoid_kernel, samples, bandwidths=bandwidth_set, subdivisions=500L)
 cat("bandwidth for gaussian kernel: ", cv_gaussian, "\nbandwidth for sigmoid kernel: ", cv_sigmoid)
 ```
 
 ### Goldenshluger-Lepski Method
-The second method is a implementation of the *Goldenshluger-Lepski method*.
+The second approach is a implementation of the *Goldenshluger-Lepski method*. To understand the function in detail see `?goldenshluger_lepski`.
 ```{r}
 # goldenshluger-lepski method
 gl_gaussian <- goldenshluger_lepski(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
@@ -132,7 +136,7 @@ cat("bandwidth for gaussian kernel: ", gl_gaussian, "\nbandwidth for sigmoid ker
 ```
 
 ### Penalized Comparison to Overfitting
-The third approach for estimating a bandwidth is called *Penalized Comparison to Overfitting (PCO)*
+The third method for estimating a bandwidth is called *Penalized Comparison to Overfitting (PCO)*. If you want to look up further details about the function `pco_method` run `?pco_method`.
 ```{r}
 # Penalized Comparison to Overfitting
 pco_gaussian <- pco_method(gaussian_kernel, samples, bandwidths=bandwidth_set, subdivisions=100L)
@@ -142,7 +146,7 @@ cat("bandwidth for gaussian kernel: ", pco_gaussian, "\nbandwidth for sigmoid ke
 
 
 ## Kernel-Density-Estimation
-Now that we have some suggestions for our bandwidth $h$ we can finally estimate our density function $f$ using the kernel density estimator.
+Now that we have determined some suggestions for our bandwidth $h$ we can finally estimate our density function $f$ using the kernel density estimator.
 
 ### Calculating the KDE function
 ```{r}
@@ -157,7 +161,7 @@ kde_pco_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, pco_sigmoid
 Note that the  `kernel_density_estimator` returns a `IntegrableFunction` object. 
 
 ## Kernel and bandwidth comparison 
-Note that some bandwidth estimators can choose the same bandwidth and therefore, their KDE will be the same. For a little comparison of our calculated estimators, we will use the following ISE function:
+Keep in mind that two different bandwidth estimators can choose the same bandwidth and therefore, their KDE will be the same. For a small comparison of our calculated estimators, we will use the following ISE function:
 ```{r}
 # comparing the ISE
 ISE <- function(kde, dens, subdivisions=100L){
@@ -242,7 +246,7 @@ points(samples,
 
 ```
 
-At last, a little side by side comparison of the ISE:
+At last, a side by side comparison of the above calculated ISE's:
 ```{r, echo=FALSE}
 table <- data.frame(method=c("cross_validation ISE", "goldenshluger_lepski ISE", "pco_method ISE"),
                     gaussian=c(ISE(kde_cv_gaussian, dens), ISE(kde_gl_gaussian, dens), ISE(kde_pco_gaussian, dens)),
@@ -258,7 +262,7 @@ To use the shiny app call `shiny_kde()`.
 ## References
 1. Estimator selection: a new method with applications to kernel density estimation C. Lacour, P. Massart, V. Rivoirard [2017]: <https://arxiv.org/abs/1607.05091v2>
 1. Numerical performance of Penalized Comparison to Overfitting for multivariate kernel density estimation S. Varet, C. Lacour, P. Massart, V. Rivoirard [2019]: <https://arxiv.org/abs/1902.01075>
-1. "Nonparametric Estimation" by Comte [2017], ISBN: 978-2-36693-030-6 
+1. "Nonparametric Estimation" by F. Comte [2017], ISBN: 978-2-36693-030-6 
 
 
 
