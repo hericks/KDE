@@ -8,7 +8,7 @@
 An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
 \itemize{
 \item silverman function \code{fun}
-\item support = \code{c(-20,20)}
+\item support = \code{c(-40,40)}
 A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
 \item subdivisions = \code{100L}.
 }
