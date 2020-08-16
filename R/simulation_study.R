@@ -1,17 +1,28 @@
 #' @include builtin_kernels.R
 #' @export
-compare <- function(eval_points, funs=list(runif), ns=50, kernels=list(gaussian), lambda_set=1, kappa_set=1.2, reps=4, length.out=5){
+compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cross_validation, goldenshluger_lepski, pco_method),
+ ns=50, kernels=list(gaussian), lambda_set=1, kappa_set=1.2, reps=400, length.out=5){
   # TODO: Argchecks necessary?
   # TODO: length.out nach Tests auf 30 setzen, reps hochsetzen
   if(!is.list(kernels)) kernels <- as.list(kernels)
-  if(!is.list(lambda_set)) lambda_set <- as.list(lambda_set)
-  if(!is.list(kappa_set)) kappa_set <- as.list(kappa_set)
+  #if(!is.list(lambda_set)) lambda_set <- as.list(lambda_set)
+  #if(!is.list(kappa_set)) kappa_set <- as.list(kappa_set)
   if(!is.list(ns)) ns <- as.list(ns)
 
-  bandwidth_estimators <- list(cv=cross_validation, gl=goldenshluger_lepski, pco=pco_method)
-
   m <- length(funs) * length(ns) * length(kernels)
-  m <- m * length(lambda_set) + m * length(kappa_set) + m
+  if(identical(bandwidth_estimators, list(cross_validation))) m <- m
+  if(identical(bandwidth_estimators, list(goldenshluger_lepski))) m <- m * length(kappa_set)
+  if(identical(bandwidth_estimators, list(pco_method))) m <- m * length(lambda_set)
+  if(identical(bandwidth_estimators, list(goldenshluger_lepski, cross_validation))||
+     identical(bandwidth_estimators, list(cross_validation, goldenshluger_lepski))) {m <- m * length(kappa_set) +  m}
+  if(identical(bandwidth_estimators, list(pco_method, cross_validation))||
+     identical(bandwidth_estimators, list(cross_validation, pco_method))) {m <- m * length(lambda_set) +  m}
+  if(identical(bandwidth_estimators, list(pco_method, goldenshluger_lepski))||
+     identical(bandwidth_estimators, list(goldenshluger_lepski, pco_method))) {
+    m <- m * length(lambda_set) +  m * length(kappa_set)
+  }else{
+    m <- m * length(lambda_set) + m * length(kappa_set) + m
+    }
   res <- array(NA, dim=c(length(eval_points), reps, m))
   cnt <- 1
   subdivisions <- 1000L
@@ -45,7 +56,7 @@ compare <- function(eval_points, funs=list(runif), ns=50, kernels=list(gaussian)
               } )
               cnt <- cnt + 1
             }
-          }else {
+          }else if(identical(est, cross_validation)){
             res[,,cnt] <- replicate(reps, {
               samples <- f(n)
 
@@ -63,3 +74,4 @@ compare <- function(eval_points, funs=list(runif), ns=50, kernels=list(gaussian)
   }
   res
 }
+
