@@ -3,27 +3,24 @@
 \docType{data}
 \name{sigmoid}
 \alias{sigmoid}
-\title{Sigmoid Function}
+\title{Sigmoid Kernel}
 \format{
-An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+An object of S3 class \code{\link{Kernel}} with named entries
 \itemize{
-\item sigmoid function \code{fun}
-\item support = \code{c(-20,20)}
-A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
-\item subdivisions = \code{100L}.
+\item \bold{\code{fun}}: the sigmoid function
+\item \bold{\code{support}}: \code{c(-20,20)}
+\item \bold{\code{subdivisions}}: \code{1000L}.
 }
 }
 \usage{
-\code{sigmoid$fun(u)}
-}
-\arguments{
-\item{u}{vector of numerical values}
+sigmoid
 }
 \description{
-The sigmoid function is used as the function for an S3 object \code{sigmoid} of class \link[KDE:Kernel]{Kernel}.
+The sigmoid kernel is S3 object of class \code{Kernel}
+provided by the \code{KDE} package.
 }
 \seealso{
-\code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+\code{\link{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{biweight}},

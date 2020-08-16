@@ -3,27 +3,24 @@
 \docType{data}
 \name{gaussian}
 \alias{gaussian}
-\title{Gaussian Function}
+\title{Gaussian Kernel}
 \format{
-An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+An object of S3 class \code{\link{Kernel}} with named entries
 \itemize{
-\item gaussian function \code{fun}
-\item support = \code{c(-15,15)}.
-A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
-\item subdivisions = \code{100L}.
+\item \bold{\code{fun}}: the gaussian function
+\item \bold{\code{support}}: \code{c(-10,10)}
+\item \bold{\code{subdivisions}}: \code{1000L}.
 }
 }
 \usage{
-\code{gaussian$fun(u)}
-}
-\arguments{
-\item{u}{vector of numerical values}
+gaussian
 }
 \description{
-The gaussian function is used as the function for an S3 object \code{gaussian} of class \link[KDE:Kernel]{Kernel}.
+The gaussian kernel is S3 object of class \code{Kernel}
+provided by the \code{KDE} package.
 }
 \seealso{
-\code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+\code{\link{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{biweight}},

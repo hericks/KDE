@@ -3,29 +3,24 @@
 \docType{data}
 \name{epanechnikov}
 \alias{epanechnikov}
-\title{Epanechnikov Function}
+\title{Epanechnikov Kernel}
 \format{
-An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+An object of S3 class \code{\link{Kernel}} with named entries
 \itemize{
-\item epanechnikov function \code{fun}
-\item support = \code{c(-1,1)}
-\item subdivisions = \code{100L}.
+\item \bold{\code{fun}}: the epanechnikov function
+\item \bold{\code{support}}: \code{c(-1,1)}
+\item \bold{\code{subdivisions}}: \code{1000L}.
 }
 }
 \usage{
-\code{epanechnikov$fun(u)}
-}
-\arguments{
-\item{u}{vector of numerical values}
-}
-\value{
-returning evaluation of the kernel function in u.
+epanechnikov
 }
 \description{
-The epanechnikov function is used as the function for an S3 object \code{epanechnikov} of class \link[KDE:Kernel]{Kernel}.
+The epanechnikov kernel is S3 object of class \code{Kernel}
+provided by the \code{KDE} package.
 }
 \seealso{
-\code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
+\code{\link{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{biweight}},

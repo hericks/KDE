@@ -3,27 +3,24 @@
 \docType{data}
 \name{silverman}
 \alias{silverman}
-\title{Silverman Function}
+\title{Silverman Kernel}
 \format{
-An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+An object of S3 class \code{\link{Kernel}} with named entries
 \itemize{
-\item silverman function \code{fun}
-\item support = \code{c(-40,40)}
-A function is sufficiently small outside of a compact space, such that the numeric integration outside of this space will be zero.
-\item subdivisions = \code{100L}.
+\item \bold{\code{fun}}: the silverman function
+\item \bold{\code{support}}: \code{c(-25,25)}
+\item \bold{\code{subdivisions}}: \code{1000L}.
 }
 }
 \usage{
-\code{silverman$fun(u)}
-}
-\arguments{
-\item{u}{vector of numerical values}
+silverman
 }
 \description{
-The silverman function is used as the function for an S3 object \code{silverman} of class \link[KDE:Kernel]{Kernel}.
+The silverman kernel is S3 object of class \code{Kernel}
+provided by the \code{KDE} package.
 }
 \seealso{
-\code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+\code{\link{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{biweight}},
