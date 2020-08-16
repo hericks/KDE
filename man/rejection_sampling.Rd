@@ -2,52 +2,46 @@
 % Please edit documentation in R/rejection_sampling.R
 \name{rejection_sampling}
 \alias{rejection_sampling}
-\title{Rejection Sampling (I.e., Accept-reject Method)}
+\title{Rejection Sampling}
 \usage{
 rejection_sampling(f_den, g_den, g, M)
 }
 \arguments{
-\item{f_den}{density function as an S3 object of the class
-\link[KDE:Density]{Density}. The function \code{f_den$fun} of the S3 object
-\code{f_den} is a normalized probability density function, from which the
-desired samples will be drawn.}
+\item{f_den}{S3 object of class \code{\link{Density}}; the probability density
+to construct the sampler for.}
 
-\item{g_den}{density function as an S3 object of the class
-\link[KDE:Density]{Density}. The function \code{g_den$fun} of the S3 object
-\code{g_den} is a normalized probability density function that is used as a
-helper-function to draw samples from, instead of drawing samples from
-\code{f_den}.}
+\item{g_den}{S3 object of class \code{Density}; the probability density for
+the sampler given in \code{g}.}
 
-\item{g}{random number generator function that draws samples from the density
-function \code{g_den$fun}.}
+\item{g}{\code{R} function with single numeric argument; the random number
+generator that draws samples from the density function \code{g_den}.}
 
-\item{M}{real number, which satisfies the condition that \code{f(x)} is less
-or equal than \code{M*g(x)} for all real numbers x.}
+\item{M}{strictly positive numeric scalar; satisfies \code{f(x) <= M*g(x)}
+for all numeric scalar inputs \code{x}.}
 }
 \value{
-returning a function with argument \code{n} that draws \code{n}
-samples from the density function \code{f_den$fun}.
+A function taking a single numeric scalar argument \code{n},
+returning \code{n} \code{f-den} distributed random numbers.
 }
 \description{
 The \code{rejection_sampling} function operator creates a function that draws
 samples from a given probability density function.
 }
 \details{
-the algorithm first draws samples from the density function
-\code{g_den$fun}, for which (in general) should exist an easier method to
-generate samples. Subsequently the algorithm accepts/rejects these draws,
-according to whether they are likely within the proposed denisty function
-\code{f_den$fun} or not. It is the most efficient if \code{M} is chosen as
-small as possible. That means that the shape of g_den is very close to f_den
-and as a result it is more likely that the samples drawn from
-\code{g_den$fun} get accepted.
+Rejection sampling uses \code{g} to draw samples and accepts/rejects
+these samples according to the densities \code{f_gen} and \code{g_den},
+such that the resulting samples are \code{f_den}-distributed. Many rejected
+samples result in longer runtimes. To prevent this \code{M} should be
+chosen as small as possible, satisfying \code{f(x) <= M*g(x)} for all
+numeric scalar inputs \code{x}.
 }
 \examples{
 custom_den <- function(x) {
-ret <- 1 + sin(2*pi*x)
-ret[x < 0 | 1 < x] <- 0
-ret
+  ret <- 1 + sin(2*pi*x)
+  ret[x < 0 | 1 < x] <- 0
+  ret
 }
+
 f_den <- Density(custom_den, c(0,1))
 g_den <- Density(dunif)
 
@@ -57,6 +51,13 @@ y <- f_den$fun(x)
 
 plot(x, y, type="l", main="Custom density: 1 + sin(2*pi*x)", ylab="density")
 n <- 65
-points(custom_sampler(65), rep(1, n), col="red", cex=0.5)
+points(custom_sampler(65), rep(0, n), col="red", pch=".", cex=0.5)
+legend("topright",
+       legend=c("f_den", "samples"),
+       col=c("black", "red", "blue"),
+       pch=c("-", "."))
 
+}
+\seealso{
+\code{\link{Density}} for more information about densities.
 }

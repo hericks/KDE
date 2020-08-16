@@ -21,8 +21,7 @@ estimator.}
 internally passed to \code{\link{integrate_primitive}}.}
 }
 \value{
-The estimator is returned as S3 object of class
-\code{\link{IntegrableFunction}}.
+The estimator as S3 object of class \code{\link{IntegrableFunction}}.
 }
 \description{
 The \code{kernel_density_estimator} function builds a kernel
@@ -31,15 +30,11 @@ density estimator using the provided kernel, bandwidth and samples.
 \details{
 The validation of the returned estimator as
 \code{\link{IntegrableFunction}} relies on the function
-\code{\link{integrate_primitive}}, thus the \code{subdivisions} parameter.
-
-For more information about kernel density estimaton, see "Nonparametric
-Estimation" by Fabienne Comte.
+\code{integrate_primitive}, thus the \code{subdivisions} parameter.
 }
 \seealso{
 \code{\link{Kernel}} for more information about kernels,
-\code{\link[KDE:pco_method]{PCO}},
-\code{\link[KDE:cross_validation]{Cross-Validation}} and
-\code{\link[KDE:goldenshluger_lepski]{Goldenshluger-Lepski}} for
-automatic bandwidth-selection algorithms.
+\code{\link{PCO}}, \code{\link{Cross-Validation}} and
+\code{\link{Goldenshluger-Lepski}} for automatic bandwidth-selection
+algorithms.
 }
