@@ -11,19 +11,9 @@ compare <- function(eval_points, funs=list(runif),
   if(!is.list(ns)) ns <- as.list(ns)
 
   m <- length(funs) * length(ns) * length(kernels)
-  if(identical(bandwidth_estimators, list(cross_validation))) m <- m
-  else if(identical(bandwidth_estimators, list(goldenshluger_lepski))) m <- m * length(kappa_set)
-  else if(identical(bandwidth_estimators, list(pco_method))) m <- m * length(lambda_set)
-  else if(identical(bandwidth_estimators, list(goldenshluger_lepski, cross_validation))||
-     identical(bandwidth_estimators, list(cross_validation, goldenshluger_lepski))) {m <- m * length(kappa_set) +  m}
-  else if(identical(bandwidth_estimators, list(pco_method, cross_validation))||
-     identical(bandwidth_estimators, list(cross_validation, pco_method))) {m <- m * length(lambda_set) +  m}
-  else if(identical(bandwidth_estimators, list(pco_method, goldenshluger_lepski))||
-     identical(bandwidth_estimators, list(goldenshluger_lepski, pco_method))) {
-    m <- m * length(lambda_set) +  m * length(kappa_set)
-  } else{
-    m <- m * length(lambda_set) + m * length(kappa_set) + m
-  }
+  m <- m*(any(sapply(bandwidth_estimators, identical, cross_validation))
+       + length(kappa_set)*any(sapply(bandwidth_estimators, identical, goldenshluger_lepski))
+       + length(lambda_set)*any(sapply(bandwidth_estimators, identical, pco_method)))
 
   res <- array(NA, dim=c(length(eval_points), reps, m))
   cnt <- 1
