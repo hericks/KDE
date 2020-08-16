@@ -55,7 +55,8 @@ and \code{upper} must be finite. The number of evaluation points is
 specified in the positive numerical parameter \code{subdivisions}. In
 particular a higher number of subdivisions yields a more accurate result at
 the expense of longer runtimes. Points at which the integrand takes
-non-finite values will be ignored by the primitive approximation.
+non-finite values will be ignored by the primitive
+approximation.
 
 The \code{check} parameter can be set to enable the collection of an
 additional measure of convergence \code{rel_error}. The relative error is

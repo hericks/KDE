@@ -1,21 +1,22 @@
-#' Construct a logarithmic bandwidth set
+#' Construct a Logarithmic Bandwidth Set
 #'
 #' @description \code{logarithmic_bandwidth_set} returns a logarithmically
 #'   scaled sequence of \code{length.out} elements between \code{from} and
 #'   \code{to}.
 #'
-#' @param from the starting value of the sequence (of length 1).
-#' @param to the end value of the sequence (of length 1).
-#' @param length.out desired length of the sequence. A non-negative number,
-#'   which will be rounded up if fractional (of length 1).
+#' @param from strictly positive numeric scalar; the starting value of the
+#'   sequence.
+#' @param to strictly positive numeric scalar; the end value of the sequence.
+#' @param length.out non-negative numeric scalar; desired length of the sequence
+#'   (will be rounded up if fractional).
 #'
-#' @details Numerical inputs should all be \link{finite} (that is, not infinite,
-#'   \link{NaN} or NA). The \code{from} and \code{to} arguments must be strictly positive.
+#' @details Numerical inputs should all be \link[is.finite]{finite} (that is,
+#'   not infinite, \code{NaN} or \code{NA}).
 #'
 #' @return A logarithmically spaced sequence of \code{length.out} elements
 #'   between \code{from} and \code{to}.
 #'
-#' @seealso The method \link{seq} (for linearly scaled sequences).
+#' @seealso \code{\link{seq}} for linearly scaled sequences.
 #'
 #' @export
 logarithmic_bandwidth_set <- function(from, to, length.out) {
