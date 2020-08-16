@@ -30,7 +30,8 @@
 #'   specified in the positive numerical parameter \code{subdivisions}. In
 #'   particular a higher number of subdivisions yields a more accurate result at
 #'   the expense of longer runtimes. Points at which the integrand takes
-#'   non-finite values will be ignored by the primitive approximation.
+#'   non-finite/not-available values will be ignored by the primitive
+#'   approximation.
 #'
 #'   The \code{check} parameter can be set to enable the collection of an
 #'   additional measure of convergence \code{rel_error}. The relative error is
@@ -72,7 +73,7 @@ integrate_primitive <- function(integrand,
 
   eval_points <- seq(from=lower, to=upper, length.out = subdivisions)
   eval_values <- integrand(eval_points)
-  eval_values <- eval_values[!is.infinite(eval_values)]
+  eval_values <- eval_values[!is.infinite(eval_values) & !is.na(eval_values)]
 
   integral <- sum(eval_values)*integration_length/length(eval_points)
   rel_error <- NULL

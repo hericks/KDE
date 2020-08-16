@@ -46,7 +46,7 @@
 #'   'Details' paragraph: see \code{validate_Density}.
 #'
 #' @examples
-#' dens_norm <- Density(dnorm, c(-Inf, Inf))
+#' dens_norm <- Density(dnorm, c(-15, 15))
 #' dens_unif <- Density(dunif)
 #' x <- seq(from = -4, to = 4, length.out = 1000)
 #' plot(x, dens_norm$fun(x),

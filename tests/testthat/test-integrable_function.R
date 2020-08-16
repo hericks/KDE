@@ -61,16 +61,8 @@ test_that("the function has to be zero outside of support",{
   expect_error(IntegrableFunction(rectangular_function,c(-0.5, 0.5)))
 })
 
-test_that("The integral of the absolute function must integrate to a finite value",{
-  diverging_fun <- function(x) 1
-  diverging_fun2 <- function(x) x
-  expect_error(IntegrableFunction(diverging_fun, c(-Inf, Inf)))
-  expect_error(IntegrableFunction(diverging_fun2, c(-Inf, Inf)))
-})
-
-test_that("the integrable function has to be integrable over its support",{
-  non_integrable <- function(x) 1/x
-  expect_error(IntegrableFunction(non_integrable, c(-Inf,Inf)))
+test_that("non-compact supports or prohibited", {
+  expect_error(IntegrableFunction(exp, c(-Inf, Inf)))
 })
 
 test_that("validate_IntegrableFunction has to recognize a Integrable function",{

@@ -41,9 +41,9 @@ test_that("the integral of a kernel over the real numbers equals one",{
   finite_integral_fun <- function(x) 1*(x <= 100)
   non_integrable_fun <- function(x) 1/x
 
-  expect_error(Kernel(div_integral_fun,c(-Inf,Inf)))
-  expect_error(Kernel(finite_integral_fun,c(-Inf,Inf)))
-  expect_error(Kernel(non_integrable_fun,c(-Inf,Inf)))
+  expect_error(Kernel(div_integral_fun,c(0,2)))
+  expect_error(Kernel(finite_integral_fun,c(0,100)))
+  expect_error(Kernel(non_integrable_fun,c(0,1)))
 })
 
 test_that("kernel function has to be a numeric function",{
