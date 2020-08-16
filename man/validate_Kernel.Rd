@@ -16,31 +16,29 @@ This function serves as a validator for the S3 class
 potential flaws.
 }
 \details{
-The validator \code{validate_Kernel} can be used to
-verify objects as formally correct S3 objects of class
-\code{\link{Kernel}}. In particular the formal structure is ensured and it makes use of the \link{validate_IntegrableFunction}.
-Additionally this function \emph{tries to} (see 'Special Attention')
-validate the additional conditions of valid kernel functions (as
-specified in the first 'Details'-paragraph of \code{Kernel}).
+The validator \code{validate_Kernel} can be used to verify objects
+as formally correct S3 objects of class \code{\link{Kernel}}. In particular
+the formal structure is ensured and it makes use of the
+\code{\link{validate_IntegrableFunction}}. Additionally this function
+\emph{tries to} (see 'Special Attention') validate the additional
+conditions of valid kernel functions (as specified in the first
+'Details'-paragraph of \code{Kernel}).
 }
 \section{Special Attention}{
 
 
-Like all numerical routines, \code{validate_Kernel} can
-evaluate the represented function on a finite set of points. If the
-represented function returns valid results over nearly all its range, it is
-possible that the validator misses unexpected/wrong return values. Thus,
-using \code{Kernel} or \code{validate_Kernel} to construct
-and validate objects representing kernels is \emph{not}
-sufficient to ensure the properties listed in the first
-'Details'-paragraph of \code{Kernel}, but serves more as a
+Like all numerical routines, \code{validate_Kernel} can evaluate the
+represented function on a finite set of points. If the represented function
+returns valid results over nearly all its range, it is possible that the
+validator misses unexpected/wrong return values. Thus, using \code{Kernel}
+or \code{validate_Kernel} to construct and validate objects representing
+kernels is \emph{not} sufficient to ensure the properties listed in the
+first 'Details'-paragraph of \code{Kernel}, but serves more as a
 sanity-check.
 }
 
 \seealso{
-\code{\link{Kernel}} for more information about kernel functions and the S3
-class \code{Kernel}, \code{\link{IntegrableFunction}} for more information about
-integrable functions and the S3 class \code{IntegrableFunction},
-\code{\link{validate_IntegrableFunction}} for more information about the
-\code{IntegrableFunction} validator.
+\code{\link{Kernel}} for more information about kernel functions and
+the S3 class \code{Kernel}, \code{\link{IntegrableFunction}} for more
+information about the superclass \code{IntegrableFunction}.
 }
