@@ -17,11 +17,11 @@ integrate_primitive(
 returning a numeric vector of the same length. Further the function should
 be integrable in the mathematical sense.}
 
-\item{lower}{the lower bound for the integration. Must be finite.}
+\item{lower}{finite numerical scalar; the lower bound for the integration.}
 
-\item{upper}{the upper bound for the integration. Must be finite.}
+\item{upper}{finite numerical scalar; the upper bound for the integration.}
 
-\item{subdivisions}{the number of evaluation points used in the procedure.}
+\item{subdivisions}{positive numerical scalar; the number of evaluation points used in the procedure.}
 
 \item{check}{a boolean value to activate the collection of an additional measure of convergence.}
 }

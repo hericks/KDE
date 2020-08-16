@@ -7,9 +7,9 @@
 #' @param integrand a \code{R} function taking a single numeric argument and
 #'   returning a numeric vector of the same length. Further the function should
 #'   be integrable in the mathematical sense.
-#' @param lower the lower bound for the integration. Must be finite.
-#' @param upper the upper bound for the integration. Must be finite.
-#' @param subdivisions the number of evaluation points used in the procedure.
+#' @param lower finite numerical scalar; the lower bound for the integration.
+#' @param upper finite numerical scalar; the upper bound for the integration.
+#' @param subdivisions positive numerical scalar; the number of evaluation points used in the procedure.
 #' @param check a boolean value to activate the collection of an additional measure of convergence.
 #'
 #' @details The \code{KDE} package has to frequently handle functions, which are
@@ -81,7 +81,7 @@ integrate_primitive <- function(integrand,
     approx_integral <- sum(eval_values)*integration_length/length(eval_points)
 
     abs_error <- abs(integral - approx_integral)
-    rel_error <- ifelse(all.equal(abs_error, 0), 0, abs_error/abs(integral))
+    rel_error <- ifelse(isTRUE(all.equal(abs_error, 0)), 0, abs_error/abs(integral))
   }
 
   return(list(value=integral, relError=rel_error))
