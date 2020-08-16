@@ -18,11 +18,11 @@ potential flaws.
 \details{
 The validator \code{validate_Kernel} can be used to verify objects
 as formally correct S3 objects of class \code{\link{Kernel}}. In particular
-the formal structure is ensured and it makes use of the
-\code{\link{validate_IntegrableFunction}}. Additionally this function
-\emph{tries to} (see 'Special Attention') validate the additional
-conditions of valid kernel functions (as specified in the first
-'Details'-paragraph of \code{Kernel}).
+the formal structure is ensured and
+\code{\link{validate_IntegrableFunction}} is called internally.
+Additionally this function \emph{tries to} (see 'Special Attention')
+validate the additional conditions of valid kernel functions (as specified
+in the first 'Details'-paragraph of \code{Kernel}).
 }
 \section{Special Attention}{
 

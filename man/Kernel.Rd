@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel.R
 \name{Kernel}
 \alias{Kernel}
-\title{Kernel}
+\title{Kernels}
 \usage{
 Kernel(fun, support = NULL, subdivisions = 1000L)
 }
@@ -21,29 +21,30 @@ the function \code{\link{integrate_primitive}}.}
 \description{
 The kernels are key-objects of the \code{KDE} package. The S3
 class \code{Kernel} tries to ensure some of the properties of kernels and
-is a subclass of the \code{\link{IntegrableFunction}} (see: 'Details' for
-exact requirements).
+is a subclass of \code{\link{IntegrableFunction}} (see: 'Details' for exact
+requirements).
 }
 \details{
-{ A kernel function is a real valued, integrable function, such that
+A kernel function is a real valued, integrable function, such that
 its integral over the real numbers equals one. Kernel functions as \code{R}
 functions are required to
 \enumerate{
-\item be vectorised in its argument, taking a single numeric argument, returning
-a numerical vector of the same length only,
+\item be vectorised in its argument, taking a single numeric argument,
+returning a numerical vector of the same length only,
 \item return zero for inputs outside their support,
-\item can be integrated over their support using \code{integrate_primitive} and
-the given number of subdivisions (the relative error converges).
+\item can be integrated over their support using \code{integrate_primitive}
+and the given number of subdivisions (the relative error converges).
 \item yield an integral of nearly 1 (absolute error < 1\%).
 }
 
-The S3 class \code{Kernel} exists to ensure some of the most basic properties
-of kernel functions. The class is build on
-\code{\link[=IntegrableFunction]{IntegrableFunctions}}.
+The S3 class \code{Density} exists to ensure some of the most basic
+properties of density functions. The class is build on
+\code{\link[IntegrableFunction]{IntegrableFunctions}} and inherits its
+structure.
 
-The constructor \code{Kernel} tries to construct a valid \code{Kernel} object
-based on the passed arguments. Returned objects are guaranteed to pass the
-validator \code{\link{validate_Kernel}}.
+The constructor \code{Kernel} tries to construct a valid \code{Kernel}
+object based on the passed arguments. Returned objects are guaranteed to
+pass the validator \code{\link{validate_Kernel}}.
 
 \bold{Attention:} This does not guarantee the conditions in the first
 'Details' paragraph: see \code{validate_Kernel}.
@@ -61,7 +62,6 @@ validator \code{\link{validate_Kernel}}.
 \item{\code{\link{logistic}}}{}
 \item{\code{\link{sigmoid}}}{}
 \item{\code{\link{silverman}}}{}
-}
 }
 }
 \examples{

@@ -1,9 +1,9 @@
-#' Kernel
+#' Kernels
 #'
 #' @description The kernels are key-objects of the \code{KDE} package. The S3
 #'   class \code{Kernel} tries to ensure some of the properties of kernels and
-#'   is a subclass of the \code{\link{IntegrableFunction}} (see: 'Details' for
-#'   exact requirements).
+#'   is a subclass of \code{\link{IntegrableFunction}} (see: 'Details' for exact
+#'   requirements).
 #'
 #' @param fun a \code{R} function taking a single numeric argument and returning
 #'   a numeric vector of the same length. See 'Details' for further
@@ -14,49 +14,49 @@
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
 #'
-#' @details{ A kernel function is a real valued, integrable function, such that
-#' its integral over the real numbers equals one. Kernel functions as \code{R}
-#' functions are required to
+#' @details A kernel function is a real valued, integrable function, such that
+#'   its integral over the real numbers equals one. Kernel functions as \code{R}
+#'   functions are required to
 #'
-#' 1. be vectorised in its argument, taking a single numeric argument, returning
-#' a numerical vector of the same length only,
+#'   1. be vectorised in its argument, taking a single numeric argument,
+#'   returning a numerical vector of the same length only,
 #'
-#' 2. return zero for inputs outside their support,
+#'   2. return zero for inputs outside their support,
 #'
-#' 3. can be integrated over their support using \code{integrate_primitive} and
-#' the given number of subdivisions (the relative error converges).
+#'   3. can be integrated over their support using \code{integrate_primitive}
+#'   and the given number of subdivisions (the relative error converges).
 #'
-#' 4. yield an integral of nearly 1 (absolute error < 1%).
+#'   4. yield an integral of nearly 1 (absolute error < 1%).
 #'
-#' The S3 class \code{Kernel} exists to ensure some of the most basic properties
-#' of kernel functions. The class is build on
-#' \code{\link[=IntegrableFunction]{IntegrableFunctions}}.
+#'   The S3 class \code{Density} exists to ensure some of the most basic
+#'   properties of density functions. The class is build on
+#'   \code{\link[IntegrableFunction]{IntegrableFunctions}} and inherits its
+#'   structure.
 #'
-#' The constructor \code{Kernel} tries to construct a valid \code{Kernel} object
-#' based on the passed arguments. Returned objects are guaranteed to pass the
-#' validator \code{\link{validate_Kernel}}.
+#'   The constructor \code{Kernel} tries to construct a valid \code{Kernel}
+#'   object based on the passed arguments. Returned objects are guaranteed to
+#'   pass the validator \code{\link{validate_Kernel}}.
 #'
-#' \bold{Attention:} This does not guarantee the conditions in the first
-#' 'Details' paragraph: see \code{validate_Kernel}.
+#'   \bold{Attention:} This does not guarantee the conditions in the first
+#'   'Details' paragraph: see \code{validate_Kernel}.
 #'
-#' \strong{List of built-in kernels functions:}
-#' \describe{
-#'   \item{\code{\link{rectangular}}}{}
-#'   \item{\code{\link{triangular}}}{}
-#'   \item{\code{\link{epanechnikov}}}{}
-#'   \item{\code{\link{biweight}}}{}
-#'   \item{\code{\link{triweight}}}{}
-#'   \item{\code{\link{tricube}}}{}
-#'   \item{\code{\link{gaussian}}}{}
-#'   \item{\code{\link{cosine}}}{}
-#'   \item{\code{\link{logistic}}}{}
-#'   \item{\code{\link{sigmoid}}}{}
-#'   \item{\code{\link{silverman}}}{}
+#'   \strong{List of built-in kernels functions:}
+#'   \describe{
+#'     \item{\code{\link{rectangular}}}{}
+#'     \item{\code{\link{triangular}}}{}
+#'     \item{\code{\link{epanechnikov}}}{}
+#'     \item{\code{\link{biweight}}}{}
+#'     \item{\code{\link{triweight}}}{}
+#'     \item{\code{\link{tricube}}}{}
+#'     \item{\code{\link{gaussian}}}{}
+#'     \item{\code{\link{cosine}}}{}
+#'     \item{\code{\link{logistic}}}{}
+#'     \item{\code{\link{sigmoid}}}{}
+#'     \item{\code{\link{silverman}}}{}
 #'   }
-#' }
 #'
-#' @seealso
-#' \code{\link{validate_Kernel}} for the corresponding validator,
+#'
+#' @seealso \code{\link{validate_Kernel}} for the corresponding validator,
 #' \code{\link{IntegrableFunction}} for more information about the superclass.
 #'
 #' @examples
@@ -97,11 +97,11 @@ Kernel <- function(fun, support = NULL, subdivisions=1000L) {
 #'
 #' @details The validator \code{validate_Kernel} can be used to verify objects
 #'   as formally correct S3 objects of class \code{\link{Kernel}}. In particular
-#'   the formal structure is ensured and it makes use of the
-#'   \code{\link{validate_IntegrableFunction}}. Additionally this function
-#'   \emph{tries to} (see 'Special Attention') validate the additional
-#'   conditions of valid kernel functions (as specified in the first
-#'   'Details'-paragraph of \code{Kernel}).
+#'   the formal structure is ensured and
+#'   \code{\link{validate_IntegrableFunction}} is called internally.
+#'   Additionally this function \emph{tries to} (see 'Special Attention')
+#'   validate the additional conditions of valid kernel functions (as specified
+#'   in the first 'Details'-paragraph of \code{Kernel}).
 #'
 #' @section Special Attention:
 #'
@@ -133,7 +133,6 @@ validate_Kernel <- function(x){
   invisible(x)
 }
 
-#' @include integrable_function.R
 new_Kernel <- function(fun, support, subdivisions=1000L, ..., subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Kernel"))
 }
