@@ -38,8 +38,6 @@ test_that("non integrable functions will not converge with more subdivisions",{
     subdivisions <- 10^i
     rel_error <- c(rel_error,integrate_primitive(non_integrable_fun, 0, 1, subdivisions, check=TRUE)$relError)
   }
-  rel_error
-
   # rel_error does get smaller using more subdivision steps, but it will not get sufficiently small
   expect_error(stopifnot(res[length(rel_error)] < 0.01))
 
@@ -64,7 +62,6 @@ test_that("integrating integrable functions will converge",{
     res <- c(res,integrate_primitive(fun, 0, 1, subdivisions, check=TRUE)$value)
 
   }
-  res
   true_value <- 2+1/3
   expect_true(convergence(abs(res - true_value)))
 })
