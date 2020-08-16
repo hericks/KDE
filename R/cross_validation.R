@@ -58,7 +58,12 @@ cross_validation <- function(kernel, samples, bandwidths = logarithmic_bandwidth
   stopifnot(is.integer(subdivisions))
   stopifnot(length(subdivisions) == 1)
 
-  errors <- sapply(bandwidths, function(h) cross_validation_error(kernel, samples, h, subdivisions = subdivisions))
+  errors <- sapply(bandwidths,
+                   cross_validation_error,
+                   kernel=kernel,
+                   samples=samples,
+                   subdivisions=subdivisions)
+
   bandwidths[which.min(errors)]
 }
 
