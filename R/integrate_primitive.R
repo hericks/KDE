@@ -9,8 +9,10 @@
 #'   be integrable in the mathematical sense.
 #' @param lower finite numerical scalar; the lower bound for the integration.
 #' @param upper finite numerical scalar; the upper bound for the integration.
-#' @param subdivisions positive numerical scalar; the number of evaluation points used in the procedure.
-#' @param check a boolean value to activate the collection of an additional measure of convergence.
+#' @param subdivisions positive numerical scalar; the number of evaluation
+#'   points used in the procedure.
+#' @param check logical; if \code{TRUE} activate the collection of an additional
+#'   measure of convergence.
 #'
 #' @details The \code{KDE} package has to frequently handle functions, which are
 #'   integrable in the mathematical sense but are hard to integrate consistently
@@ -31,14 +33,16 @@
 #'   non-finite values will be ignored by the primitive approximation.
 #'
 #'   The \code{check} parameter can be set to enable the collection of an
-#'   additional measure of convergence \code{relError}. The relative error is
+#'   additional measure of convergence \code{rel_error}. The relative error is
 #'   calculated by computing the integral for increasing numbers of subdivisions
 #'   and comparing the successive results.
 #'
 #' @return \code{integrate_primitive} returns a named list containing the entries
-#'   \code{value} and \code{relError} for the integration value and relative
-#'   Error respectively. If the \code{check} parameter is not set
-#'   \code{relError} will always be equal to \code{NULL}.
+#'   \code{value} and \code{rel_error} for the integration value and relative
+#'   error respectively. If the \code{check} parameter is not set
+#'   \code{rel_error} will always be equal to \code{NULL}.
+#'
+#' @seealso \code{\link{IntegrableFunction}} as application example for \code{integrate_primitive}.
 #'
 #' @export
 integrate_primitive <- function(integrand,
@@ -84,5 +88,5 @@ integrate_primitive <- function(integrand,
     rel_error <- ifelse(isTRUE(all.equal(abs_error, 0)), 0, abs_error/abs(integral))
   }
 
-  return(list(value=integral, relError=rel_error))
+  return(list(value=integral, rel_error=rel_error))
 }
