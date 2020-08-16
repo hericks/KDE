@@ -11,21 +11,19 @@ IntegrableFunction(fun, support = NULL, subdivisions = 1000L)
 a numeric vector of the same length. See 'Details' for further
 requirements.}
 
-\item{support}{a numerical vector of length 2 containing the lower- and
-upperbound in the first and second entry respectively.
-\code{IntegrableFunction} will try to find bounds on the support itself if
-\code{NULL} is passed.}
+\item{support}{numerical vector of length 2; the lower- and upperbound in the
+first and second entry respectively. \code{IntegrableFunction} will try to
+find bounds on the support itself if \code{NULL} is passed.}
 
-\item{subdivisions}{a positive numeric vector of length 1, used for the
-subdivisions parameter for the function
-\code{\link[stats::integrate]{integrate}}.}
+\item{subdivisions}{positive numeric scalar; the subdivisions parameter for
+the function \code{\link{integrate_primitive}}.}
 }
 \description{
-Many functions of the KDE package work with densities and
-kernels, which are integrable. See 'Details' for exact requirements. The S3
-class \code{IntegrableFunction} tries to ensure some of the properties of
-integrable functions and serves as superclass for the more specific S3
-classes \code{Density} and \code{Kernel}.
+Many functions of the \code{KDE} package work with densities and
+kernels, which are integrable in the mathematical sense. See 'Details' for
+exact requirements. The S3 class \code{IntegrableFunction} tries to ensure
+some of the properties of integrable functions and serves as superclass for
+the more specific S3 classes \code{Density} and \code{Kernel}.
 }
 \details{
 Integrable functions as \code{R} functions are required to
@@ -33,8 +31,8 @@ Integrable functions as \code{R} functions are required to
 \item be vectorised in its argument, taking a single numeric argument,
 returning a numerical vector of the same length only,
 \item return zero for inputs outside their support,
-\item can be integrated over their support using \code{integrate} and the
-given number ofsubdivisions without throwing an error.
+\item can be integrated over their support using \code{integrate_primitive}
+and the given number of subdivisions (the relative error converges).
 }
 
 The functions in this package don't just take \code{R} functions satisfying
@@ -47,19 +45,17 @@ containing three named entries \code{fun}, \code{support} and \code{subdivisions
 \itemize{
 \item \strong{\code{fun}} is a \code{R} function (the represented function) taking a
 single numeric argument and returning a numeric vector of the same length.
-This function should return zero outside of the interval given in the
+This function should return near zero outside of the interval given in the
 \code{support} entry.
 \item \strong{\code{support}} is a numeric vector of length 2 containing a lower-
 and upperbound for the support of the function stored in \code{fun} in its
 first and second entry respectively. In particular the values \code{-Inf}
 and \code{Inf} are allowed.
-\item \strong{\code{subdivisions}} is a positive numeric value used as the
-subdivisions parameter for \code{\link[stats:integrate]{integrate}}. The
-function \code{fun} should be integrable using
-\code{integrate}. Therefore the subdivisions
-parameter should to be large enough, such that
-\code{integrate} can work properly. A larger number
-of subdivisions may result in longer runtimes.
+\item \strong{\code{subdivisions}} is a positive numeric scalar used as the
+subdivisions parameter for \code{\link{integrate_primitive}}. The function
+\code{fun} should be integrable (the relative error converges). Therefore
+the subdivisions parameter should to be large enough, such that
+\code{integrate_primitive} yields a sufficiently accurate result.
 }
 
 The constructor \code{IntegrableFunction} tries to construct a valid
@@ -71,6 +67,7 @@ objects are guaranteed to pass the validator \code{validate_IntegrableFunction}.
 information.
 }
 \seealso{
-\code{\link[KDE:Kernel]{Kernel}} for more information about kernels,
-\code{\link[KDE:Density]{Density}} for more information about densities.
+\code{\link{integrate_primitive}} for the integration method used,
+\code{\link{Kernel}}/\code{\link{Density}} for more information about
+kernels/densities.
 }

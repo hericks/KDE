@@ -1,22 +1,19 @@
 #' Integrable Functions
 #'
-#' @description Many functions of the KDE package work with densities and
-#'   kernels, which are integrable. See 'Details' for exact requirements. The S3
-#'   class \code{IntegrableFunction} tries to ensure some of the properties of
-#'   integrable functions and serves as superclass for the more specific S3
-#'   classes \code{Density} and \code{Kernel}.
+#' @description Many functions of the \code{KDE} package work with densities and
+#'   kernels, which are integrable in the mathematical sense. See 'Details' for
+#'   exact requirements. The S3 class \code{IntegrableFunction} tries to ensure
+#'   some of the properties of integrable functions and serves as superclass for
+#'   the more specific S3 classes \code{Density} and \code{Kernel}.
 #'
 #' @param fun a \code{R} function taking a single numeric argument and returning
 #'   a numeric vector of the same length. See 'Details' for further
 #'   requirements.
-#' @param support a numerical vector of length 2 containing the lower- and
-#'   upperbound in the first and second entry respectively.
-#'   \code{IntegrableFunction} will try to find bounds on the support itself if
-#'   \code{NULL} is passed.
-#' @param subdivisions a positive numeric vector of length 1, used for the
-#'   subdivisions parameter for the function
-#'   \code{\link[stats::integrate]{integrate}}.
-#'
+#' @param support numerical vector of length 2; the lower- and upperbound in the
+#'   first and second entry respectively. \code{IntegrableFunction} will try to
+#'   find bounds on the support itself if \code{NULL} is passed.
+#' @param subdivisions positive numeric scalar; the subdivisions parameter for
+#'   the function \code{\link{integrate_primitive}}.
 #'
 #' @details Integrable functions as \code{R} functions are required to
 #'
@@ -25,8 +22,8 @@
 #'
 #'   2. return zero for inputs outside their support,
 #'
-#'   3. can be integrated over their support using \code{integrate} and the
-#'   given number ofsubdivisions without throwing an error.
+#'   3. can be integrated over their support using \code{integrate_primitive}
+#'   and the given number of subdivisions (the relative error converges).
 #'
 #'   The functions in this package don't just take \code{R} functions satisfying
 #'   these conditions, but objects of S3 class \code{IntegrableFunction} (or one
@@ -38,7 +35,7 @@
 #'
 #'   * \strong{`fun`} is a \code{R} function (the represented function) taking a
 #'   single numeric argument and returning a numeric vector of the same length.
-#'   This function should return zero outside of the interval given in the
+#'   This function should return near zero outside of the interval given in the
 #'   \code{support} entry.
 #'
 #'   * \strong{`support`} is a numeric vector of length 2 containing a lower-
@@ -46,13 +43,11 @@
 #'   first and second entry respectively. In particular the values \code{-Inf}
 #'   and \code{Inf} are allowed.
 #'
-#'   * \strong{`subdivisions`} is a positive numeric value used as the
-#'   subdivisions parameter for \code{\link[stats:integrate]{integrate}}. The
-#'   function \code{fun} should be integrable using
-#'   \code{integrate}. Therefore the subdivisions
-#'   parameter should to be large enough, such that
-#'   \code{integrate} can work properly. A larger number
-#'   of subdivisions may result in longer runtimes.
+#'   * \strong{`subdivisions`} is a positive numeric scalar used as the
+#'   subdivisions parameter for \code{\link{integrate_primitive}}. The function
+#'   \code{fun} should be integrable (the relative error converges). Therefore
+#'   the subdivisions parameter should to be large enough, such that
+#'   \code{integrate_primitive} yields a sufficiently accurate result.
 #'
 #'   The constructor \code{IntegrableFunction} tries to construct a valid
 #'   \code{IntegrableFunction} object based on the passed arguments. Returned
@@ -62,8 +57,9 @@
 #'   'Details' paragraph. See \code{\link{validate_IntegrableFunction}} for further
 #'   information.
 #'
-#' @seealso \code{\link[KDE:Kernel]{Kernel}} for more information about kernels,
-#'   \code{\link[KDE:Density]{Density}} for more information about densities.
+#' @seealso \code{\link{integrate_primitive}} for the integration method used,
+#'   \code{\link{Kernel}}/\code{\link{Density}} for more information about
+#'   kernels/densities.
 #'
 #' @include integrate_primitive.R
 #'
