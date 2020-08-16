@@ -1,34 +1,27 @@
-#' Construct a kernel density estimator
+#' Construct a Kernel Density Estimator
 #'
 #' @description The \code{kernel_density_estimator} function builds a kernel
 #'   density estimator using the provided kernel, bandwidth and samples.
 #'
 #' @param kernel a kernel as S3 object of the class \link{Kernel}.
-#' @param samples a numerical vector of observations.
-#' @param bandwidth a non-negative numeric value to use as the bandwidth for the
+#' @param samples numeric vector; the observations.
+#' @param bandwidth non-negative numeric scalar; the bandwidth for the
 #'   estimator.
-#' @param subdivisions a integer vector of length 1 used for the subdivisions
-#'   parameter of the builtin R-function \code{\link{integrate}}.
+#' @param subdivisions positive numeric scalar; subdivisions parameter
+#'   internally passed to \code{\link{integrate_primitive}}.
 #'
 #' @details The validation of the returned estimator as
-#'   \code{\link{IntegrableFunction}} relies on the builtin function
-#'   \code{\link{integrate}}, which requires a \code{subdivisions} argument.
-#'   Integration using a larger number of subdivisions will increase the
-#'   runtime. In contrast too few subdivisions may result in a runtime error.
+#'   \code{\link{IntegrableFunction}} relies on the function
+#'   \code{integrate_primitive}, thus the \code{subdivisions} parameter.
 #'
-#'   For more information about kernel density estimaton, see "Nonparametric
-#'   Estimation" by Fabienne Comte.
-#'
-#' @return The estimator is returned as S3 object of class
-#'   \code{\link{IntegrableFunction}}.
+#' @return The estimator as S3 object of class \code{\link{IntegrableFunction}}.
 #'
 #' @source Nonparametric Estimation, Comte \[2017\], ISBN: 978-2-36693-030-6
 #'
 #' @seealso \code{\link{Kernel}} for more information about kernels,
-#'   \code{\link[KDE:pco_method]{PCO}},
-#'   \code{\link[KDE:cross_validation]{Cross-Validation}} and
-#'   \code{\link[KDE:goldenshluger_lepski]{Goldenshluger-Lepski}} for
-#'   automatic bandwidth-selection algorithms.
+#'   \code{\link{PCO}}, \code{\link{Cross-Validation}} and
+#'   \code{\link{Goldenshluger-Lepski}} for automatic bandwidth-selection
+#'   algorithms.
 #'
 #' @export
 kernel_density_estimator <- function(kernel, samples, bandwidth=1, subdivisions=1000L) {

@@ -54,7 +54,7 @@ for (i in seq_along(estimators)) {
   I <- integrate_primitive(integrand = estimator$fun,
                            lower = estimator$support[1],
                            upper = estimator$support[2],
-                           fixed = fixed)
+                           subdivisions = fixed)$value
 
   primitive_abs_errors[i] <- abs(I - 1)
 }
@@ -80,9 +80,7 @@ primitive_integration <- function() {
     integrate_primitive(integrand = estimator$fun,
                         lower = estimator$support[1],
                         upper = estimator$support[2],
-                        stepsize = stepsize,
-                        max_length = max_length,
-                        fixed = fixed)
+                        subdivisions = fixed)$value
   }
 }
 

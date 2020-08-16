@@ -2,70 +2,59 @@
 % Please edit documentation in R/density.R
 \name{Density}
 \alias{Density}
-\title{Density}
+\title{Densities}
 \usage{
 Density(fun, support = NULL, subdivisions = 1000L)
 }
 \arguments{
-\item{fun}{an \code{R} function taking a single numeric argument and
-returning a numeric vector of the same length: see 'Details'.}
+\item{fun}{a \code{R} function taking a single numeric argument and returning
+a numeric vector of the same length. See 'Details' for further
+requirements.}
 
-\item{support}{a numerical vector of length 2 containing the lower- and
-upperbound in the first and second entry respectively.
-\code{Density} will try to find bounds on the support itself if
-\code{NULL} is passed.}
+\item{support}{numerical vector of length 2; the lower- and upper bound of
+the compact support in the first and second entry respectively. In
+particular non-finite values are prohibited. \code{IntegrableFunction} will
+try to find bounds on the support itself if \code{NULL} is passed.}
 
-\item{subdivisions}{a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.}
+\item{subdivisions}{positive numeric scalar; the subdivisions parameter for
+the function \code{\link{integrate_primitive}}.}
 }
 \description{
-The S3 Class \code{Density} tries to ensure some of the properties of densities
-and is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}
+The S3 class \code{Density} tries to ensure some of the
+properties of densities and is a subclass \code{\link{IntegrableFunction}}
 (see: 'Details' for exact requirements).
 }
 \details{
-{
-A density function is a real valued, non-negative, integrable function, such that its integral over the real numbers equals one.
-Density functions as \code{R} functions are required to:
+A density function is a real valued, non-negative, integrable
+function, such that its integral over the real numbers equals one. Density
+functions as \code{R} functions are required to
 \enumerate{
 \item be vectorised in its argument, taking a single numeric argument,
-returning a numerical vector of the same length only
-\item return zero for inputs outside their support
-\item return non-negative values for inputs inside their support
-\item be integrated over their support using \code{integrate} without
-throwing an error
-\item computate the integral properly over its support, using \code{integrate}. The result should be equal to one.
+returning a numerical vector of the same length only,
+\item return zero for inputs outside their compact support,
+\item return non-negative values for inputs inside their support,
+\item can be integrated over their support using \code{integrate_primitive}
+and the given number of subdivisions (the relative error converges),
+\item yield an integral of nearly 1 (absolute error < 1\%).
 }
 
-The functions in this package don't just take \code{R} functions satisfying
-these conditions, but objects of S3 class \code{IntegrableFunction} (or one
-of its subclasses \code{Kernel}, \code{Density}).
+See the 'Details' section of \code{\link{IntegrableFunction}} for comments
+on the restrictiveness of compact supports.
 
-The S3 class \code{Density} exists to ensure some of the most
-basic properties of density functions. The class is build on lists
-containing two named entries \code{fun} and \code{support}.
-\itemize{
-\item \strong{\code{fun}} is an \code{R} function (the represented function) taking
-a single numeric argument and returning a numeric vector of the same
-length. This function should return zero outside, and non-negative values inside of the interval given in
-the \code{support} entry. Using \code{integrate} over its support should evaluate to one.
-\item \strong{\code{support}} is a numeric vector of length 2 containing a lower-
-and upperbound for the support of the function stored in \code{fun} in its
-first and second entry respectively. In particular the values \code{-Inf}
-and \code{Inf} are allowed.
-\item \strong{\code{subdivisions}} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
-The function \code{fun} is needed to be integrated using \code{\link[stats:integrate]{integrate}}.
-Because of that, the subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
-The default value is set to 1000L. Be aware that too large numbers can cause long runtimes!
-}
+The S3 class \code{Density} exists to ensure some of the most basic
+properties of density functions. The class is build on
+\code{\link[IntegrableFunction]{IntegrableFunctions}} and inherits its
+structure.
 
-The constructor \code{Density} tries to construct a valid
-\code{Density} object based on the passed arguments. Returned
-objects are guaranteed to pass the validator \link{validate_Density}
-(\bold{Attention:} This does not guarantee the conditions in the first
-'Details' paragraph: see \link{validate_Density}.).}
+The constructor \code{Density} tries to construct a valid \code{Density}
+object based on the passed arguments. Returned objects are guaranteed to
+pass the validator \code{\link{validate_Density}}.
+
+\bold{Attention:} This does not guarantee the conditions in the first
+'Details' paragraph: see \code{validate_Density}.
 }
 \examples{
-dens_norm <- Density(dnorm, c(-Inf, Inf))
+dens_norm <- Density(dnorm, c(-15, 15))
 dens_unif <- Density(dunif)
 x <- seq(from = -4, to = 4, length.out = 1000)
 plot(x, dens_norm$fun(x),
@@ -76,8 +65,9 @@ lines(x,dens_unif$fun(x), col="red")
 legend("topright",
        legend=c("dens_norm", "dens_unif"),
        col=c("black","red"), lty=1, cex=0.8)
+
 }
 \seealso{
-\code{\link[KDE:validate_Density]{validate_Density}}
-\code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
+\code{\link{validate_Density}} for the corresponding validator,
+\code{\link{IntegrableFunction}} for more information about the superclass.
 }

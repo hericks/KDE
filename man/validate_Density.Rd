@@ -2,45 +2,42 @@
 % Please edit documentation in R/density.R
 \name{validate_Density}
 \alias{validate_Density}
-\title{Validator for S3 class \code{Density}}
+\title{Validator for the S3 class \code{Density}}
 \usage{
 validate_Density(x)
 }
 \arguments{
-\item{x}{an \code{R} object to validate as object of S3 class
-\code{[Density]}.}
+\item{x}{an \code{R} object to validate as object of S3 class \code{Density}.}
 }
 \description{
 This function serves as a validator for the S3 class
-\code{Density}. See 'Details' for further information and
-potential flaws.
+\code{\link{Density}}. See 'Details' for further information and potential
+flaws.
 }
 \details{
-The validator \code{validate_Density} can be used to
-verify objects as formally correct S3 objects of class
-\link{Density}. In particular the formal structure is ensured and it makes use of the \link{validate_IntegrableFunction}.
+The validator \code{validate_Density} can be used to verify objects
+as formally correct S3 objects of class \code{\link{Density}}. In
+particular the formal structure is ensured and
+\code{\link{validate_IntegrableFunction}} is called internally.
 Additionally this function \emph{tries to} (see 'Special Attention')
-validate the additional conditions of valid integrable functions (as
-specified in the first 'Details'-paragraph of \link{Density}).
+validate the additional conditions of valid density functions (as specified
+in the first 'Details'-paragraph of \code{Density}).
 }
 \section{Special Attention}{
 
 
-Like all numerical routines, \code{validate_Density} can
-evaluate the represented function on a finite set of points only. If the
-represented function returns valid results over nearly all its range, it is
-possible that this function misses unexpected/wrong return values. Thus,
-using \link{Density} or \link{validate_Density} to construct
-and validate objects representing integrable functions is \emph{not}
-sufficient to ensure the properties [1-5] listed in the first
-'Details'-paragraph of \link{Density}, but serves more as a
-sanity-check.
+Like all numerical routines, \code{validate_Density} can evaluate the
+represented function on a finite set of points only. If the represented
+function returns valid results over nearly all its range, it is possible
+that this function misses unexpected/wrong return values. Thus, using
+\link{Density} or \link{validate_Density} to construct and validate objects
+representing integrable functions is \emph{not} sufficient to ensure the
+properties [1-5] listed in the first 'Details'-paragraph of \link{Density},
+but serves more as a sanity-check.
 }
 
 \seealso{
-\itemize{
-\item \link{Density} for more information about Density functions and the S3 class \code{Density}.
-\item \link{IntegrableFunction} for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
-\item \link{validate_IntegrableFunction} for more information about the IntegrableFunction validator.
-}
+\code{\link{Density}} for more information about density functions and
+the S3 class \code{Density}, \code{\link{IntegrableFunction}} for more
+information about the superclass \code{IntegrableFunction}.
 }

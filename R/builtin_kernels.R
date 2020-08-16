@@ -7,31 +7,23 @@ rectangular_function <- function(u){
   return(1/2*(abs(u) <= 1))
 }
 
-#' Rectangular Function
+#' Rectangular Kernel
 #'
-#' @description
-#' The rectangular function is used as the function for an S3 object \code{rectangular} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{rectangular$fun(u)}
+#' @description The rectangular kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * rectangular function \code{fun}
+#' * \bold{\code{fun}}: the rectangular function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
-#'
-#' @return returning evaluation of the kernel function in u.
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -42,31 +34,23 @@ triangular_function <- function(u){
   return((1 - abs(u)) * (abs(u) <= 1))
 }
 
-#' Triangular Function
+#' Triangular Kernel
 #'
-#' @description
-#' The triangular function is used as the function for an S3 object \code{triangular} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{triangular$fun(u)}
+#' @description The triangular kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * triangular function \code{fun}
+#' * \bold{\code{fun}}: the triangular function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
-#'
-#' @return returning evaluation of the kernel function in u.
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
+#' @seealso \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -78,31 +62,23 @@ epanechnikov_function <- function(u){
   return(3/4 * (1 - u^2) * (abs(u) <= 1))
 }
 
-#' Epanechnikov Function
+#' Epanechnikov Kernel
 #'
-#' @description
-#' The epanechnikov function is used as the function for an S3 object \code{epanechnikov} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{epanechnikov$fun(u)}
+#' @description The epanechnikov kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * epanechnikov function \code{fun}
+#' * \bold{\code{fun}}: the epanechnikov function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
-#'
-#' @return returning evaluation of the kernel function in u.
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -113,31 +89,24 @@ biweight_function <- function(u){
   return(15/16 * (1 - u^2)^2 * (abs(u) <= 1))
 }
 
-#' Biweight Function
+#' Biweight Kernel
 #'
-#' @description
-#' The biweight function is used as the function for an S3 object \code{biweight} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{biweight$fun(u)}
+#' @description The biweight kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * biweight function \code{fun}
+#' * \bold{\code{fun}}: the biweight function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
-#'
-#' @return returning evaluation of the kernel function in u.
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
 #' @seealso
-#' \code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
+#' \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -148,28 +117,23 @@ triweight_function <- function(u){
   return((35/32 * (1 - u^2)^3) * (abs(u) <= 1))
 }
 
-#' Triweight Function
+#' Triweight Kernel
 #'
-#' @description
-#' The triweight function is used as the function for an S3 object \code{triweight} of class \link[KDE:Kernel]{Kernel}.
-#' @usage
-#' \code{triweight$fun(u)}
+#' @description The triweight kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * triweight function \code{fun}
+#' * \bold{\code{fun}}: the triweight function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -180,28 +144,23 @@ tricube_function <- function(u){
   return(70/81 * (1 - abs(u^3))^3 * (abs(u) <= 1))
 }
 
-#' Tricube Function
+#' Tricube Kernel
 #'
-#' @description
-#' The tricube function is used as the function for an S3 object \code{tricube} of class \link[KDE:Kernel]{Kernel}.
-#' @usage
-#' \code{tricube$fun(u)}
+#' @description The tricube kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * tricube function \code{fun}
+#' * \bold{\code{fun}}: the tricube function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -212,61 +171,50 @@ gaussian_function <- function(u){
   return(1/sqrt(2 * pi) * exp(-1/2 * u^2))
 }
 
-#' Gaussian Function
+#' Gaussian Kernel
 #'
-#'@description
-#' The gaussian function is used as the function for an S3 object \code{gaussian} of class \link[KDE:Kernel]{Kernel}.
-#' @usage
-#' \code{gaussian$fun(u)}
+#' @description The gaussian kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * gaussian function \code{fun}
+#' * \bold{\code{fun}}: the gaussian function
 #'
-#' * support = \code{c(-15,15)}.
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' * \bold{\code{support}}: \code{c(-10,10)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
-gaussian <- Kernel(gaussian_function, c(-15,15))
+gaussian <- Kernel(gaussian_function, c(-10,10))
 
 cosine_function <- function(u){
   check_kernel_conditions(u)
   return(pi/4 * cos(pi/2 * u) * (abs(u) <= 1))
 }
 
-#' Cosine Function
+#' Cosine Kernel
 #'
-#' @description
-#' The cosine function is used as the function for an S3 object \code{cosine} of class \link[KDE:Kernel]{Kernel}.
-#' @usage
-#' \code{cosine$fun(u)}
+#' @description The cosine kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * cosine function \code{fun}
+#' * \bold{\code{fun}}: the cosine function
 #'
-#' * support = \code{c(-1,1)}
+#' * \bold{\code{support}}: \code{c(-1,1)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -277,64 +225,50 @@ logistic_function <- function(u){
   return(1/(exp(u) + 2 + exp(-u)) )
 }
 
-#' Logistic Function
+#' Logistic Kernel
 #'
-#' @description
-#' The logistic function is used as the function for an S3 object \code{logistic} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{logistic$fun(u)}
+#' @description The logistic kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * logistic function \code{fun}
+#' * \bold{\code{fun}}: the logistic function
 #'
-#' * support = \code{c(-37,37)}.
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' * \bold{\code{support}}: \code{c(-20,20)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
-logistic <- Kernel(logistic_function)
+logistic <- Kernel(logistic_function, c(-20, 20))
 
 sigmoid_function <- function(u){
   check_kernel_conditions(u)
   return(2/pi * (1/(exp(u) + exp(-u))))
 }
 
-#' Sigmoid Function
+#' Sigmoid Kernel
 #'
-#' @description
-#' The sigmoid function is used as the function for an S3 object \code{sigmoid} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{sigmoid$fun(u)}
+#' @description The sigmoid kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * sigmoid function \code{fun}
+#' * \bold{\code{fun}}: the sigmoid function
 #'
-#' * support = \code{c(-20,20)}
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' * \bold{\code{support}}: \code{c(-20,20)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
@@ -345,36 +279,24 @@ silverman_function <- function(u){
   return(0.5 * exp(-abs(u)/sqrt(2)) * sin(abs(u)/sqrt(2) + pi/4))
 }
 
-#' Silverman Function
+#' Silverman Kernel
 #'
-#' @description
-#' The silverman function is used as the function for an S3 object \code{silverman} of class \link[KDE:Kernel]{Kernel}.
-#'
-#' @usage
-#' \code{silverman$fun(u)}
+#' @description The silverman kernel is S3 object of class \code{Kernel}
+#'   provided by the \code{KDE} package.
 #'
 #' @format
-#' An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+#' An object of S3 class \code{\link{Kernel}} with named entries
 #'
-#' * silverman function \code{fun}
+#' * \bold{\code{fun}}: the silverman function
 #'
-#' * support = \code{c(-40,40)}
-#' A function is sufficiently small out of a compact space, such that the numeric integration outside of this space will be zero.
+#' * \bold{\code{support}}: \code{c(-25,25)}
 #'
-#' * subdivisions = \code{100L}.
-#'
-#' @param u vector of numerical values
+#' * \bold{\code{subdivisions}}: \code{1000L}.
 #'
 #' @family kernels
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{kernels}} for more information about kernels.
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @include kernel.R
 #' @export
-silverman <- Kernel(silverman_function, c(-40,40))
-
-
-
-
-
+silverman <- Kernel(silverman_function, c(-25,25))

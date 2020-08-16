@@ -3,29 +3,24 @@
 \docType{data}
 \name{rectangular}
 \alias{rectangular}
-\title{Rectangular Function}
+\title{Rectangular Kernel}
 \format{
-An object of class \link[KDE:Kernel]{Kernel} (inherits from IntegrableFunction) of length 2:
+An object of S3 class \code{\link{Kernel}} with named entries
 \itemize{
-\item rectangular function \code{fun}
-\item support = \code{c(-1,1)}
-\item subdivisions = \code{100L}.
+\item \bold{\code{fun}}: the rectangular function
+\item \bold{\code{support}}: \code{c(-1,1)}
+\item \bold{\code{subdivisions}}: \code{1000L}.
 }
 }
 \usage{
-\code{rectangular$fun(u)}
-}
-\arguments{
-\item{u}{vector of numerical values}
-}
-\value{
-returning evaluation of the kernel function in u.
+rectangular
 }
 \description{
-The rectangular function is used as the function for an S3 object \code{rectangular} of class \link[KDE:Kernel]{Kernel}.
+The rectangular kernel is S3 object of class \code{Kernel}
+provided by the \code{KDE} package.
 }
 \seealso{
-\code{\link[KDE:Kernel]{Kernel}} for more information about kernels.
+\code{\link{Kernel}} for more information about kernels.
 
 Other kernels: 
 \code{\link{biweight}},

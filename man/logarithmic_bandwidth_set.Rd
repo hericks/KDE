@@ -2,17 +2,18 @@
 % Please edit documentation in R/logarithmic_bandwidth_set.R
 \name{logarithmic_bandwidth_set}
 \alias{logarithmic_bandwidth_set}
-\title{Construct a logarithmic bandwidth set}
+\title{Construct a Logarithmic Bandwidth Set}
 \usage{
 logarithmic_bandwidth_set(from, to, length.out)
 }
 \arguments{
-\item{from}{the starting value of the sequence (of length 1).}
+\item{from}{strictly positive numeric scalar; the starting value of the
+sequence.}
 
-\item{to}{the end value of the sequence (of length 1).}
+\item{to}{strictly positive numeric scalar; the end value of the sequence.}
 
-\item{length.out}{desired length of the sequence. A non-negative number,
-which will be rounded up if fractional (of length 1).}
+\item{length.out}{non-negative numeric scalar; desired length of the sequence
+(will be rounded up if fractional).}
 }
 \value{
 A logarithmically spaced sequence of \code{length.out} elements
@@ -24,9 +25,9 @@ scaled sequence of \code{length.out} elements between \code{from} and
 \code{to}.
 }
 \details{
-Numerical inputs should all be \link{finite} (that is, not infinite,
-\link{NaN} or NA). The \code{from} and \code{to} arguments must be strictly positive.
+Numerical inputs should all be \link[is.finite]{finite} (that is,
+not infinite, \code{NaN} or \code{NA}).
 }
 \seealso{
-The method \link{seq} (for linearly scaled sequences).
+\code{\link{seq}} for linearly scaled sequences.
 }

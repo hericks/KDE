@@ -54,7 +54,7 @@ f_dens <- function(x) {
 }
 support_density <- c(0,1)
 # constructing the Density object
-dens <- Density(f_dens, support_density, subdivisions=100L)
+dens <- Density(f_dens, support_density, subdivisions=1000L)
 print(dens)
 ```
 Now we can see that the density is an object of the class `Density`. In addition to the function, the object is equipped with a support and subdivisions parameter. Both are needed for the `stats::integrate` function to work properly.
@@ -69,11 +69,11 @@ f_ker <- function(x){
 }
 support_sigmoid <- c(-20,20)
 # constructing a Kernel object
-sigmoid_kernel <- Kernel(f_ker, support_sigmoid, subdivisions=10L)
+sigmoid_kernel <- Kernel(f_ker, support_sigmoid, subdivisions=1000L)
 print(sigmoid_kernel)
 ```
 Note that in the case of the support being `c(-Inf,Inf)` a kernel function is sufficiently small outside of a compact interval, such that the numeric integration outside of it will be zero.
-We need to chose a finite interval as support for some bandwidth estimators to work properly.
+We need to choose a finite interval as support for some bandwidth estimators to work properly.
 
 To see the requirements for constructing a Kernel object use `?Kernel`.
 
@@ -83,7 +83,6 @@ This package also provides a selection of various built-in kernels:
 # using a built-in Kernel
 gaussian_kernel <- gaussian
 print(gaussian_kernel)
-
 ```
 Run `?Kernel` to see the full list of the built-in kernels.
 

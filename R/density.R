@@ -1,65 +1,52 @@
-#' Density
+#' Densities
 #'
-#' @description
-#' The S3 Class \code{Density} tries to ensure some of the properties of densities
-#' and is a subclass of the \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}}
+#' @description The S3 class \code{Density} tries to ensure some of the
+#' properties of densities and is a subclass \code{\link{IntegrableFunction}}
 #' (see: 'Details' for exact requirements).
 #'
-#' @details{
-#' A density function is a real valued, non-negative, integrable function, such that its integral over the real numbers equals one.
-#' Density functions as \code{R} functions are required to:
+#' @param fun a \code{R} function taking a single numeric argument and returning
+#'   a numeric vector of the same length. See 'Details' for further
+#'   requirements.
+#' @param support numerical vector of length 2; the lower- and upper bound of
+#'   the compact support in the first and second entry respectively. In
+#'   particular non-finite values are prohibited. \code{IntegrableFunction} will
+#'   try to find bounds on the support itself if \code{NULL} is passed.
+#' @param subdivisions positive numeric scalar; the subdivisions parameter for
+#'   the function \code{\link{integrate_primitive}}.
+#'
+#' @details A density function is a real valued, non-negative, integrable
+#'   function, such that its integral over the real numbers equals one. Density
+#'   functions as \code{R} functions are required to
 #'
 #'   1. be vectorised in its argument, taking a single numeric argument,
-#'   returning a numerical vector of the same length only
+#'   returning a numerical vector of the same length only,
 #'
-#'   2. return zero for inputs outside their support
+#'   2. return zero for inputs outside their compact support,
 #'
-#'   3. return non-negative values for inputs inside their support
+#'   3. return non-negative values for inputs inside their support,
 #'
-#'   4. be integrated over their support using \code{integrate} without
-#'   throwing an error
+#'   4. can be integrated over their support using \code{integrate_primitive}
+#'   and the given number of subdivisions (the relative error converges),
 #'
-#'   5. computate the integral properly over its support, using \code{integrate}. The result should be equal to one.
+#'   5. yield an integral of nearly 1 (absolute error < 1%).
 #'
-#'   The functions in this package don't just take \code{R} functions satisfying
-#'   these conditions, but objects of S3 class \code{IntegrableFunction} (or one
-#'   of its subclasses \code{Kernel}, \code{Density}).
+#'   See the 'Details' section of \code{\link{IntegrableFunction}} for comments
+#'   on the restrictiveness of compact supports.
 #'
-#'   The S3 class \code{Density} exists to ensure some of the most
-#'   basic properties of density functions. The class is build on lists
-#'   containing two named entries \code{fun} and \code{support}.
+#'   The S3 class \code{Density} exists to ensure some of the most basic
+#'   properties of density functions. The class is build on
+#'   \code{\link[IntegrableFunction]{IntegrableFunctions}} and inherits its
+#'   structure.
 #'
-#'   * \strong{`fun`} is an \code{R} function (the represented function) taking
-#'   a single numeric argument and returning a numeric vector of the same
-#'   length. This function should return zero outside, and non-negative values inside of the interval given in
-#'   the \code{support} entry. Using \code{integrate} over its support should evaluate to one.
+#'   The constructor \code{Density} tries to construct a valid \code{Density}
+#'   object based on the passed arguments. Returned objects are guaranteed to
+#'   pass the validator \code{\link{validate_Density}}.
 #'
-#'   * \strong{`support`} is a numeric vector of length 2 containing a lower-
-#'   and upperbound for the support of the function stored in \code{fun} in its
-#'   first and second entry respectively. In particular the values \code{-Inf}
-#'   and \code{Inf} are allowed.
-#'
-#'   * \strong{`subdivisions`} is a integer value used for the subdivisions parameter for \code{\link[stats:integrate]{integrate}}.
-#'   The function \code{fun} is needed to be integrated using \code{\link[stats:integrate]{integrate}}.
-#'   Because of that, the subdivisions parameter is required to be large enough, such that \code{\link[stats:integrate]{integrate}} can work properly.
-#'   The default value is set to 1000L. Be aware that too large numbers can cause long runtimes!
-#'
-#'   The constructor \code{Density} tries to construct a valid
-#'   \code{Density} object based on the passed arguments. Returned
-#'   objects are guaranteed to pass the validator [validate_Density]
-#'   (\bold{Attention:} This does not guarantee the conditions in the first
-#'   'Details' paragraph: see [validate_Density].).}
-#'
-#' @param fun an \code{R} function taking a single numeric argument and
-#' returning a numeric vector of the same length: see 'Details'.
-#' @param support a numerical vector of length 2 containing the lower- and
-#'   upperbound in the first and second entry respectively.
-#'   \code{Density} will try to find bounds on the support itself if
-#'   \code{NULL} is passed.
-#' @param subdivisions a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats::integrate]{integrate}}.
+#'   \bold{Attention:} This does not guarantee the conditions in the first
+#'   'Details' paragraph: see \code{validate_Density}.
 #'
 #' @examples
-#' dens_norm <- Density(dnorm, c(-Inf, Inf))
+#' dens_norm <- Density(dnorm, c(-15, 15))
 #' dens_unif <- Density(dunif)
 #' x <- seq(from = -4, to = 4, length.out = 1000)
 #' plot(x, dens_norm$fun(x),
@@ -70,9 +57,9 @@
 #' legend("topright",
 #'        legend=c("dens_norm", "dens_unif"),
 #'        col=c("black","red"), lty=1, cex=0.8)
-#' @seealso
-#' \code{\link[KDE:validate_Density]{validate_Density}}
-#' \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
+#'
+#' @seealso \code{\link{validate_Density}} for the corresponding validator,
+#'   \code{\link{IntegrableFunction}} for more information about the superclass.
 #'
 #' @include integrable_function.R
 #'
@@ -83,42 +70,40 @@ Density <- function(fun, support = NULL, subdivisions = 1000L){
   den
 }
 
-#'Validator for S3 class \code{Density}
+#' Validator for the S3 class \code{Density}
 #'
 #' @description This function serves as a validator for the S3 class
-#'   \code{Density}. See 'Details' for further information and
-#'   potential flaws.
+#'   \code{\link{Density}}. See 'Details' for further information and potential
+#'   flaws.
 #'
-#' @param x an \code{R} object to validate as object of S3 class
-#'   \code{[Density]}.
+#' @param x an \code{R} object to validate as object of S3 class \code{Density}.
 #'
-#' @details The validator \code{validate_Density} can be used to
-#'   verify objects as formally correct S3 objects of class
-#'   [Density]. In particular the formal structure is ensured and it makes use of the [validate_IntegrableFunction].
+#' @details The validator \code{validate_Density} can be used to verify objects
+#'   as formally correct S3 objects of class \code{\link{Density}}. In
+#'   particular the formal structure is ensured and
+#'   \code{\link{validate_IntegrableFunction}} is called internally.
 #'   Additionally this function \emph{tries to} (see 'Special Attention')
-#'   validate the additional conditions of valid integrable functions (as
-#'   specified in the first 'Details'-paragraph of [Density]).
+#'   validate the additional conditions of valid density functions (as specified
+#'   in the first 'Details'-paragraph of \code{Density}).
 #'
 #' @section Special Attention:
 #'
-#'   Like all numerical routines, \code{validate_Density} can
-#'   evaluate the represented function on a finite set of points only. If the
-#'   represented function returns valid results over nearly all its range, it is
-#'   possible that this function misses unexpected/wrong return values. Thus,
-#'   using [Density] or [validate_Density] to construct
-#'   and validate objects representing integrable functions is \emph{not}
-#'   sufficient to ensure the properties \[1-5\] listed in the first
-#'   'Details'-paragraph of [Density], but serves more as a
-#'   sanity-check.
+#'   Like all numerical routines, \code{validate_Density} can evaluate the
+#'   represented function on a finite set of points only. If the represented
+#'   function returns valid results over nearly all its range, it is possible
+#'   that this function misses unexpected/wrong return values. Thus, using
+#'   [Density] or [validate_Density] to construct and validate objects
+#'   representing integrable functions is \emph{not} sufficient to ensure the
+#'   properties \[1-5\] listed in the first 'Details'-paragraph of [Density],
+#'   but serves more as a sanity-check.
 #'
-#' @seealso
-#' * [Density] for more information about Density functions and the S3 class \code{Density}.
-#' * [IntegrableFunction] for more information about integrable functions and the S3 class \code{IntegrableFunctions}.
-#' * [validate_IntegrableFunction] for more information about the IntegrableFunction validator.
+#' @seealso \code{\link{Density}} for more information about density functions and
+#' the S3 class \code{Density}, \code{\link{IntegrableFunction}} for more
+#' information about the superclass \code{IntegrableFunction}.
 #'
 #' @include integrable_function.R
 #'
-#'@export
+#' @export
 validate_Density <- function(x){
   stopifnot("object has to be of class Density"=inherits(x, "Density"))
   validate_IntegrableFunction(x)
