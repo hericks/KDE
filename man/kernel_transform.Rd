@@ -2,25 +2,26 @@
 % Please edit documentation in R/kernel_transform.R
 \name{kernel_transform}
 \alias{kernel_transform}
-\title{Shifting kernels to a coefficient and applying a bandwidth.}
+\title{Shifting Kernels to a Coefficient and applying a Bandwidth.}
 \usage{
-kernel_transform(kernel, sample, h, subdivisions = 1000L)
+kernel_transform(kernel, sample, bandwidth, subdivisions = 1000L)
 }
 \arguments{
 \item{kernel}{a kernel object.}
 
-\item{sample}{the observation/coefficient as a numerical scalar.}
+\item{sample}{numeric scalar; the observation.}
 
-\item{h}{the bandwidth as a numerical scalar.}
+\item{bandwidth}{numeric scalar; the bandwidth.}
 
-\item{subdivisions}{a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats:integrate]{integrate}} in \code{\link[KDE:Kernel]{Kernel}}.}
+\item{subdivisions}{positive numeric scalar; subdivisions parameter
+internally passed to \code{\link{integrate_primitive}}.}
 }
 \value{
 The transformed (shifted and scaled) kernel as valid S3 object of
 class \code{Kernel}.
 }
 \description{
-The \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
+\code{kernel_transform} is shifting and applying a bandwidth to a kernel.
 }
 \examples{
 # shifting the gaussian kernel
@@ -41,7 +42,5 @@ legend("topright",
 
 }
 \seealso{
-\code{\link[KDE:Kernel]{Kernel}}
-\code{\link[KDE:validate_Kernel]{validate_Kernel}}
-\code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
+\code{\link{Kernel}} for more information about kernels.
 }

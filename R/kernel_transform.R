@@ -1,20 +1,18 @@
-#' Shifting kernels to a coefficient and applying a bandwidth.
+#' Shifting Kernels to a Coefficient and applying a Bandwidth.
 #'
 #' @description
-#' The \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
+#' \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
 #'
 #' @param kernel a kernel object.
-#' @param sample the observation/coefficient as a numerical scalar.
-#' @param h the bandwidth as a numerical scalar.
-#' @param subdivisions a integer vector of length 1, used for the subdivisions parameter for the function \code{\link[stats:integrate]{integrate}} in \code{\link[KDE:Kernel]{Kernel}}.
+#' @param sample numeric scalar; the observation.
+#' @param bandwidth numeric scalar; the bandwidth.
+#' @param subdivisions positive numeric scalar; subdivisions parameter
+#'   internally passed to \code{\link{integrate_primitive}}.
 #'
 #' @return The transformed (shifted and scaled) kernel as valid S3 object of
 #'   class \code{Kernel}.
 #'
-#' @seealso
-#' \code{\link[KDE:Kernel]{Kernel}}
-#' \code{\link[KDE:validate_Kernel]{validate_Kernel}}
-#' \code{\link[KDE:IntegrableFunction]{IntegrableFunction}}
+#' @seealso \code{\link{Kernel}} for more information about kernels.
 #'
 #' @examples
 #' # shifting the gaussian kernel
@@ -34,7 +32,7 @@
 #'        col=c("black","red", "blue"), lty=1, cex=0.8)
 #'
 #' @export
-kernel_transform <- function(kernel, sample, h, subdivisions=1000L) {
+kernel_transform <- function(kernel, sample, bandwidth, subdivisions=1000L) {
   # Kernel conditions
   tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
 
@@ -43,10 +41,10 @@ kernel_transform <- function(kernel, sample, h, subdivisions=1000L) {
   stopifnot(length(sample) == 1)
 
   # Bandwidth conditions
-  stopifnot(is.numeric(h))
-  stopifnot(length(h) == 1)
-  stopifnot(h > 0)
+  stopifnot(is.numeric(bandwidth))
+  stopifnot(length(bandwidth) == 1)
+  stopifnot(bandwidth > 0)
 
-  Kernel(function(x) kernel$fun((x-sample)/h)/h, h*kernel$support + sample, subdivisions=subdivisions)
+  Kernel(function(x) kernel$fun((x-sample)/bandwidth)/bandwidth, bandwidth*kernel$support + sample, subdivisions=subdivisions)
 }
 
