@@ -254,6 +254,7 @@ table <- data.frame(method=c("cross_validation ISE", "goldenshluger_lepski ISE",
 
 knitr::kable(table)
 ```
+## Simulation Study
 
 ## Shiny App
 This package provides a small web application, built with the shiny package.
