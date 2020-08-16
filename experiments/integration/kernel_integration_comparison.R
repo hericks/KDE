@@ -10,9 +10,7 @@ kernels <- list(rectangular,
                 silverman)
 
 # Settings
-stepsize = 0.01
-max_length = Inf
-fixed = 1000
+subdivisions = 1000L
 
 # Error Analysis
 primitive_abs_errors <- double(length(kernels))
@@ -21,9 +19,7 @@ for (i in seq_along(kernels)) {
   I <- integrate_primitive(integrand = kernel$fun,
                            lower = kernel$support[1],
                            upper = kernel$support[2],
-                           stepsize = stepsize,
-                           max_length = max_length,
-                           fixed = fixed)
+                           subdivisions = subdivisions)$value
 
   primitive_abs_errors[i] <- abs(I - 1)
 }
@@ -47,9 +43,7 @@ primitive_integration <- function() {
     integrate_primitive(integrand = kernel$fun,
                         lower = kernel$support[1],
                         upper = kernel$support[2],
-                        stepsize = stepsize,
-                        max_length = max_length,
-                        fixed = fixed)
+                        subdivisions = subdivisions)$value
   }
 }
 
