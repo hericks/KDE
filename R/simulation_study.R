@@ -1,11 +1,12 @@
-compare <- function(eval_points, funs=list(runif), ns=50, kernels=gaussian, lambda_set=1, kappa_set=1.2, reps=400, length.out=5){
+#' @include builtin_kernels.R
+#' @export
+compare <- function(eval_points, funs=list(runif), ns=50, kernels=list(gaussian), lambda_set=1, kappa_set=1.2, reps=4, length.out=5){
   # TODO: Argchecks necessary?
-  # TODO: length.out nach Tests auf 30 setzen
+  # TODO: length.out nach Tests auf 30 setzen, reps hochsetzen
   if(!is.list(kernels)) kernels <- list(kernels)
-  if(!is.list(bandwidth_estimators)) bandwidth_estimators <- list(bandwidth_estimators)
   if(!is.list(lambda_set)) lambda_set <- list(lambda_set)
   if(!is.list(kappa_set)) kappa_set <- list(kappa_set)
-
+  if(!is.list(ns)) ns <- list(ns)
 
   bandwidth_estimators <- list(cv=cross_validation, gl=goldenshluger_lepski, pco=pco_method)
 
@@ -49,7 +50,7 @@ compare <- function(eval_points, funs=list(runif), ns=50, kernels=gaussian, lamb
               res[,,cnt] <- replicate(reps, {
                 samples <- f(n)
 
-                bandwidth <- cross_validation(k,samples, bandwidths, subdivisions)
+                bandwidth <- cross_validation(k, samples, bandwidths, subdivisions)
 
                 kde <- kernel_density_estimator(k, samples, bandwidth, subdivisions)
                 kde$fun(eval_points)
