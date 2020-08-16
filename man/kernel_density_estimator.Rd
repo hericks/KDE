@@ -34,7 +34,7 @@ The validation of the returned estimator as
 }
 \seealso{
 \code{\link{Kernel}} for more information about kernels,
-\code{\link{PCO}}, \code{\link{Cross-Validation}} and
-\code{\link{Goldenshluger-Lepski}} for automatic bandwidth-selection
+\code{\link{pco_method}}, \code{\link{cross_validation}} and
+\code{\link{goldenshluger_lepski}} for automatic bandwidth-selection
 algorithms.
 }

@@ -36,14 +36,18 @@ bandwidth for kernel density estimation from a given set of bandwidths.
 }
 \details{
 Cross-validation aims to minimize the mean integrated squared error
-(MISE) of a kernel density estimator. For each bandwidth \code{h}
-given in \code{bandwidths}, \code{cross_validation} approximates the
-estimator-dependent part of the risk. The method then selects the bandwidth
-with the minimal associated risk.
+(MISE) of a kernel density estimator. The MISE is defined as the
+expectation of the squared L2-Norm of the difference between estimator and
+(unknown) true density.
+
+For each bandwidth \code{h} given in \code{bandwidths},
+\code{cross_validation} approximates the estimator-dependent part of the
+risk. The method then selects the bandwidth with the minimal associated
+risk.
 }
 \seealso{
 \code{\link{kernel_density_estimator}} for more information about
-kernel density estimators, \code{\link{PCO}} and
-\code{\link{Goldenshluger-Lepski}} for more automatic bandwidth-selection
+kernel density estimators, \code{\link{pco_method}} and
+\code{\link{goldenshluger_lepski}} for more automatic bandwidth-selection
 algorithms.
 }

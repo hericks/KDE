@@ -4,7 +4,8 @@
 \alias{goldenshluger_lepski}
 \title{Goldenshluger-Lepski Method}
 \source{
-\itemize{\href{https://spartacus-idh.com/030.html}{Nonparametric Estimation}, Comte \code{[}2017\verb{]}, ISBN: 978-2-36693-030-6}
+\href{https://spartacus-idh.com/030.html}{Nonparametric Estimation},
+Comte [2017], ISBN: 978-2-36693-030-6
 }
 \usage{
 goldenshluger_lepski(
@@ -16,36 +17,45 @@ goldenshluger_lepski(
 )
 }
 \arguments{
-\item{kernel}{kernel function as an S3 object of the class \link[KDE:Kernel]{Kernel}.}
+\item{kernel}{S3 object of class \code{\link{Kernel}}; the kernel to use for
+the estimator}
 
-\item{samples}{A numerical vector of observations.}
+\item{samples}{numeric vector; the observations.}
 
-\item{bandwidths}{The bandwidth set from which the bandwidth with the least risk will be selected. The \code{goldenshluger_lepski} function will try to set up a suitable bandwidth set using \code{\link[KDE:logarthmic_bandwidth_set]{logarithmic_bandwidth_set}} if \code{NULL} is passed.}
+\item{bandwidths}{strictly positive numeric vector; the bandwidth set from
+which the bandwidth with the least estimated risk will be selected.}
 
-\item{kappa}{A tuning parameter. It has to be a numerical value with length 1. The minimal admissible value is 1. The recommendation is to set kappa = 1.2.}
+\item{kappa}{numeric scalar greater 1; a tuning parameter.}
 
-\item{subdivisions}{A integer vector of length 1 used for the subdivisions parameter of the builtin R-function \code{\link[stats:integrate]{integrate}}. The default value is set to 100L.}
+\item{subdivisions}{positive numeric scalar; subdivisions parameter
+internally passed to \code{\link{integrate_primitive}}.}
 }
 \value{
-A numerical vector of length 1 containing the bandwidth with minimal risk.
+The estimated optimal bandwidth contained in the bandwidth set.
 }
 \description{
-The Goldenshluger-Lepski Method is used to estimate a optimal bandwidth for kernel density estimation from a given set of bandwidths.
+The Goldenshluger-Lepski method is used to estimate an optimal
+bandwidth for kernel density estimation from a given set of bandwidths.
 }
 \details{
-This method is an implementation of the Goldenshluger-Lepski method for bandwith estimation. The aim is to minimize the risk of a kernel density estimator (KDE).
-The risk function is given by the expected value of the integrated square error of the KDE with a given bandwith and the desired density that is matching the distibution of the samples (which we are trying to estimate with the KDE). \cr
-By applying this method the risk will be decomposed into a bias and a variance term, where the
-bias term needs to be estimated, because it includes a dependency of the real function that we are
-trying to estimate with the KDE. The variance term is simply a bound for the variance of the KDE (created with a
-bandwith \code{h}), which is tuned by a parameter \code{kappa}.
-The bias term will be estimated by using a double kernel approach.
-The method then selects the bandwidth with the minimal associated risk. \cr
-For further information about the Goldenshluger-Lepski method for bandwidth estimation, see "Nonparametric Estimation" by Fabienne Comte.
+The Goldenshluger-Lepski method aims to minimize an upper bound for
+the mean integrated squared error (MISE) of a kernel density estimator. The
+MISE is defined as the expectation of the squared L2-Norm of the difference
+between estimator and (unknown) true density.
+
+This methods works with the popular bias-/variance- decomposition. A
+double-kernel approach is used for an estimator of the bias term as it
+still depends on the unknown density.
+
+The estimator used for an upper bound of the variance depends on the tuning
+parameter \code{kappa}. The recommended value for \code{kappa} is 1.2.
+
+Subsequently the bandwidth with the minimal associated risk will is
+selected.
 }
 \seealso{
-\itemize{\code{\link[KDE:pco_method]{PCO Method}},
-\code{\link[KDE:cross_validation]{Cross-Validation Method}} to see other methods for estimating bandwidths.}
-\itemize{\code{\link[KDE:Kernel]{Kernel}} to see the definiotion of a kernel.}
-\itemize{\code{\link[KDE:kernel_density_estimator]{Kernel Density Estimator}} to see the functionality of the Kernel density estimation.}
+\code{\link{kernel_density_estimator}} for more information about
+kernel density estimators, \code{\link{pco_method}} and
+\code{\link{cross_validation}} for more automatic bandwidth-selection
+algorithms.
 }
