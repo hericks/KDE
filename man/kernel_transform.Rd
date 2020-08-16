@@ -7,7 +7,7 @@
 kernel_transform(kernel, sample, bandwidth, subdivisions = 1000L)
 }
 \arguments{
-\item{kernel}{a kernel object.}
+\item{kernel}{a kernel as S3 object of the class \link{Kernel}.}
 
 \item{sample}{numeric scalar; the observation.}
 
@@ -22,6 +22,11 @@ class \code{Kernel}.
 }
 \description{
 \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
+}
+\details{
+The validation of the returned estimator as
+\code{\link{IntegrableFunction}} relies on the function
+\code{\link{integrate_primitive}}, thus the \code{subdivisions} parameter.
 }
 \examples{
 # shifting the gaussian kernel

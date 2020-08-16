@@ -3,11 +3,15 @@
 #' @description
 #' \code{kernel_transform} is shifting and applying a bandwidth to a kernel.
 #'
-#' @param kernel a kernel object.
+#' @param kernel a kernel as S3 object of the class \link{Kernel}.
 #' @param sample numeric scalar; the observation.
 #' @param bandwidth numeric scalar; the bandwidth.
 #' @param subdivisions positive numeric scalar; subdivisions parameter
 #'   internally passed to \code{\link{integrate_primitive}}.
+#'
+#' @details The validation of the returned estimator as
+#'   \code{\link{IntegrableFunction}} relies on the function
+#'   \code{\link{integrate_primitive}}, thus the \code{subdivisions} parameter.
 #'
 #' @return The transformed (shifted and scaled) kernel as valid S3 object of
 #'   class \code{Kernel}.

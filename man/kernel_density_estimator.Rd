@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernel_density_estimator.R
 \name{kernel_density_estimator}
 \alias{kernel_density_estimator}
-\title{Construct a kernel density estimator}
+\title{Construct a Kernel Density Estimator}
 \source{
 Nonparametric Estimation, Comte [2017], ISBN: 978-2-36693-030-6
 }
@@ -12,13 +12,13 @@ kernel_density_estimator(kernel, samples, bandwidth = 1, subdivisions = 1000L)
 \arguments{
 \item{kernel}{a kernel as S3 object of the class \link{Kernel}.}
 
-\item{samples}{a numerical vector of observations.}
+\item{samples}{numeric vector; the observations.}
 
-\item{bandwidth}{a non-negative numeric value to use as the bandwidth for the
+\item{bandwidth}{non-negative numeric scalar; the bandwidth for the
 estimator.}
 
-\item{subdivisions}{a integer vector of length 1 used for the subdivisions
-parameter of the builtin R-function \code{\link{integrate}}.}
+\item{subdivisions}{positive numeric scalar; subdivisions parameter
+internally passed to \code{\link{integrate_primitive}}.}
 }
 \value{
 The estimator is returned as S3 object of class
@@ -30,10 +30,8 @@ density estimator using the provided kernel, bandwidth and samples.
 }
 \details{
 The validation of the returned estimator as
-\code{\link{IntegrableFunction}} relies on the builtin function
-\code{\link{integrate}}, which requires a \code{subdivisions} argument.
-Integration using a larger number of subdivisions will increase the
-runtime. In contrast too few subdivisions may result in a runtime error.
+\code{\link{IntegrableFunction}} relies on the function
+\code{\link{integrate_primitive}}, thus the \code{subdivisions} parameter.
 
 For more information about kernel density estimaton, see "Nonparametric
 Estimation" by Fabienne Comte.
