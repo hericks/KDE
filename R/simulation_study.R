@@ -1,7 +1,8 @@
 #' @include builtin_kernels.R
 #' @export
-compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cross_validation, goldenshluger_lepski, pco_method),
- ns=50, kernels=list(gaussian), lambda_set=1, kappa_set=1.2, reps=400, length.out=5){
+compare <- function(eval_points, funs=list(runif),
+                    bandwidth_estimators=list(cross_validation, goldenshluger_lepski, pco_method),
+                    ns=50, kernels=list(gaussian), lambda_set=1, kappa_set=1.2, reps=400, length.out=5){
   # TODO: Argchecks necessary?
   # TODO: length.out nach Tests auf 30 setzen, reps hochsetzen
   if(!is.list(kernels)) kernels <- as.list(kernels)
@@ -11,22 +12,22 @@ compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cr
 
   m <- length(funs) * length(ns) * length(kernels)
   if(identical(bandwidth_estimators, list(cross_validation))) m <- m
-  if(identical(bandwidth_estimators, list(goldenshluger_lepski))) m <- m * length(kappa_set)
-  if(identical(bandwidth_estimators, list(pco_method))) m <- m * length(lambda_set)
-  if(identical(bandwidth_estimators, list(goldenshluger_lepski, cross_validation))||
+  else if(identical(bandwidth_estimators, list(goldenshluger_lepski))) m <- m * length(kappa_set)
+  else if(identical(bandwidth_estimators, list(pco_method))) m <- m * length(lambda_set)
+  else if(identical(bandwidth_estimators, list(goldenshluger_lepski, cross_validation))||
      identical(bandwidth_estimators, list(cross_validation, goldenshluger_lepski))) {m <- m * length(kappa_set) +  m}
-  if(identical(bandwidth_estimators, list(pco_method, cross_validation))||
+  else if(identical(bandwidth_estimators, list(pco_method, cross_validation))||
      identical(bandwidth_estimators, list(cross_validation, pco_method))) {m <- m * length(lambda_set) +  m}
-  if(identical(bandwidth_estimators, list(pco_method, goldenshluger_lepski))||
+  else if(identical(bandwidth_estimators, list(pco_method, goldenshluger_lepski))||
      identical(bandwidth_estimators, list(goldenshluger_lepski, pco_method))) {
     m <- m * length(lambda_set) +  m * length(kappa_set)
-  }else{
+  } else{
     m <- m * length(lambda_set) + m * length(kappa_set) + m
-    }
+  }
+
   res <- array(NA, dim=c(length(eval_points), reps, m))
   cnt <- 1
   subdivisions <- 1000L
-
   for(f in funs){
     for(n in ns){
       bandwidths <- logarithmic_bandwidth_set(from=1/n, to=1, length.out=length.out)
@@ -40,6 +41,7 @@ compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cr
                 bandwidth <- goldenshluger_lepski(k, samples, bandwidths, kappa, subdivisions)
 
                 kde <- kernel_density_estimator(k, samples, bandwidth, subdivisions)
+                if(any(kde$fun(eval_points) < 0)){ print(kde)}
                 kde$fun(eval_points)
               } )
               cnt <- cnt + 1
@@ -52,6 +54,8 @@ compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cr
                 bandwidth <- pco_method(k,samples, bandwidths, lambda, subdivisions)
 
                 kde <- kernel_density_estimator(k, samples, bandwidth, subdivisions)
+                if(any(kde$fun(eval_points) < 0)){ print(kde)}
+
                 kde$fun(eval_points)
               } )
               cnt <- cnt + 1
@@ -63,6 +67,8 @@ compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cr
               bandwidth <- cross_validation(k, samples, bandwidths, subdivisions)
 
               kde <- kernel_density_estimator(k, samples, bandwidth, subdivisions)
+              if(any(kde$fun(eval_points) < 0)){ print(kde)}
+
               kde$fun(eval_points)
             } )
             cnt <- cnt + 1
@@ -74,4 +80,3 @@ compare <- function(eval_points, funs=list(runif),  bandwidth_estimators=list(cr
   }
   res
 }
-
