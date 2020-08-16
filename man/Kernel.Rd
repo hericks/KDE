@@ -11,9 +11,10 @@ Kernel(fun, support = NULL, subdivisions = 1000L)
 a numeric vector of the same length. See 'Details' for further
 requirements.}
 
-\item{support}{numerical vector of length 2; the lower- and upperbound in the
-first and second entry respectively. \code{IntegrableFunction} will try to
-find bounds on the support itself if \code{NULL} is passed.}
+\item{support}{numerical vector of length 2; the lower- and upper bound of
+the compact support in the first and second entry respectively. In
+particular non-finite values are prohibited. \code{IntegrableFunction} will
+try to find bounds on the support itself if \code{NULL} is passed.}
 
 \item{subdivisions}{positive numeric scalar; the subdivisions parameter for
 the function \code{\link{integrate_primitive}}.}
@@ -31,11 +32,14 @@ functions are required to
 \enumerate{
 \item be vectorised in its argument, taking a single numeric argument,
 returning a numerical vector of the same length only,
-\item return zero for inputs outside their support,
+\item return zero for inputs outside their compact support,
 \item can be integrated over their support using \code{integrate_primitive}
 and the given number of subdivisions (the relative error converges).
 \item yield an integral of nearly 1 (absolute error < 1\%).
 }
+
+See the 'Details' section of \code{\link{IntegrableFunction}} for comments
+on the restrictiveness of compact supports.
 
 The S3 class \code{Density} exists to ensure some of the most basic
 properties of density functions. The class is build on

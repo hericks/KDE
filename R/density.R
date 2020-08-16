@@ -7,9 +7,10 @@
 #' @param fun a \code{R} function taking a single numeric argument and returning
 #'   a numeric vector of the same length. See 'Details' for further
 #'   requirements.
-#' @param support numerical vector of length 2; the lower- and upperbound in the
-#'   first and second entry respectively. \code{IntegrableFunction} will try to
-#'   find bounds on the support itself if \code{NULL} is passed.
+#' @param support numerical vector of length 2; the lower- and upper bound of
+#'   the compact support in the first and second entry respectively. In
+#'   particular non-finite values are prohibited. \code{IntegrableFunction} will
+#'   try to find bounds on the support itself if \code{NULL} is passed.
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
 #'
@@ -20,7 +21,7 @@
 #'   1. be vectorised in its argument, taking a single numeric argument,
 #'   returning a numerical vector of the same length only,
 #'
-#'   2. return zero for inputs outside their support,
+#'   2. return zero for inputs outside their compact support,
 #'
 #'   3. return non-negative values for inputs inside their support,
 #'
@@ -28,6 +29,9 @@
 #'   and the given number of subdivisions (the relative error converges),
 #'
 #'   5. yield an integral of nearly 1 (absolute error < 1%).
+#'
+#'   See the 'Details' section of \code{\link{IntegrableFunction}} for comments
+#'   on the restrictiveness of compact supports.
 #'
 #'   The S3 class \code{Density} exists to ensure some of the most basic
 #'   properties of density functions. The class is build on

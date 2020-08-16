@@ -9,9 +9,10 @@
 #' @param fun a \code{R} function taking a single numeric argument and returning
 #'   a numeric vector of the same length. See 'Details' for further
 #'   requirements.
-#' @param support numerical vector of length 2; the lower- and upperbound in the
-#'   first and second entry respectively. \code{IntegrableFunction} will try to
-#'   find bounds on the support itself if \code{NULL} is passed.
+#' @param support numerical vector of length 2; the lower- and upper bound of
+#'   the compact support in the first and second entry respectively. In
+#'   particular non-finite values are prohibited. \code{IntegrableFunction} will
+#'   try to find bounds on the support itself if \code{NULL} is passed.
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
 #'
@@ -20,10 +21,14 @@
 #'   1. be vectorised in its argument, taking a single numeric argument,
 #'   returning a numerical vector of the same length only,
 #'
-#'   2. return zero for inputs outside their support,
+#'   2. return zero for inputs outside their compact support,
 #'
 #'   3. can be integrated over their support using \code{integrate_primitive}
 #'   and the given number of subdivisions (the relative error converges).
+#'
+#'   Notice that a compact support may sound like a strong restriction, but
+#'   since every integrable function is near zero outside of a compact set this
+#'   is computatianlly always given for integrable functions.
 #'
 #'   The functions in this package don't just take \code{R} functions satisfying
 #'   these conditions, but objects of S3 class \code{IntegrableFunction} (or one
@@ -121,6 +126,7 @@ validate_IntegrableFunction <- function(x){
   stopifnot("Entry 'support' must be numeric"=is.numeric(support))
   stopifnot("Entry 'support' must be of length 2"=identical(length(support), 2L))
   stopifnot("Entry 'support' must contain lower- before upperbound"=support[1] < support[2])
+  stopifnot("Entry 'support' must only contain finite values"=is.finite(support[1]) & is.finite(support[2]))
 
   offsets <- 10**(-1:10)
   testing_values <- c(fun(max(support[1],-1e10) - offsets), fun(min(support[2], 1e10) + offsets))
