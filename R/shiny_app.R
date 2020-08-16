@@ -245,9 +245,6 @@ shiny_kde <- function(){
         observeEvent(c(input_density_parameters$params(),input$num_samples, input$refresh_samples), {
           #get new samples
           samples <- reactive_samples$values()
-
-          observeEvent(input$show_kernel, {
-            observeEvent(input$show_kernel, {
               output$plot <- renderPlot({
                 plot(
                   x_grid(),
@@ -263,7 +260,6 @@ shiny_kde <- function(){
 
                 )
                 legend("topleft", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
-
                 if (input$show_kernel) {
                   lines(x_grid(), reactive_kernel$fun(x_grid()))
                 }
@@ -306,8 +302,6 @@ shiny_kde <- function(){
 
                 })
               })
-            })
-          })
         })
       })
     }
