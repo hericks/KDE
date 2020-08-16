@@ -24,8 +24,7 @@
 #'   The estimator used for an upper bound of the variance depends on the tuning
 #'   parameter \code{kappa}. The recommended value for \code{kappa} is 1.2.
 #'
-#'   Subsequently the bandwidth with the minimal associated risk will is
-#'   selected.
+#'   Subsequently the bandwidth with the minimal associated risk is selected.
 #'
 #' @return The estimated optimal bandwidth contained in the bandwidth set.
 #'

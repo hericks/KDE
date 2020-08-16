@@ -43,7 +43,7 @@ the mean integrated squared error (MISE) of a kernel density estimator. The
 MISE is defined as the expectation of the squared L2-Norm of the difference
 between estimator and (unknown) true density.
 
-This methods works with the popular bias-/variance- decomposition. A
+This methods works with the popular bias-/variance-decomposition. A
 double-kernel approach is used for an estimator of the bias term as it
 still depends on the unknown density.
 
