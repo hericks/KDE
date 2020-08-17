@@ -90,8 +90,9 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
   stopifnot(length(lambda) == 1)
 
   # conditions for subdivisions
-  stopifnot(is.integer(subdivisions))
+  stopifnot(is.numeric(subdivisions))
   stopifnot(length(subdivisions) == 1)
+  subdivisions <- ceiling(subdivisions)
 
   res <- c()
   h_min <- min(bandwidths)

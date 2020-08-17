@@ -55,7 +55,7 @@ goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandw
   stopifnot("samplesize has to be greater or equal to the length of the bandwidth collection" = length(samples) >= length(bandwidths))
   stopifnot(is.numeric(bandwidths))
   stopifnot(length(bandwidths) > 0)
-  stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
+  # stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
   stopifnot(isTRUE(all(bandwidths > 0)))
 
   # conditions for kappa
@@ -64,8 +64,9 @@ goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandw
   stopifnot("kappa has to be greater or equal to 1" = kappa >= 1)
 
   # conditions for subdivisions
-  stopifnot(is.integer(subdivisions))
+  stopifnot(is.numeric(subdivisions))
   stopifnot(length(subdivisions) == 1)
+  subdivisions <- ceiling(subdivisions)
 
   # Used for calculation of V(h)
   squared_l1_norm_kernel <- integrate_primitive(function(x) abs(kernel$fun(x)), lower=kernel$support[1], upper=kernel$support[2], subdivisions = subdivisions)$value**2
