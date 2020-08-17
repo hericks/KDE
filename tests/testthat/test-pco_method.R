@@ -93,16 +93,11 @@ test_that("lambda has to be numerical scalar",{
                           subdivisions = 100L))
 })
 
-test_that("subdivisions must be a single integer",{
+test_that("subdivisions must be a numeric scalar",{
   kernel <- Kernel(epanechnikov_function, c(-1,1))
   samples <- c(1, 2, 3, 4)
   H_n <- c(0.5, 0.8)
   lambda <- 1
-  expect_error(pco_method(kernel,
-                          samples,
-                          H_n,
-                          lambda = 1,
-                          subdivisions = 100))
   expect_error(pco_method(kernel,
                           samples,
                           H_n,
