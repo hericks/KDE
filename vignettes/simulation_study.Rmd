@@ -320,7 +320,6 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
                                     lambda_set=lambda_set, kappa_set=kappa_set, reps=reps, length.out=length.out_bandwidths))
   print(time)
 
-  #f_true <- sapply(dens_list, function(d) d$fun(x_grid))
   f_true <- array(NA, dim=c(length(eval_points_set[[1]]), length(dens_list)))
   for(i in seq_along(dens_list)){
     f <- dens_list[[i]]$fun
@@ -362,11 +361,6 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
   }
   add_column(opts[rep(1:nrow(opts), each=reps), ], ise=as.vector(ise))
 }
-
-
-
-
-#bandwidth_estimators=bandwidth_estimators, kernel=names(kernels), n=ns, dens=names(dens_list)
 
 calculate_mise <- function(data_ise){
   if("kappa" %in% names(data_ise)){
