@@ -81,9 +81,7 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
   stopifnot(is.numeric(bandwidths))
   stopifnot(length(bandwidths) > 0)
   stopifnot(all(bandwidths <= 1) & all(bandwidths >= 1 / length(samples)))
-  #stopifnot(!isTRUE(all.equal(1/length(samples), 0)))
   stopifnot(isTRUE(all(bandwidths > 0)))
-
 
   # conditions for lambda
   stopifnot(is.numeric(lambda))
