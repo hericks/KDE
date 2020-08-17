@@ -1,5 +1,3 @@
-#' @include builtin_kernels.R
-#' @export
 compare <- function(eval_points,
                     funs = list(runif),
                     bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),

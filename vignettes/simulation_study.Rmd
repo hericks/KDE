@@ -19,7 +19,6 @@ library(KDE)
 ```
 
 ```{r, echo=FALSE}
-library(tidyverse)
 compare <- function(eval_points,
                     funs = list(runif),
                     bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
@@ -321,6 +320,7 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
                                     lambda_set=lambda_set, kappa_set=kappa_set, reps=reps, length.out=length.out_bandwidths))
   print(time)
 
+  #f_true <- sapply(dens_list, function(d) d$fun(x_grid))
   f_true <- array(NA, dim=c(length(eval_points_set[[1]]), length(dens_list)))
   for(i in seq_along(dens_list)){
     f <- dens_list[[i]]$fun
@@ -343,7 +343,9 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
   diff <-array(NA, dim=dim(res))
 
   for(j in 1:dim(res)[3]) diff[,,j] <- res[,,j] - f_true[,j]
-  ise <-apply(diff^2,c(2, 3), mean)
+  ise_pre <-apply(diff^2,c(2, 3), sum)
+  ise <- (ise_pre * (eval_points_range[2] - eval_points_range[1])) / length(eval_points)
+
 
   if (length(kappa_set) > 1 &&
       length(lambda_set) > 1) {
@@ -360,6 +362,9 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
   }
   add_column(opts[rep(1:nrow(opts), each=reps), ], ise=as.vector(ise))
 }
+
+
+
 
 #bandwidth_estimators=bandwidth_estimators, kernel=names(kernels), n=ns, dens=names(dens_list)
 
