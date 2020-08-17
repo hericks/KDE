@@ -1,0 +1,27 @@
+---
+title: "simulation_study"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{simulation_study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(KDE)
+```
+
+##Performance of various Kernels
+
+##Dependency of Density Function
+
+##Dependency of tuning Facor
+
+##Dependency of Samples
