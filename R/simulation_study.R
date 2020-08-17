@@ -3,11 +3,7 @@
 compare <- function(eval_points, funs=list(runif),
                     bandwidth_estimators=list(cross_validation, goldenshluger_lepski, pco_method),
                     ns=50, kernels=list(gaussian), lambda_set=1, kappa_set=1.2, reps=400, length.out=5){
-  # TODO: Argchecks necessary?
-  # TODO: length.out nach Tests auf 30 setzen, reps hochsetzen
   if(!is.list(kernels)) kernels <- as.list(kernels)
-  #if(!is.list(lambda_set)) lambda_set <- as.list(lambda_set)
-  #if(!is.list(kappa_set)) kappa_set <- as.list(kappa_set)
   if(!is.list(ns)) ns <- as.list(ns)
 
   m <- length(funs) * length(ns) * length(kernels)

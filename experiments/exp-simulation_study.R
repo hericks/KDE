@@ -87,5 +87,3 @@ plot_comparison <- function(dens=Density(dunif,c(0,1)),
     }
   }
 }
-#plot_comparison(kernels=list(rectangular, gaussian),bandwidth_estimators = list(cross_validation), show_diff=FALSE)
-#plot_comparison(kernels=list(rectangular), ns=list(10, 100), reps=100, show_diff=FALSE, bandwidth_estimators = list(pco_method, cross_validation))

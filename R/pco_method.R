@@ -98,29 +98,16 @@ pco_crit <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/l
 
   for (h in bandwidths) {
     f_h_est <- kernel_density_estimator(kernel, samples, h, subdivisions=subdivisions)
-    if (f_h_min_est$support[2] < f_h_est$support[1] |
-        f_h_est$support[2] < f_h_min_est$support[1]) {
-      z1 <-
-        integrate_primitive(function(x) {
-          f_h_min_est$fun(x) ^ 2
-        }, f_h_min_est$support[1], f_h_min_est$support[2], subdivisions=subdivisions)$value
-      z2 <-
-        integrate_primitive(function(x) {
-          f_h_est$fun(x) ^ 2
-        }, f_h_est$support[1], f_h_est$support[2], subdivisions=subdivisions)$value
-      bias_estim <- z1 + z2
-    }
-    else{
-      bias_estim <-
-        integrate_primitive(
-          function(x) {
-            (f_h_min_est$fun(x) - f_h_est$fun(x)) ^ 2
-          },
-          lower = min(f_h_min_est$support[1], f_h_est$support[1]),
-          upper = max(f_h_min_est$support[2], f_h_est$support[2]), subdivisions=subdivisions
-        )$value
-      bias_estim <- bias_estim
-    }
+
+    bias_estim <-
+      integrate_primitive(
+        function(x) {
+          (f_h_min_est$fun(x) - f_h_est$fun(x)) ^ 2
+        },
+        lower = min(f_h_min_est$support[1], f_h_est$support[1]),
+        upper = max(f_h_min_est$support[2], f_h_est$support[2]), subdivisions=subdivisions
+      )$value
+
     pen_function <- penalty_term(kernel, samples, h_min, h, lambda)
     l_pco <- bias_estim + pen_function
     res <- c(res, l_pco)
