@@ -6,7 +6,7 @@ compare <- function(eval_points,
                     lambda_set = list(1),
                     kappa_set = list(1.2),
                     reps = 400,
-                    length.out = 5) {
+                    length.out = 10) {
   if (!is.list(kernels))
     kernels <- as.list(kernels)
   if (!is.list(ns))
@@ -16,6 +16,16 @@ compare <- function(eval_points,
     if(!(length(unique(sapply(eval_points, length))) == 1)) stop("same length for all eval_points vectors are needed")
     if(length(eval_points) != length(funs) && length(eval_points) > 1) stop("eval_point set has to be of same length as funs")
   }
+
+  if (length(kappa_set) > 1 &&
+      length(lambda_set) > 1) {
+    stop("how is this supposed to look like?")
+  }
+  else if (length(kappa_set) > 1) {
+    bandwidth_estimators <- list(goldenshluger_lepski=goldenshluger_lepski)  }
+  else if (length(lambda_set) > 1) {
+    bandwidth_estimators <- list(pco_method=pco_method)  }
+
 
   m <- length(funs) * length(ns) * length(kernels)
   m <-
@@ -28,7 +38,6 @@ compare <- function(eval_points,
     + length(lambda_set) * any(sapply(
       bandwidth_estimators, identical, pco_method
     )))
-
   res <- array(NA, dim = c(length(eval_points[[1]]), reps, m))
   cnt <- 1
   subdivisions <- 1000L
@@ -48,11 +57,11 @@ compare <- function(eval_points,
                                   length.out = length.out)
       for (k in kernels) {
         for (est in bandwidth_estimators) {
+          cat("fun number:", i)
           if (identical(est, goldenshluger_lepski)) {
             for (kappa in kappa_set) {
               res[, , cnt] <- replicate(reps, {
                 samples <- f(n)
-
                 bandwidth <-
                   goldenshluger_lepski(k, samples, bandwidths, kappa, subdivisions)
 
@@ -138,7 +147,9 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
                             ...) {
   dens_fun <- dens$fun
   x_grid <- seq(xlim_lower, xlim_upper, length.out = 300)
+
   dens_eval <- dens_fun(x_grid)
+  eval_points <- list(x_grid)
   if (length(kappa) > 1 &&
       length(lambda) > 1) {
     stop("how is this plot supposed to look like?")
@@ -146,7 +157,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
   else if (length(kappa) > 1) {
     res <-
       compare(
-        x_grid,
+        eval_points,
         list(dens_sampler),
         reps = reps,
         bandwidth_estimators = list(goldenshluger_lepski),
@@ -157,7 +168,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
   else if (length(lambda) > 1) {
     res <-
       compare(
-        x_grid,
+        eval_points,
         list(dens_sampler),
         reps = reps,
         bandwidth_estimators = list(pco_method),
@@ -167,7 +178,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
   } else {
     res <-
       compare(
-        x_grid,
+        eval_points,
         list(dens_sampler),
         reps = reps,
         bandwidth_estimators = bandwidth_estimators,
@@ -176,7 +187,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
   }
   m <- dim(res)[3]
   bw_len <- length(bandwidth_estimators)
-  if (isTRUE(split) && bw_len > 1) {
+  if (isTRUE(split) && bw_len > 1 && m > 3) {
     m_bw_len <- m / bw_len
     for (i in 1:m_bw_len) {
       res_sub <- res[, , (1 + (i - 1) * bw_len):(i * bw_len)]
@@ -229,7 +240,6 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
   } else{
     m <- dim(res)[3]
     del <- max(apply(res, c(1, 3), sd))
-
     # plot results
     par(
       mar = c(0, 0, 1, 0),
@@ -277,15 +287,24 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
 library(tidyverse)
 
 compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
-                        dens_sampler_list = list(runif),
+                        dens_sampler_list = list(runif=runif),
                         bandwidth_estimators = list(cross_validation=cross_validation, goldenshluger_lepski=goldenshluger_lepski, pco_method=pco_method),
                         ns = 50,
                         kernels = list(gaussian=gaussian),
                         lambda_set = list(1),
                         kappa_set = list(1.2),
                         reps = 3,
-                        num_eval_points= 30,
-                        length.out_bandwidths = 5){
+                        num_eval_points= 300,
+                        n_bandwidths = 5){
+
+  if (length(kappa_set) > 1 &&
+      length(lambda_set) > 1) {
+    stop("how is this supposed to look like?")
+  }
+  else if (length(kappa_set) > 1) {
+    bandwidth_estimators <- list(goldenshluger_lepski=goldenshluger_lepski)  }
+  else if (length(lambda_set) > 1) {
+    bandwidth_estimators <- list(pco_method=pco_method)}
 
   eval_points_set <- list()
   for(d in dens_list){
@@ -296,7 +315,7 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
   }
   time <-system.time(res <- compare(eval_points=eval_points_set, funs=dens_sampler_list, ns=ns, kernels=kernels,
                                     bandwidth_estimators=bandwidth_estimators,
-                                    lambda_set=lambda_set, kappa_set=kappa_set, reps=reps, length.out=length.out_bandwidths))
+                                    lambda_set=lambda_set, kappa_set=kappa_set, reps=reps, length.out=n_bandwidths))
   print(time)
 
   f_true <- array(NA, dim=c(length(eval_points_set[[1]]), length(dens_list)))
@@ -304,7 +323,6 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
     f <- dens_list[[i]]$fun
     f_true[,i] <- f(eval_points_set[[i]])
   }
-
   m <- length(ns) * length(kernels)
   m <-
     m * (any(sapply(
@@ -317,46 +335,46 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
       bandwidth_estimators, identical, pco_method
     )))
 
+  print(m)
   f_true <- f_true[,rep(seq_along(dens_list), each=m)]
   diff <-array(NA, dim=dim(res))
-
   for(j in 1:dim(res)[3]) diff[,,j] <- res[,,j] - f_true[,j]
-  ise_pre <-apply(diff^2,c(2, 3), sum)
-  ise <- (ise_pre * (eval_points_range[2] - eval_points_range[1])) / length(eval_points)
-
+  diff_sq <-apply(diff^2,c(2, 3), sum)
+  ise <- (diff_sq * (eval_points_range[2] - eval_points_range[1])) / num_eval_points
 
   if (length(kappa_set) > 1 &&
       length(lambda_set) > 1) {
     stop("how is this supposed to look like?")
   }
   else if (length(kappa_set) > 1) {
-    opts <-as_tibble(expand.grid(kappa=kappa_set, bandwidth_estimators=bandwidth_estimators, kernel=names(kernels), n=ns, dens=names(dens_list)))
+    opts <- as_tibble(expand.grid(kappa=kappa_set, bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, den=names(dens_list)))
   }
   else if (length(lambda_set) > 1) {
-    opts <-as_tibble(expand.grid(lambda=lambda_set, bandwidth_estimators=bandwidth_estimators, kernel=names(kernels), n=ns, dens=names(dens_list)))
+    opts <-as_tibble(expand.grid(lambda=lambda_set, bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, den=names(dens_list)))
 
   } else {
-    opts <-as_tibble(expand.grid(bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, dens=names(dens_list)))
+    opts <-as_tibble(expand.grid(bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, den=names(dens_list)))
   }
   add_column(opts[rep(1:nrow(opts), each=reps), ], ise=as.vector(ise))
 }
 
 calculate_mise <- function(data_ise){
   if("kappa" %in% names(data_ise)){
-    group_by(dens, n, kernel, bandwidth_estimators, kappa) %>%
+    data_ise %>%
+      group_by(den, n, kernel, bandwidth_estimators, kappa) %>%
       summarise(mise = mean(ise), med_ise=median(ise), sd_ise=sd(ise), reps= n()) %>%
       ungroup() ->
       data_mise
 
   }else if("lambda" %in% names(data_ise)){
     data_ise %>%
-      group_by(dens, n, kernel, bandwidth_estimators, lambda) %>%
+      group_by(den, n, kernel, bandwidth_estimators, lambda) %>%
       summarise(mise = mean(ise), med_ise=median(ise), sd_ise=sd(ise), reps= n()) %>%
       ungroup() ->
       data_mise
   } else {
     data_ise %>%
-      group_by(dens, n, kernel, bandwidth_estimators) %>%
+      group_by(den, n, kernel, bandwidth_estimators) %>%
       summarise(mise = mean(ise), med_ise=median(ise), sd_ise=sd(ise), reps= n()) %>%
       ungroup() ->
       data_mise
