@@ -186,7 +186,19 @@ plot_comparison_objects <- function(dens = Density(dunif, c(0, 1)),
         ...
       )
   }
-  list(res, dens_fun, x_grid, dens_eval)
+  m <- dim(res)[3]
+  bw_len <- length(bandwidth_estimators)
+  if (isTRUE(split) && bw_len > 1 && m > 3) {
+    m_bw_len <- m / bw_len
+    ret <- list()
+    for (i in 1:m_bw_len) {
+      res_sub <- res[, , (1 + (i - 1) * bw_len):(i * bw_len)]
+      ret <- c(ret, list(list(res_sub, dens_fun, x_grid, dens_eval)))
+    }
+  }else{
+    ret <- list(res, dens_fun, x_grid, dens_eval)
+  }
+  ret
 }
 
 
@@ -194,6 +206,8 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
                             dens_sampler = runif,
                             xlim_lower = -1,
                             xlim_upper = 2,
+                            ylim_lower=NULL,
+                            ylim_upper=NULL,
                             main = NA,
                             legend = NULL,
                             show_diff = TRUE,
@@ -204,6 +218,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
                             lambda = list(1),
                             objects=NULL,
                             ...) {
+
 
   if(!is.null(objects)){
     res <- objects[[1]]
@@ -232,6 +247,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
 
   m <- dim(res)[3]
   bw_len <- length(bandwidth_estimators)
+
   if (isTRUE(split) && bw_len > 1 && m > 3) {
     m_bw_len <- m / bw_len
     for (i in 1:m_bw_len) {
@@ -245,13 +261,20 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
         xaxt = "n",
         yaxt = "n"
       )
+      if(is.null(ylim_lower)){
+        ylim_lower <- (range(dens_eval) + del * c(-1, 1))[1]
+      }
+      if(is.null(ylim_upper)){
+        ylim_upper <- (range(dens_eval) + del * c(-1, 1))[2]
+      }
+      ylim <- c(ylim_lower,ylim_upper)
       plot(
         x_grid,
         dens_eval,
         type = "l",
         lwd = 2,
         col = 1,
-        ylim = range(dens_eval) + del * c(-1, 1)
+        ylim = ylim
       )
       grid()
       for (i in 1:bw_len) {
@@ -292,13 +315,20 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
       xaxt = "n",
       yaxt = "n"
     )
+    if(is.null(ylim_lower)){
+      ylim_lower <- (range(dens_eval) + del * c(-1, 1))[1]
+    }
+    if(is.null(ylim_upper)){
+      ylim_upper <- (range(dens_eval) + del * c(-1, 1))[2]
+    }
+    ylim <- c(ylim_lower, ylim_upper)
     plot(
       x_grid,
       dens_eval,
       type = "l",
       lwd = 2,
       col = 1,
-      ylim = range(dens_eval) + del * c(-1, 1)
+      ylim = ylim
     )
     grid()
     for (i in 1:m) {
@@ -381,7 +411,6 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
       bandwidth_estimators, identical, pco_method
     )))
 
-  print(m)
   f_true <- f_true[,rep(seq_along(dens_list), each=m)]
   diff <-array(NA, dim=dim(res))
   for(j in 1:dim(res)[3]) diff[,,j] <- res[,,j] - f_true[,j]
