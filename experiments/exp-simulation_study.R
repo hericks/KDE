@@ -4,12 +4,12 @@ library(tidyverse)
 compare <- function(eval_points,
                     funs = list(runif),
                     bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
-                    ns = 50,
+                    ns = 1000,
                     kernels = list(gaussian),
                     lambda_set = list(1),
                     kappa_set = list(1.2),
                     reps = 400,
-                    length.out = 5) {
+                    length.out = 10) {
   if (!is.list(kernels))
     kernels <- as.list(kernels)
   if (!is.list(ns))
@@ -144,7 +144,7 @@ plot_comparison_objects <- function(dens = Density(dunif, c(0, 1)),
                                     show_diff = TRUE,
                                     split = TRUE,
                                     bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
-                                    reps = 4,
+                                    reps = 2,
                                     kappa = list(1.2),
                                     lambda = list(1),
                                     ...) {
@@ -370,7 +370,7 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
                         kappa_set = list(1.2),
                         reps = 3,
                         num_eval_points= 300,
-                        n_bandwidths = 5){
+                        n_bandwidths = 10){
 
   if (length(kappa_set) > 1 &&
       length(lambda_set) > 1) {
@@ -541,7 +541,7 @@ for(j in seq_along(dens_list)) {
 # mathematically we will calculate the MISE to get the empirical proof
 
 mise_vec <- c()
-reps <- 2
+reps <- 4
 
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
@@ -551,6 +551,7 @@ for(j in seq_along(dens_list)) {
     for(n in n_samples){
       ise_vec <- c()
       for(rep in 1:reps){
+        cat("mise_kernel",rep)
         samples <- d[[2]](n)
         kde <- kernel_density_estimator(k, samples, bandwidth=bandwidth)
         ise_vec <- c(ise_vec, (sum((kde$fun(grid) - dens$fun(grid))^2) * (x_lim[2] - x_lim[1])) / length(grid))
@@ -588,7 +589,7 @@ for(h in bandwidth_set){
 }
 
 mise_vec <- c()
-reps <- 2
+reps <- 400
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
   for(h in bandwidth_set){
@@ -612,8 +613,9 @@ print(mise_2)
 # sweeter plot f?r defaultwerte auf unserer custom_density:
 # TODO: main und legend mit reinwerfen (als listen?)
 
-obj_simple_comp <- plot_comparison_objects(show_diff=FALSE, reps=2)
-plot_comparison(show_diff=FALSE, reps=2, obj_simple_comp)
+obj_simple_comp <- plot_comparison_objects(show_diff=FALSE, reps=400)
+plot_comparison(show_diff=FALSE, reps=400, objects=obj_simple_comp)
+
 # 2. lambda/kappa wählen
 # hence we estimate a upper bound for the variance, we have tuning parameters for the pco_method and goldenshluger_lepski
 
@@ -621,9 +623,9 @@ plot_comparison(show_diff=FALSE, reps=2, obj_simple_comp)
 # in literature, they set kappa=1.2
 
 # kappa_set <- c(1, ,1.18, 1.2, 1.22, 1.4, 1.6, 1.8, 2)
-ns <- 100
-reps <- 2
-kappa_set <- list(1, 2)
+ns <- 1000
+reps <- 400
+kappa_set <- c(1, 1.18, 1.2, 1.22, 1.4, 1.7, 2)
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
 kernel_list <- list(epanechnikov=epanechnikov)
@@ -634,9 +636,9 @@ mise_kappa <- calculate_mise(ise_kappa)
 
 # now we try to tune our lambda
 # lambda_set <- c(1, 1.1, 1.2, 1.4, 1.6, 1.8, 2)
-ns <- 100
-reps <- 2
-lambda_set <- list(1,2)
+ns <- 1000
+reps <- 400
+lambda_set <- c(1, 1.05, 1.1, 1.2, 1.4, 1.7, 2)
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
 kernel_list <- list(epanechnikov=epanechnikov)

@@ -52,7 +52,7 @@ In the following two sections we first carry out a visual and then a numerical c
 ### visual comparison 
 
 We choose the three different kernels *rectangular*, *gaussian* and *epanechnikov* and initialize below the list *dens_list* with the three different densities we like to sample from along with their sampler functions.
-
+Problem: Plots auseinanderzeihen!
 ```{r}
 kernels <- list(rectangular = rectangular, gaussian = gaussian, epanechnikov = epanechnikov)
 dens_list <- list(list(dens, custom_sampler), list(Density(dunif, c(0,1)), runif), list(Density(dnorm, c(-15,15)), rnorm))
