@@ -1,5 +1,5 @@
 #code for simulation study vignette
-
+library(tidyverse)
 # Custom density
 f_dens <- function(x) {
   ret <- 1 + sin(2*pi*x)
@@ -13,6 +13,9 @@ dens <- Density(f_dens, support_density, subdivisions=1000L)
 x_lim <- c(dens$support[1] - 0.5, dens$support[2] + 0.5)
 grid <- seq(from=x_lim[1], to=x_lim[2], length.out=300)
 # plotting the density
+
+
+
 plot(grid, dens$fun(grid), xlim = x_lim, ylim=c(-1,2),
      xlab = "",
      ylab = "",
@@ -79,7 +82,7 @@ for(j in seq_along(dens_list)) {
 # as we can see, as the number of samples increases, the kernel will get more and more irrelevant
 # mathematically we will calculate the MISE to get the empirical proof
 mise_vec <- c()
-reps <- 100
+reps <- 2
 
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
@@ -87,7 +90,6 @@ for(j in seq_along(dens_list)) {
     name <- names(kernels)[[i]]
     k <- kernels[[i]]
     for(n in n_samples){
-      print(i)
       ise_vec <- c()
       for(rep in 1:reps){
         samples <- d[[2]](n)
@@ -127,12 +129,11 @@ for(h in bandwidth_set){
 }
 
 mise_vec <- c()
-reps <- 10
+reps <- 2
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
   for(h in bandwidth_set){
     ise_vec <- c()
-    print(j)
     for(rep in 1:reps){
       samples <- d[[2]](n_samples)
       kde <- kernel_density_estimator(kernel, samples, bandwidth=h[[1]])
@@ -161,7 +162,7 @@ plot_comparison(show_diff=FALSE, reps=2)
 
 # kappa_set <- c(1, 1.2, 1.4, 1.6, 1.8, 2)
 ns <- 100
-reps <- 100
+reps <- 2
 kappa_set <- list(1, 2)
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
@@ -174,7 +175,7 @@ mise_kappa <- calculate_mise(ise_kappa)
 # now we try to tune our lambda
 # lambda_set <- c(1, 1.2, 1.4, 1.6, 1.8, 2)
 ns <- 100
-reps <- 10
+reps <- 2
 lambda_set <- list(1,2)
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
@@ -191,7 +192,7 @@ mise_lambda <- calculate_mise(ise_lambda)
 kappa_set <- list(1.2)
 lambda_set <- list(1)
 reps <- 2
-ns <- c(10000)
+ns <- c(1000)
 
 # mehr densities?
 # als erstes schauen wir, welcher Bandweitensch?tzer bei 1000 samples auf unseren 3 densities am besten performen w?rde
@@ -210,8 +211,6 @@ mise_ns_comp %>%
 
 # TODO: performance
 # we will make a small performance comparison
-
-
 
 # da nicht immer sehr viele daten vorhanden sind, betrachten wir nun, welcher Bandweitensch?tzer sich bei verschiedenen sample sizes am besten verh?lt
 c(10, 50, 100, 1000)
@@ -237,8 +236,3 @@ mise_ns_comp %>%
 #microbenchmark(expr1, expr2, times=25L)
 # TODO: 1. performance vergleich, 1.5 legenden etc 2. wie kann man objekte abspeichern und in vignette einbinden? 3. welche parameter bei welchem test?
 
-
-# save and load all objects in a environment
-save(list=objects(all.names=TRUE), file="sim_objects.rda")
-
-load(file="sim_objects.rda")

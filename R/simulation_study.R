@@ -1,3 +1,4 @@
+# TODO::length.out hochsetzen
 compare <- function(eval_points,
                     funs = list(runif),
                     bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
@@ -6,7 +7,7 @@ compare <- function(eval_points,
                     lambda_set = list(1),
                     kappa_set = list(1.2),
                     reps = 400,
-                    length.out = 10) {
+                    length.out = 5) {
   if (!is.list(kernels))
     kernels <- as.list(kernels)
   if (!is.list(ns))
@@ -132,7 +133,7 @@ plot_with_confidence_band <- function(x, Y, col) {
   lines(x, v[1,] - v[2,], lwd = 1, col = col)
 }
 
-plot_comparison <- function(dens = Density(dunif, c(0, 1)),
+plot_comparison_objects <- function(dens = Density(dunif, c(0, 1)),
                             dens_sampler = runif,
                             xlim_lower = -1,
                             xlim_upper = 2,
@@ -185,6 +186,50 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
         ...
       )
   }
+  list(res, dens_fun, x_grid, dens_eval)
+}
+
+
+plot_comparison <- function(dens = Density(dunif, c(0, 1)),
+                            dens_sampler = runif,
+                            xlim_lower = -1,
+                            xlim_upper = 2,
+                            main = NA,
+                            legend = NULL,
+                            show_diff = TRUE,
+                            split = TRUE,
+                            bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
+                            reps = 4,
+                            kappa = list(1.2),
+                            lambda = list(1),
+                            objects=NULL,
+                            ...) {
+
+  if(!is.null(objects)){
+    res <- objects[[1]]
+    dens_fun <- objects[[2]]
+    x_grid <- objects[[3]]
+    dens_eval <- objects[[4]]
+  }else{
+    objects <- plot_comparison_objects(dens,
+                                       dens_sampler,
+                                       xlim_lower,
+                                       xlim_upper,
+                                       main,
+                                       legend,
+                                       show_diff,
+                                       split,
+                                       bandwidth_estimators,
+                                       reps,
+                                       kappa,
+                                       lambda,
+                                       ...)
+    res <- objects[[1]]
+    dens_fun <- objects[[2]]
+    x_grid <- objects[[3]]
+    dens_eval <- objects[[4]]
+  }
+
   m <- dim(res)[3]
   bw_len <- length(bandwidth_estimators)
   if (isTRUE(split) && bw_len > 1 && m > 3) {
@@ -283,6 +328,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
     }
   }
 }
+
 
 library(tidyverse)
 
