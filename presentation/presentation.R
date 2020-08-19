@@ -114,8 +114,11 @@ library(KDE)
 IntegrableFunction(dnorm, support=c(-Inf, Inf))
 all.equal(dnorm(-15), 0)
 
-IntegrableFunction(dnorm, support=c(-15, 15))
-IntegrableFunction(dnorm)
+f <- IntegrableFunction(dnorm, support=c(-15, 15))
+str(f)
+rm(f)
+
+IntegrableFunction(dnorm, mean=2)
 
 # subdivisions parameter
 integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 25L)
