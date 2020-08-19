@@ -15,6 +15,8 @@
 #'   try to find bounds on the support itself if \code{NULL} is passed.
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
+#' @param ... additional parameters to keep fixed during the evaluation of
+#'   \code{fun}.
 #'
 #' @details Integrable functions as \code{R} functions are required to
 #'
@@ -39,9 +41,9 @@
 #'   containing three named entries \code{fun}, \code{support} and \code{subdivisions}
 #'
 #'   * \strong{`fun`} is a \code{R} function (the represented function) taking a
-#'   single numeric argument and returning a numeric vector of the same length.
-#'   This function should return near zero outside of the interval given in the
-#'   \code{support} entry.
+#'   single numeric argument (additional to the fixed arguments in \code{...})
+#'   and returning a numeric vector of the same length. This function should
+#'   return near zero outside of the interval given in the \code{support} entry.
 #'
 #'   * \strong{`support`} is a numeric vector of length 2 containing a lower-
 #'   and upperbound for the support of the function stored in \code{fun} in its
@@ -69,10 +71,12 @@
 #' @include integrate_primitive.R
 #'
 #' @export
-IntegrableFunction <- function(fun, support=NULL, subdivisions=1000L){
-  func <- new_IntegrableFunction(fun, support, subdivisions)
-  validate_IntegrableFunction(func)
-  func
+IntegrableFunction <- function(fun, support=NULL, subdivisions=1000L, ...){
+  extra_args <- list(...)
+  new_fun <- function(x) do.call(fun, c(list(x), extra_args))
+  obj <- new_IntegrableFunction(new_fun, support, subdivisions)
+  validate_IntegrableFunction(obj)
+  obj
 }
 
 #' Validator for S3 class \code{IntegrableFunction}
@@ -182,4 +186,26 @@ find_support <- function(fun) {
   upper_bound <- ifelse(upper_index > length(testing_points), Inf, testing_points[upper_index])
 
   c(lower_bound, upper_bound)
+}
+
+#' Print objects of S3 class \code{IntegrableFunction}
+#'
+#' @param x object of S3 class \code{IntegrableFunction}; the object to print
+#' @param class_prefix optional character vector of length 1; string to replace
+#'   \code{IntegrableFunction} in formatted output
+#'
+#' @export
+print.IntegrableFunction <- function(x, class_prefix=NULL) {
+  extra_args <- with(environment(x$fun), extra_args)
+  prefixes <- sapply(names(extra_args), function(name) {if (name == "") "" else paste0(name, " = ")}, USE.NAMES = FALSE)
+  parts <- sapply(seq_len(length(prefixes)), function(i) paste0(prefixes[i], extra_args[[i]]))
+  eval_expr <- paste0("(", paste(c("x", parts), collapse=", "), ")")
+
+  if (is.null(class_prefix)) cat("IntegrableFunction", sep="\n")
+  else cat(class_prefix[1], sep="\n")
+
+  fun_lines <- deparse(with(environment(x$fun), fun))
+  collapse <- ifelse(length(fun_lines) == 2, "", "\n")
+  cat(paste(fun_lines, collapse=collapse))
+  cat(paste0("\nevaluated at ", eval_expr, ", support: [", x$support[1], ",", x$support[2], "], subdivisions: ", x$subdivisions))
 }

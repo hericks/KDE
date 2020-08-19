@@ -13,6 +13,8 @@
 #'   try to find bounds on the support itself if \code{NULL} is passed.
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
+#' @param ... additional parameters to keep fixed during the evaluation of
+#'   \code{fun}.
 #'
 #' @details A density function is a real valued, non-negative, integrable
 #'   function, such that its integral over the real numbers equals one. Density
@@ -64,8 +66,10 @@
 #' @include integrable_function.R
 #'
 #' @export
-Density <- function(fun, support = NULL, subdivisions = 1000L){
-  den <- new_Density(fun, support, subdivisions)
+Density <- function(fun, support = NULL, subdivisions = 1000L, ...){
+  extra_args <- list(...)
+  new_fun <- function(x) do.call(fun, c(list(x), extra_args))
+  den <- new_Density(new_fun, support, subdivisions)
   validate_Density(den)
   den
 }
@@ -116,11 +120,20 @@ validate_Density <- function(x){
   # prevent double checking with validate_integrable function
   stopifnot("density functions are non-negative" = all(object(testing_points) >= 0))
 
-  stopifnot("The integral of a density over its support has to be one"=
-              isTRUE(all.equal(integrate(object, lower = lower, upper = upper, subdivisions = subdivisions)[[1]], 1)))
+  stopifnot("The integral of a kernel over its support has to be one"=
+              isTRUE(abs(integrate_primitive(object, lower = lower, upper = upper, subdivisions = subdivisions)$value-1) < 0.01))
   invisible(x)
 }
 
-new_Density <- function(fun, support, subdivisions = 1000L, ..., subclass=NULL){
+new_Density <- function(fun, support, subdivisions = 1000L, subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Density"))
+}
+
+#' Print objects of S3 class \code{Density}
+#'
+#' @param x object of S3 class \code{Density}; the object to print
+#'
+#' @export
+print.Density <- function(x) {
+  print.IntegrableFunction(x, "Density")
 }
