@@ -69,10 +69,12 @@
 #' @include integrate_primitive.R
 #'
 #' @export
-IntegrableFunction <- function(fun, support=NULL, subdivisions=1000L){
-  func <- new_IntegrableFunction(fun, support, subdivisions)
-  validate_IntegrableFunction(func)
-  func
+IntegrableFunction <- function(fun, support=NULL, subdivisions=1000L, ...){
+  extra_args <- list(...)
+  new_fun <- function(x) do.call(fun, c(list(x), extra_args))
+  obj <- new_IntegrableFunction(new_fun, support, subdivisions)
+  validate_IntegrableFunction(obj)
+  obj
 }
 
 #' Validator for S3 class \code{IntegrableFunction}
@@ -182,4 +184,17 @@ find_support <- function(fun) {
   upper_bound <- ifelse(upper_index > length(testing_points), Inf, testing_points[upper_index])
 
   c(lower_bound, upper_bound)
+}
+
+#' @export
+print.IntegrableFunction <- function(x) {
+  extra_args <- with(environment(x$fun), extra_args)
+  prefixes <- sapply(names(extra_args), function(name) {if (name == "") "" else paste0(name, " = ")}, USE.NAMES = FALSE)
+  parts <- sapply(seq_len(length(prefixes)), function(i) paste0(prefixes[i], extra_args[[i]]))
+  eval_expr <- paste0("(", paste(c("x", parts), collapse=", "), ")")
+
+  cat(paste0("IntegrableFunction (Subdivisions: ", x$subdivisions, ", support: [", x$support[1], ",", x$support[2], "]).\n"))
+  fun_lines <- deparse(with(environment(x$fun), fun))
+  fun_lines[1] <- paste0("function", eval_expr)
+  cat(paste(fun_lines, collapse="\n"))
 }
