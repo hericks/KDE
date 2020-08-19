@@ -3,10 +3,15 @@ test_that("the integrable function should be built correctly",{
     return(1/2 * (abs(u) <= 1))
   }
   integ_fun <- IntegrableFunction(rectangular_function,c(-1,1))
-  expect_equal(integ_fun$fun, rectangular_function)
   expect_equal(integ_fun$support, c(-1,1))
   expect_true(inherits(integ_fun, "IntegrableFunction"))
   expect_equal(validate_IntegrableFunction(integ_fun), integ_fun)
+})
+
+test_that("the ... argument works for integrable functions", {
+  expect_equal(IntegrableFunction(dnorm, mean=2)$fun(2), dnorm(0))
+  expect_equal(IntegrableFunction(dexp, rate=2)$fun(0), dexp(0, rate=2))
+  expect_equal(IntegrableFunction(dunif, max=3)$fun(2.5), 1/3)
 })
 
 test_that("the support has to be computed correctly",{
@@ -82,3 +87,7 @@ test_that("the subdivisions parameter has to be a positive numeric value",{
   expect_output(print(IntegrableFunction(rec_fun, c(-1,1), subdivisions=150L)))
 })
 
+test_that("the custom printing method works", {
+  expected_lines <- "IntegrableFunction\nfunction (x, mean = 0, sd = 1, log = FALSE) .Call(C_dnorm, x, mean, sd, log)\nevaluated at (x, mean = 2), support: [-12,15], subdivisions: 250"
+  expect_output(print(IntegrableFunction(dnorm, support=c(-12, 15), subdivisions=250, mean=2)), expected_lines, fixed=TRUE)
+})
