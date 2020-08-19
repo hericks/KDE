@@ -120,8 +120,10 @@ validate_Density <- function(x){
   # prevent double checking with validate_integrable function
   stopifnot("density functions are non-negative" = all(object(testing_points) >= 0))
 
-  stopifnot("The integral of a kernel over its support has to be one"=
-              isTRUE(abs(integrate_primitive(object, lower = lower, upper = upper, subdivisions = subdivisions)$value-1) < 0.01))
+  I <- integrate_primitive(object, lower = lower, upper = upper, subdivisions = subdivisions)$value
+  if (isTRUE(abs(I-1) > 0.01))
+    stop(paste0("The integral of a kernel over its support has to be one (is ", I, ")"))
+
   invisible(x)
 }
 
