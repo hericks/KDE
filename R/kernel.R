@@ -84,8 +84,10 @@
 #' @include integrable_function.R
 #'
 #' @export
-Kernel <- function(fun, support = NULL, subdivisions=1000L) {
-  kern <- new_Kernel(fun, support, subdivisions)
+Kernel <- function(fun, support = NULL, subdivisions=1000L, ...) {
+  extra_args <- list(...)
+  new_fun <- function(x) do.call(fun, c(list(x), extra_args))
+  kern <- new_Kernel(new_fun, support, subdivisions)
   validate_Kernel(kern)
   kern
 }

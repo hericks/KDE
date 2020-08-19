@@ -64,8 +64,10 @@
 #' @include integrable_function.R
 #'
 #' @export
-Density <- function(fun, support = NULL, subdivisions = 1000L){
-  den <- new_Density(fun, support, subdivisions)
+Density <- function(fun, support = NULL, subdivisions = 1000L, ...){
+  extra_args <- list(...)
+  new_fun <- function(x) do.call(fun, c(list(x), extra_args))
+  den <- new_Density(new_fun, support, subdivisions)
   validate_Density(den)
   den
 }
@@ -121,6 +123,6 @@ validate_Density <- function(x){
   invisible(x)
 }
 
-new_Density <- function(fun, support, subdivisions = 1000L, ..., subclass=NULL){
+new_Density <- function(fun, support, subdivisions = 1000L, subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Density"))
 }

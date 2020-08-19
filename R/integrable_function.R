@@ -193,8 +193,10 @@ print.IntegrableFunction <- function(x) {
   parts <- sapply(seq_len(length(prefixes)), function(i) paste0(prefixes[i], extra_args[[i]]))
   eval_expr <- paste0("(", paste(c("x", parts), collapse=", "), ")")
 
-  cat(paste0("IntegrableFunction (Subdivisions: ", x$subdivisions, ", support: [", x$support[1], ",", x$support[2], "]).\n"))
+  cat(class(x)[1], sep="\n")
+
   fun_lines <- deparse(with(environment(x$fun), fun))
-  fun_lines[1] <- paste0("function", eval_expr)
-  cat(paste(fun_lines, collapse="\n"))
+  collapse <- ifelse(length(fun_lines) == 2, "", "\n")
+  cat(paste(fun_lines, collapse=collapse))
+  cat(paste0("\nevaluated at ", eval_expr, ", support: [", x$support[1], ",", x$support[2], "], subdivisions: ", x$subdivisions))
 }
