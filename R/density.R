@@ -129,6 +129,10 @@ new_Density <- function(fun, support, subdivisions = 1000L, subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Density"))
 }
 
+#' Print objects of S3 class \code{Density}
+#'
+#' @param x object of S3 class \code{Density}; the object to print
+#'
 #' @export
 print.Density <- function(x) {
   print.IntegrableFunction(x, "Density")

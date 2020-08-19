@@ -145,6 +145,10 @@ new_Kernel <- function(fun, support, subdivisions=1000L, ..., subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Kernel"))
 }
 
+#' Print objects of S3 class \code{Kernel}
+#'
+#' @param x object of S3 class \code{Kernel}; the object to print
+#'
 #' @export
 print.Kernel <- function(x) {
   print.IntegrableFunction(x, "Kernel")

@@ -188,6 +188,12 @@ find_support <- function(fun) {
   c(lower_bound, upper_bound)
 }
 
+#' Print objects of S3 class \code{IntegrableFunction}
+#'
+#' @param x object of S3 class \code{IntegrableFunction}; the object to print
+#' @param class_prefix optional character vector of length 1; string to replace
+#'   \code{IntegrableFunction} in formatted output
+#'
 #' @export
 print.IntegrableFunction <- function(x, class_prefix=NULL) {
   extra_args <- with(environment(x$fun), extra_args)
@@ -196,7 +202,7 @@ print.IntegrableFunction <- function(x, class_prefix=NULL) {
   eval_expr <- paste0("(", paste(c("x", parts), collapse=", "), ")")
 
   if (is.null(class_prefix)) cat("IntegrableFunction", sep="\n")
-  else cat(class_prefix, sep="\n")
+  else cat(class_prefix[1], sep="\n")
 
   fun_lines <- deparse(with(environment(x$fun), fun))
   collapse <- ifelse(length(fun_lines) == 2, "", "\n")
