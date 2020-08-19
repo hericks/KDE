@@ -57,7 +57,7 @@ support_density <- c(0,1)
 dens <- Density(f_dens, support_density, subdivisions=1000L)
 print(dens)
 ```
-Now we can see that the density is an object of the class `Density`. In addition to the function, the object is equipped with a support and subdivisions parameter. Both are needed for the `stats::integrate` function to work properly.
+Now we can see that the density is an object of the class `Density`. Notice the custom S3 printing method for `Densitiy` objects. In addition to the function, the object is equipped with a support and subdivisions parameter. Both are needed for the `stats::integrate` function to work properly.
 To see the requirements for constructing a `Density` object use `?Density`.
 
 ### Kernel
@@ -75,7 +75,7 @@ print(sigmoid_kernel)
 Note that in the case of the support being `c(-Inf,Inf)` a kernel function is sufficiently small outside of a compact interval, such that the numeric integration outside of it will be zero.
 We need to choose a finite interval as support for some bandwidth estimators to work properly.
 
-To see the requirements for constructing a Kernel object use `?Kernel`.
+To see the requirements for constructing a Kernel object and further informations use `?Kernel`.
 
 ### Builtin Kernels
 This package also provides a selection of various built-in kernels:
