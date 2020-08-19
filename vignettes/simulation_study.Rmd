@@ -10,9 +10,14 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-In this simulation study we essentially compare the three bandwidth estimation functions *cross_validation*, *goldenshluger_lepski* and *pco_method* from the package *KDE*. (kurz zum comparison mehr ? kurze übersicht?)
+In this simulation study we essentially compare the three bandwidth estimation functions *cross_validation*, *goldenshluger_lepski* and *pco_method* from the package *KDE*. For more information about the functions of the latter, you can lookup its vignette via:
+```
+vignette("vignette_KDE")
+```
 
-## performance of various kernels 
+(vlt noch hier eine kleine motivation wieso wir genau auf die ganzen aspekte unten eingehen ?)
+
+## dependency of the kernel
 
 In this section we want to investigate the influence of the kernel on the KDE function with an increasing number of samples. 
 In order to have a good balance of denseties for studying the behaviour of the KDE, we first initialize a custom density as a *Density* S3-object, from which we want to sample from, along with other built-in densities.
@@ -51,7 +56,7 @@ In the following two sections we first carry out a visual and then a numerical c
 
 ### visual comparison 
 
-We choose the three different kernels *rectangular*, *gaussian* and *epanechnikov* and initialize below the list *dens_list* with the three different densities we like to sample from along with their sampler functions.
+We choose the three different kernels *rectangular*, *gaussian* and *epanechnikov* and initialize below the list *dens_list* with the three different densities we like to sample from along with their sampler functions. In addition we set the bandwith to a constant value of $0.1$.
 Problem: Plots auseinanderzeihen!
 ```{r}
 kernels <- list(rectangular = rectangular, gaussian = gaussian, epanechnikov = epanechnikov)
@@ -102,9 +107,109 @@ for(j in seq_along(dens_list)) {
 }
 ```
 
+These plots suggest that with an increasing number of samples, the kernel will get more and more irrelevant. Now that we can see this tendency of the plots, we want to compute the *mean integrated square error (MISE)* of the KDE and the density we originally sampled from, to make our observations more precise. 
 
-##Dependency of Density Function
+### numerical comparison
 
-##Dependency of tuning Facor
+In the code block below we claculate the *MISE* by using $400$ repetitions (called *reps*) to sample from our given density to get a realistic result that we can rely on. 
 
-##Dependency of Samples
+```
+mise_vec <- c()
+reps <- 400
+
+for(j in seq_along(dens_list)) {
+  d <- dens_list[[j]]
+  for(i in seq_along(kernels)){
+    name <- names(kernels)[[i]]
+    k <- kernels[[i]]
+    for(n in n_samples){
+      ise_vec <- c()
+      for(rep in 1:reps){
+        samples <- d[[2]](n)
+        kde <- kernel_density_estimator(k, samples, bandwidth=bandwidth)
+        ise_vec <- c(ise_vec, (sum((kde$fun(grid) - dens$fun(grid))^2) * (x_lim[2] - x_lim[1])) / length(grid))
+      }
+      mise_vec <- c(mise_vec, mean(ise_vec))
+    }
+  }
+}
+
+mise_1 <- array(mise_vec,
+              dimnames = list("n_samples" = n_samples, "kernels" = c("rectangular","gaussian", "epanechnikov"),
+                              "density" = c("custom density", "uniform distribution", "normal distribution")),
+              dim = c(length(n_samples),length(kernels),length(dens_list)))
+mise_1
+```
+```{r, echo=FALSE}
+load(file="sim_objects.rda")
+dimnames(mise_1) <- NULL
+table1 <- data.frame(num_samples = c(10, 50, 1000), rectangular = mise_1[,1,1], gaussian = mise_1[,2,1],
+                              epanechnikov = mise_1[,3,1])
+table2 <- data.frame(num_samples = c(10, 50, 1000), rectangular = mise_1[,1,2], gaussian = mise_1[,2,2],
+                              epanechnikov = mise_1[,3,2])
+table3 <- data.frame(num_samples = c(10, 50, 1000), rectangular = mise_1[,1,3], gaussian = mise_1[,2,3],
+                              epanechnikov = mise_1[,3,3])
+```
+\
+
+*MISE* of KDE and custom density
+```{r, echo=FALSE}
+knitr::kable(table1)
+```
+
+\
+*MISE* of KDE and uniform distribution
+```{r, echo=FALSE}
+knitr::kable(table2)
+```
+
+\
+*MISE* of KDE and normal distribution
+```{r, echo=FALSE}
+knitr::kable(table3)
+```
+
+Hier noch kurze Analyse der Werte hinschreiben!
+
+## dependency of the bandwidth
+
+We learned in the last section that the *KDE* does not depend on the kernel if you choose a sufficiently large number of samples. Thus the only parameter left to study is the bandwidth. 
+
+In the following plot we will set our kernel on *epanechnikov* without loss of generality, beacause we simultaneously choose a very large number of samples (here we chose $10000$). We sample from our custom density from the beginning.
+
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
+par(mfrow = c(1,1))
+bandwidth_set <- list(list(0.3, "dark red"), list(0.01, "dark green"), list(0.001, "orange"))
+kernel <- epanechnikov
+n_samples <- 10000
+samples <- custom_sampler(n_samples)
+plot(grid, dens$fun(grid), xlim = x_lim, ylim=c(-0.1,2),
+     main="comparison of KDE with different bandwidths",
+     xlab = "",
+     ylab = "",
+     type = "l",
+     lwd = 2)
+legend("topright", title= "bandwidths", legend = c(0.3, 0.01, 0.001), col = c("dark red", "dark green", "orange"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
+for(h in bandwidth_set){
+  kde <- kernel_density_estimator(kernel ,samples, bandwidth = h[[1]])
+  lines(grid, kde$fun(grid), col = h[[2]])
+}
+```
+
+Now we can see that the *KDE* depends heavily on the bandwidth. Below we calculate the *MISE* of the *KDE* with the three different bandwidths, like we did in the numerical comparison of the last chapter. In this calculation we also sampled from a uniform distribution and a normal distribution in addition to the custom density.
+
+```{r, echo=FALSE}
+load(file="sim_objects.rda")
+dimnames(mise_2) <- NULL
+table <- data.frame("bandwidths" = c(0.3, 0.01, 0.001), "custom" = mise_2[,1], "uniform" = mise_2[,2],                                            "normal" = mise_2[,3])
+knitr::kable(table)
+```
+
+anlayse wenn wir richtige Werte dafür haben....
+
+## investigation of the tuning parameters
+
+In the implementation bandwidth estimation methods 
+
+## comparison of the bandwidth estimator functions in KDE
+
