@@ -389,7 +389,7 @@ compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
     eval_points_set <- c(eval_points_set, eval_points)
   }
   time <-system.time(res <- compare(eval_points=eval_points_set, funs=dens_sampler_list, ns=ns, kernels=kernels,
-                                    bandwidth_estimators=bandwidth_estimators,
+                                   bandwidth_estimators=bandwidth_estimators,
                                     lambda_set=lambda_set, kappa_set=kappa_set, reps=reps, length.out=n_bandwidths))
   print(time)
 
@@ -541,7 +541,7 @@ for(j in seq_along(dens_list)) {
 # mathematically we will calculate the MISE to get the empirical proof
 
 mise_vec <- c()
-reps <- 4
+reps <- 2
 
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
@@ -551,7 +551,6 @@ for(j in seq_along(dens_list)) {
     for(n in n_samples){
       ise_vec <- c()
       for(rep in 1:reps){
-        cat("mise_kernel",rep)
         samples <- d[[2]](n)
         kde <- kernel_density_estimator(k, samples, bandwidth=bandwidth)
         ise_vec <- c(ise_vec, (sum((kde$fun(grid) - dens$fun(grid))^2) * (x_lim[2] - x_lim[1])) / length(grid))
@@ -574,7 +573,7 @@ print(mise_1)
 par(mfrow = c(1,1))
 bandwidth_set <- list(list(0.3, "dark red"), list(0.01, "dark green"), list(0.001, "orange"))
 kernel <- epanechnikov
-n_samples <- 1000
+n_samples <- 10
 samples <- custom_sampler(n_samples)
 plot(grid, dens$fun(grid), xlim = x_lim, ylim=c(-0.1,2),
      main="comparison of KDE with different bandwidths",
@@ -589,12 +588,13 @@ for(h in bandwidth_set){
 }
 
 mise_vec <- c()
-reps <- 400
+reps <- 2
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
   for(h in bandwidth_set){
     ise_vec <- c()
     for(rep in 1:reps){
+      cat("mise_bandwidths", rep)
       samples <- d[[2]](n_samples)
       kde <- kernel_density_estimator(kernel, samples, bandwidth=h[[1]])
       ise_vec <- c(ise_vec, (sum((kde$fun(grid) - dens$fun(grid))^2) * (x_lim[2] - x_lim[1])) / length(grid))
@@ -608,14 +608,15 @@ mise_2 <- matrix(mise_vec, nrow=c(length(bandwidth_set)),
                                "density"=c("custom density", "uniform distribution", "normal distribution")))
 print(mise_2)
 
+#hohe reps/ns erst ab hier!
 
 # TODO: 1. bandweitenschätzer vorstellen (mathematisch?),
 # sweeter plot f?r defaultwerte auf unserer custom_density:
 # TODO: main und legend mit reinwerfen (als listen?)
 
-obj_simple_comp <- plot_comparison_objects(show_diff=FALSE, reps=400)
-plot_comparison(show_diff=FALSE, reps=400, objects=obj_simple_comp)
-
+obj_simple_comp <- plot_comparison_objects(show_diff=FALSE, reps=200)
+plot_comparison(show_diff=FALSE, reps=200, objects=obj_simple_comp)
+print("plot_comparison done(616/617")
 # 2. lambda/kappa wählen
 # hence we estimate a upper bound for the variance, we have tuning parameters for the pco_method and goldenshluger_lepski
 
@@ -624,27 +625,29 @@ plot_comparison(show_diff=FALSE, reps=400, objects=obj_simple_comp)
 
 # kappa_set <- c(1, ,1.18, 1.2, 1.22, 1.4, 1.6, 1.8, 2)
 ns <- 1000
-reps <- 400
-kappa_set <- c(1, 1.18, 1.2, 1.22, 1.4, 1.7, 2)
+reps <- 200
+kappa_set <- c(1, 1.1, 1.2, 1.3, 1.6, 2)
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
 kernel_list <- list(epanechnikov=epanechnikov)
 ise_kappa <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels=kernel_list, kappa_set=kappa_set, ns = ns, reps = reps)
 mise_kappa <- calculate_mise(ise_kappa)
 
+print("kappa done")
 # bestes kappa wird hier ... sein
 
 # now we try to tune our lambda
 # lambda_set <- c(1, 1.1, 1.2, 1.4, 1.6, 1.8, 2)
 ns <- 1000
-reps <- 400
-lambda_set <- c(1, 1.05, 1.1, 1.2, 1.4, 1.7, 2)
+reps <- 200
+lambda_set <- c(1, 1.1, 1.2, 1.4, 1.7, 2)
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
 kernel_list <- list(epanechnikov=epanechnikov)
 ise_lambda <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels=kernel_list, lambda_set=lambda_set, ns = ns, reps = reps)
 mise_lambda <- calculate_mise(ise_lambda)
 
+print("lambda done")
 # bestes lambda wird hier ... sein
 
 # 3. Schätzer mit optimalen lambda/kappa
