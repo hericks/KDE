@@ -14,6 +14,8 @@
 #'   try to find bounds on the support itself if \code{NULL} is passed.
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
+#' @param ... additional parameters to keep fixed during the evaluation of
+#'   \code{fun}.
 #'
 #' @details A kernel function is a real valued, integrable function, such that
 #'   its integral over the real numbers equals one. Kernel functions as \code{R}
@@ -141,5 +143,10 @@ validate_Kernel <- function(x){
 
 new_Kernel <- function(fun, support, subdivisions=1000L, ..., subclass=NULL){
   new_IntegrableFunction(fun, support, subdivisions, subclass=c(subclass,"Kernel"))
+}
+
+#' @export
+print.Kernel <- function(x) {
+  print.IntegrableFunction(x, "Kernel")
 }
 

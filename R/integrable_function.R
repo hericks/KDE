@@ -15,6 +15,8 @@
 #'   try to find bounds on the support itself if \code{NULL} is passed.
 #' @param subdivisions positive numeric scalar; the subdivisions parameter for
 #'   the function \code{\link{integrate_primitive}}.
+#' @param ... additional parameters to keep fixed during the evaluation of
+#'   \code{fun}.
 #'
 #' @details Integrable functions as \code{R} functions are required to
 #'
@@ -39,9 +41,9 @@
 #'   containing three named entries \code{fun}, \code{support} and \code{subdivisions}
 #'
 #'   * \strong{`fun`} is a \code{R} function (the represented function) taking a
-#'   single numeric argument and returning a numeric vector of the same length.
-#'   This function should return near zero outside of the interval given in the
-#'   \code{support} entry.
+#'   single numeric argument (additional to the fixed arguments in \code{...})
+#'   and returning a numeric vector of the same length. This function should
+#'   return near zero outside of the interval given in the \code{support} entry.
 #'
 #'   * \strong{`support`} is a numeric vector of length 2 containing a lower-
 #'   and upperbound for the support of the function stored in \code{fun} in its
@@ -187,13 +189,14 @@ find_support <- function(fun) {
 }
 
 #' @export
-print.IntegrableFunction <- function(x) {
+print.IntegrableFunction <- function(x, class_prefix=NULL) {
   extra_args <- with(environment(x$fun), extra_args)
   prefixes <- sapply(names(extra_args), function(name) {if (name == "") "" else paste0(name, " = ")}, USE.NAMES = FALSE)
   parts <- sapply(seq_len(length(prefixes)), function(i) paste0(prefixes[i], extra_args[[i]]))
   eval_expr <- paste0("(", paste(c("x", parts), collapse=", "), ")")
 
-  cat(class(x)[1], sep="\n")
+  if (is.null(class_prefix)) cat("IntegrableFunction", sep="\n")
+  else cat(class_prefix, sep="\n")
 
   fun_lines <- deparse(with(environment(x$fun), fun))
   collapse <- ifelse(length(fun_lines) == 2, "", "\n")
