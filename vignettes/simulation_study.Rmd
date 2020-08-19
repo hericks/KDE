@@ -8,18 +8,20 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE)
 ```
-In this simulation study we essentially compare the three bandwidth estimation functions *cross_validation*, *goldenshluger_lepski* and *pco_method* from the package *KDE*. For more information about the functions of the latter, you can lookup its vignette via:
+In this simulation study we compare the three bandwidth estimation functions *cross_validation*, *goldenshluger_lepski* and *pco_method* from the package *KDE*. For more information about the functions of the latter, you can lookup its vignette via:
 ```
 vignette("vignette_KDE")
 ```
-
-(vlt noch hier eine kleine motivation wieso wir genau auf die ganzen aspekte unten eingehen ?)
+## overview of the parameters 
+(freitag)
 
 ## dependency of the kernel
 
 In this section we want to investigate the influence of the kernel on the KDE function with an increasing number of samples. 
+(Freitag: referenz auf oben, wieso kernel fest?)
 In order to have a good balance of denseties for studying the behaviour of the KDE, we first initialize a custom density as a *Density* S3-object, from which we want to sample from, along with other built-in densities.
 
 ```{r}
@@ -52,17 +54,23 @@ g_den <- Density(dunif, c(0,1))
 custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
 ```
 
-In the following two sections we first carry out a visual and then a numerical comparison of the KDE with different kernels, different number of samples and as an estimation of three different density functions.
+In the following two sections we carry out a visual and numerical comparison of the KDE with different kernels, different number of samples and as an estimation of three different density functions.
 
 ### visual comparison 
 
-We choose the three different kernels *rectangular*, *gaussian* and *epanechnikov* and initialize below the list *dens_list* with the three different densities we like to sample from along with their sampler functions. In addition we set the bandwith to a constant value of $0.1$.
+We first choose three different kernels *rectangular*, *gaussian* and *epanechnikov*. Then we initialize the list *dens_list* with the three different densities we like to sample from, along with their sampler functions. In addition we set the bandwith to a constant value of $0.1$.
+
 Problem: Plots auseinanderzeihen!
 ```{r}
 kernels <- list(rectangular = rectangular, gaussian = gaussian, epanechnikov = epanechnikov)
-dens_list <- list(list(dens, custom_sampler), list(Density(dunif, c(0,1)), runif), list(Density(dnorm, c(-15,15)), rnorm))
+dens_list <- list(list(dens, custom_sampler), 
+                  list(Density(dunif, c(0,1)), runif), 
+                  list(Density(dnorm, c(-15,15)), rnorm))
 n_samples <- c(10, 50, 1000)
 bandwidth <- 0.1
+```
+
+```{r, echo=FALSE}
 par(mfrow = c(1, 3))
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
@@ -107,15 +115,15 @@ for(j in seq_along(dens_list)) {
 }
 ```
 
-These plots suggest that with an increasing number of samples, the kernel will get more and more irrelevant. Now that we can see this tendency of the plots, we want to compute the *mean integrated square error (MISE)* of the KDE and the density we originally sampled from, to make our observations more precise. 
+These plots suggest that with an increasing number of samples, the kernel will get more and more irrelevant. Now that we can see this tendency of the plots, we want to compute the *mean integrated square error (MISE)* of the *KDE* and the density we originally sampled from, to make our observations more precise. 
 
 ### numerical comparison
 
-In the code block below we claculate the *MISE* by using $400$ repetitions (called *reps*) to sample from our given density to get a realistic result that we can rely on. 
+In the code block below we claculate the *MISE* by using $200$ repetitions (called *reps*) to sample from our given density to get a realistic result that we can rely on. 
 
 ```
 mise_vec <- c()
-reps <- 400
+reps <- 200
 
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
@@ -135,8 +143,9 @@ for(j in seq_along(dens_list)) {
 }
 
 mise_1 <- array(mise_vec,
-              dimnames = list("n_samples" = n_samples, "kernels" = c("rectangular","gaussian", "epanechnikov"),
-                              "density" = c("custom density", "uniform distribution", "normal distribution")),
+              dimnames = list("n_samples" = n_samples, 
+                              "kernels" = c("rectangular","gaussian", "epanechnikov"),
+                              "density" = c("custom density", "uniform distribution", "normal   distribution")),
               dim = c(length(n_samples),length(kernels),length(dens_list)))
 mise_1
 ```
@@ -171,11 +180,11 @@ knitr::kable(table3)
 
 Hier noch kurze Analyse der Werte hinschreiben!
 
-## dependency of the bandwidth
+## dependency of the bandwidth 
 
-We learned in the last section that the *KDE* does not depend on the kernel if you choose a sufficiently large number of samples. Thus the only parameter left to study is the bandwidth. 
+We learned in the last section that the influence of the kernel on the *KDE* gets smaller, as the number of samples increases. Thus we conclude that if we choose the quantity of samples suffiently high, the more important parameter left to study is the bandwidth.
 
-In the following plot we will set our kernel on *epanechnikov* without loss of generality, beacause we simultaneously choose a very large number of samples (here we chose $10000$). We sample from our custom density from the beginning.
+In the following plot we will set our kernel on *epanechnikov* without loss of generality, beacause we simultaneously choose a very large number of samples (here we chose $1000$ samples). We sample from our custom density from the beginning.
 
 ```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
 par(mfrow = c(1,1))
@@ -199,17 +208,91 @@ for(h in bandwidth_set){
 Now we can see that the *KDE* depends heavily on the bandwidth. Below we calculate the *MISE* of the *KDE* with the three different bandwidths, like we did in the numerical comparison of the last chapter. In this calculation we also sampled from a uniform distribution and a normal distribution in addition to the custom density.
 
 ```{r, echo=FALSE}
-load(file="sim_objects.rda")
 dimnames(mise_2) <- NULL
 table <- data.frame("bandwidths" = c(0.3, 0.01, 0.001), "custom" = mise_2[,1], "uniform" = mise_2[,2],                                            "normal" = mise_2[,3])
 knitr::kable(table)
 ```
 
-anlayse wenn wir richtige Werte dafür haben....
-
-## investigation of the tuning parameters
-
-In the implementation bandwidth estimation methods 
+This data shows us that $0.01$ is the optimal bandwidth for the custom density and the uniform distribution, out of the given set of bandwidths $\{0.3, 0.01, 0.001\}$. In contrast to that, $0.01$ is not the optimal bandwidth for approximating the normal distribution. 
+This behaviour shows us that the optimal bandwidth depends on the distribution of the samples. 
 
 ## comparison of the bandwidth estimator functions in KDE
+
+```{r, echo=FALSE, out.width='100%', fig.width=6, fig.height=4, fig.align = "center"}
+plot_comparison(show_diff=FALSE, reps=200, objects=obj_simple_comp, legend= c("cross_validation", "goldenshluger_lepski", "pco_method"))
+```
+
+### investigation of the tuning parameters
+
+In the functions *goldenshluger_lepski* and *pco_method* it is possible to set a tuning parameter. In literature the user is advised to set $\kappa = 1.2$ for Goldenshluger-Lepski and $\lambda = 1$ for the PCO method.
+
+In our following calculations we want to comprehend 
+
+```
+ns <- 1000
+reps <- 200
+kappa_set <- c(1, 1.1, 1.2, 1.3, 1.6, 2)
+dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
+sampler_list <- list(custom_sampler, runif, rnorm)
+kernel_list <- list(epanechnikov=epanechnikov)
+ise_kappa <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels=kernel_list, kappa_set=kappa_set, ns = ns, reps = reps)
+mise_kappa <- calculate_mise(ise_kappa)
+```
+
+```{r,echo=FALSE}
+knitr::kable(mise_kappa %>% 
+  select(den, kappa, mise, med_ise, sd_ise))
+```
+
+```{r,echo=FALSE}
+knitr::kable(mise_kappa %>% 
+  select(den, kappa, mise, med_ise, sd_ise) %>%
+    group_by(den) %>%
+      filter(mise == min(mise)) %>%
+        select(den, kappa, mise))
+
+```
+
+```
+ns <- 1000
+reps <- 200
+lambda_set <- c(1, 1.1, 1.2, 1.4, 1.7, 2)
+dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
+sampler_list <- list(custom_sampler, runif, rnorm)
+kernel_list <- list(epanechnikov=epanechnikov)
+ise_lambda <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels=kernel_list, lambda_set=lambda_set, ns = ns, reps = reps)
+mise_lambda <- calculate_mise(ise_lambda)
+```
+```{r,echo=FALSE}
+knitr::kable(mise_lambda %>% 
+  select(den, lambda, mise, med_ise, sd_ise))
+
+```
+
+```{r,echo=FALSE}
+knitr::kable(mise_lambda %>% 
+  select(den, lambda, mise, med_ise, sd_ise) %>%
+    group_by(den) %>%
+      filter(mise == min(mise)) %>%
+        select(den, lambda, mise))
+
+```
+
+### performance analysis
+
+We will make a small performance comparison of the three bandwidth estimators, calculating the optimal bandwidth out of a bandwidth set.
+First of all, we set up the bandwidth set, using the logarithmic_bandwidth_set function.
+Note that, as we wrap our functions such that they can work on different sample sets, we do not calculate the mean time solely for our bandwidth estimators.
+But as the sampler function and the number of samples are the same in every function, the mean of the runtime of the sampler can be neglected.
+Thus, we can compare the relative difference of the runtimes.
+For this comparison, the package microbenchmark will be used.
+
+
+
+As we can see, the pco_method and cross_validation are performing at similar speed, but the goldenshluger_lepski method is working very slow on a increasing number of bandwidths.
+Looking at the construction of the method, this is a reasonable claim to make.
+
+### main comparison 
+
+## comments on the study
 
