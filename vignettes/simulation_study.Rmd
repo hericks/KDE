@@ -7,6 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -102,6 +104,9 @@ for(j in seq_along(dens_list)) {
 }
 ```
 
+```{r}
+load(file="sim_objects.rda", envir=e)
+```
 
 ##Dependency of Density Function
 

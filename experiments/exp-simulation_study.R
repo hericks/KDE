@@ -1,6 +1,5 @@
 library(tidyverse)
 
-# TODO::length.out hochsetzen, length.out = 10
 compare <- function(eval_points,
                     funs = list(runif),
                     bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
@@ -288,7 +287,8 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
           "topright",
           legend = legend,
           lwd = 2,
-          col = 2:(bw_len + 1)
+          col = 2:(bw_len + 1),
+          cex = 0.8
         )
 
       # second plot (difference between true f and estimation)
@@ -541,7 +541,7 @@ for(j in seq_along(dens_list)) {
 # mathematically we will calculate the MISE to get the empirical proof
 
 mise_vec <- c()
-reps <- 2
+reps <- 200
 
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
@@ -573,7 +573,7 @@ print(mise_1)
 par(mfrow = c(1,1))
 bandwidth_set <- list(list(0.3, "dark red"), list(0.01, "dark green"), list(0.001, "orange"))
 kernel <- epanechnikov
-n_samples <- 10
+n_samples <- 1000
 samples <- custom_sampler(n_samples)
 plot(grid, dens$fun(grid), xlim = x_lim, ylim=c(-0.1,2),
      main="comparison of KDE with different bandwidths",
@@ -588,7 +588,7 @@ for(h in bandwidth_set){
 }
 
 mise_vec <- c()
-reps <- 2
+reps <- 200
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
   for(h in bandwidth_set){
@@ -610,18 +610,50 @@ print(mise_2)
 
 #hohe reps/ns erst ab hier!
 
-# TODO: 1. bandweitenschätzer vorstellen (mathematisch?),
-# sweeter plot f?r defaultwerte auf unserer custom_density:
-# TODO: main und legend mit reinwerfen (als listen?)
 
-obj_simple_comp <- plot_comparison_objects(show_diff=FALSE, reps=200)
+# sweeter plot f?r defaultwerte auf unserer custom_density:
+obj_simple_comp <- plot_comparison_objects(show_diff=FALSE, reps=5)
 plot_comparison(show_diff=FALSE, reps=200, objects=obj_simple_comp)
-print("plot_comparison done(616/617")
+print("plot_comparison done")
 # 2. lambda/kappa wählen
 # hence we estimate a upper bound for the variance, we have tuning parameters for the pco_method and goldenshluger_lepski
 
 # first, lets take a look at goldenshluger_lepski and the kappa parameter
 # in literature, they set kappa=1.2
+
+
+
+# 3. Schätzer mit optimalen lambda/kappa
+# nun vergleichen wir die bandweitensch?tzer untereinander
+# lambda, kappa fest wie oben gew?hlt
+
+kappa_set <- list(1.2)
+lambda_set <- list(1)
+reps <- 2 #200
+ns <- c(10) # 1000
+
+# mehr densities?
+# als erstes schauen wir, welcher Bandweitensch?tzer bei 1000 samples auf unseren 3 densities am besten performen w?rden
+plot_object_vec_1 <- list()
+for(i in seq_along(dens_list)){
+  d <- dens_list[[i]]
+  xlim_1 <-  c(d$support[1] - 1, d$support[2] + 1)
+  plot_object_vec_1 <- c(plot_object_vec_1, list(plot_comparison_objects(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns)))
+}
+for(i in seq_along(plot_object_vec_1)){
+  obj <- plot_object_vec_1[[i]]
+  par(mfrow=c(1,1))
+  d <- dens_list[[i]]
+  xlim_1 <-  c(d$support[1] - 1, d$support[2] + 1)
+  plot_comparison(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns, objects=obj)
+}
+ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps,ns=ns)
+mise_high_ns_comp <- calculate_mise(ise)
+mise_high_ns_comp %>%
+  group_by(n, bandwidth_estimators) %>%
+  summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise))
+
+
 
 # kappa_set <- c(1, ,1.18, 1.2, 1.22, 1.4, 1.6, 1.8, 2)
 ns <- 1000
@@ -650,42 +682,69 @@ mise_lambda <- calculate_mise(ise_lambda)
 print("lambda done")
 # bestes lambda wird hier ... sein
 
-# 3. Schätzer mit optimalen lambda/kappa
-# nun vergleichen wir die bandweitensch?tzer untereinander
-# lambda, kappa fest wie oben gew?hlt
-
-kappa_set <- list(1.2)
-lambda_set <- list(1)
-reps <- 2
-ns <- c(10)
-
-# mehr densities?
-# als erstes schauen wir, welcher Bandweitensch?tzer bei 1000 samples auf unseren 3 densities am besten performen w?rden
-plot_object_vec_1 <- list()
-for(i in seq_along(dens_list)){
-  d <- dens_list[[i]]
-  xlim_1 <-  c(d$support[1] - 1, d$support[2] + 1)
-  plot_object_vec_1 <- c(plot_object_vec_1, list(plot_comparison_objects(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns)))
-}
-for(i in seq_along(plot_object_vec_1)){
-  obj <- plot_object_vec_1[[i]]
-  par(mfrow=c(1,1))
-  d <- dens_list[[i]]
-  xlim_1 <-  c(d$support[1] - 1, d$support[2] + 1)
-  plot_comparison(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns, objects=obj)
-}
-ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps,ns=ns)
-mise_high_ns_comp <- calculate_mise(ise)
-mise_high_ns_comp %>%
-  group_by(n, bandwidth_estimators) %>%
-  summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise))
-
 
 # TODO: performance
-# we will make a small performance comparison
+# we will make a small performance comparison using the package microbenchmark and the epanechnikov kernel
+# the bandwidth set will be calculated by our builtin function logarithmic_bandwidth_set
 
-# da nicht immer sehr viele daten vorhanden sind, betrachten wir nun, welcher Bandweitensch?tzer sich bei verschiedenen sample sizes am besten verh?lt
+# at first, we will set our number of samples to 1000 and work on a small bandwidth set with 5 bandwidths for the algorithms to choose from.
+#TODO: n_bandwidths auf 5 und 20 setzen, times=100 hochsetzen
+library(rlang)
+library(microbenchmark)
+ns <- 1000
+n_bandwidths <- 5
+bandwidths_1 <- logarithmic_bandwidth_set(from=1/ns, to=1, length.out=n_bandwidths)
+strings <-c()
+n_band <- c()
+time_mean <- c()
+cross_val <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
+  samples <- rnorm(ns)
+  cross_validation(epanechnikov, samples, bandwidths_1, subdivisions = 1000L)
+}
+goldenshluger_lep <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
+  samples <- rnorm(ns)
+  goldenshluger_lepski(epanechnikov, samples, bandwidths_1, subdivisions = 1000L)
+}
+pco_meth <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
+  samples <- rnorm(ns)
+  pco_method(epanechnikov, samples, bandwidths_1, subdivisions = 1000L)
+}
+bm_small_set <- microbenchmark::microbenchmark(cross_val(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
+                                               goldenshluger_lep(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
+                                               pco_meth(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
+                                     times=200L)
+
+for (expr in unique(bm_small_set$expr)) {
+  strings <- c(strings, str_extract(expr, "\\w+_\\w+(?=\\()"))
+  n_band <- c(n_band, n_bandwidths)
+  time_mean <- c(time_mean, mean(bm_small_set$time[bm_small_set$expr == expr]) * 1e-9)
+}
+# now, we will work on a bandwidth set containing 20 elements, but on the same samples
+n_bandwidths <- 20
+bandwidths_2 <- logarithmic_bandwidth_set(from=1/ns, to=1, length.out=n_bandwidths)
+bm_big_set <- microbenchmark::microbenchmark(cross_val(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
+                                               goldenshluger_lep(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
+                                               pco_meth(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
+                                               times=200L)
+
+for (expr in unique(bm_big_set$expr)) {
+  strings <- c(strings, str_extract(expr, "\\w+_\\w+(?=\\()"))
+  n_band <- c(n_band, n_bandwidths)
+  time_mean <- c(time_mean, mean(bm_big_set$time[bm_big_set$expr == expr]) * 1e-9)
+}
+
+results_performance <- tibble(method=strings,
+                              n_bandwidths=n_band,
+                              time_mean=time_mean)
+
+results_performance %>% arrange(n_bandwidths, method)
+
+# da nicht immer sehr viele daten vorhanden sind, betrachten wir nun abschließend, welcher Bandweitensch?tzer sich bei verschiedenen sample sizes am besten verh?lt
 ns <- c(10, 50, 100, 1000)
+reps <- 5 #200
+dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
+sampler_list <- list(custom_sampler, runif, rnorm)
+kernel_list <- list(epanechnikov=epanechnikov)
 plot_object_vec_2 <- list()
 for(i in seq_along(dens_list)){
   d <- dens_list[[i]]
@@ -694,7 +753,7 @@ for(i in seq_along(dens_list)){
 )
 }
 
-# TODO: plots einzeln schöner machen
+# plot
 ylims <- list(c(-0.1, 2.2), c(-0.1, 1.5), c(-0.1, 0.5))
 for(i in seq_along(plot_object_vec_2)){
   obj_lists <- plot_object_vec_2[[i]]
@@ -714,18 +773,10 @@ for(i in seq_along(plot_object_vec_2)){
 }
 par(mfrow=c(1,1))
 
-
+# numerical comparison
 ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps, ns=c(10, 50, 100, 1000))
 mise_ns_comp <- calculate_mise(ise)
 mise_ns_comp %>%
   group_by(n, bandwidth_estimators) %>%
   summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise))
 
-
-# 4. MSE am Rand von Dichte mit kompaktem support?
-
-#microbenchmark(expr1, expr2, times=25L)
-# TODO: 1. performance vergleich, 1.5 legenden etc 2. wie kann man objekte abspeichern und in vignette einbinden? 3. welche parameter bei welchem test?
-
-save(list = ls(all.names = TRUE), file="sim_objects.rda")
-#load(file="sim_objects.rda")
