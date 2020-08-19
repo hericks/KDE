@@ -296,5 +296,3 @@ Looking at the construction of the method, this is a reasonable claim to make.
 
 ## comments on the study
 
-
-
