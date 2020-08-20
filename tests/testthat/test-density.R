@@ -8,15 +8,17 @@ test_that("a density should be built correctly",{
   }
   dens_custom <- Density(custom_den, c(0,1))
 
-  expect_equal(dens_norm$fun, dnorm)
-  expect_equal(dens_unif$fun, dunif)
-  expect_equal(dens_custom$fun, custom_den)
   expect_equal(dens_norm$support, c(-15, 15))
   expect_equal(dens_unif$support, c(0, 1))
   expect_equal(dens_custom$support, c(0,1))
   expect_true(inherits(dens_norm, "Density"))
   expect_true(inherits(dens_unif, "Density"))
   expect_true(inherits(dens_custom, "Density"))
+})
+
+test_that("the ... argument works for densities", {
+  expect_equal(Density(dnorm, mean=2)$fun(2), dnorm(0))
+  expect_equal(Density(dunif, min=-1, max=1)$fun(0), 1/2)
 })
 
 
@@ -65,5 +67,9 @@ test_that("density has to be non-negative",{
   expect_error(Density(neg_valued_function, c(-Inf, Inf)))
   expect_error(Density(neg_valued_function2, c(-1,1)))
   expect_error(Density(neg_valued_function3, c(-1,1)))
-}
-)
+})
+
+test_that("the custom printing method works", {
+  expected_lines <- "Density\nfunction (x, mean = 0, sd = 1, log = FALSE) .Call(C_dnorm, x, mean, sd, log)\nevaluated at (x, mean = 2), support: [-12,15], subdivisions: 250"
+  expect_output(print(Density(dnorm, support=c(-12, 15), subdivisions=250, mean=2)), expected_lines, fixed=TRUE)
+})

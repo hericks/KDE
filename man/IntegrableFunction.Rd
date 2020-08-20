@@ -4,7 +4,7 @@
 \alias{IntegrableFunction}
 \title{Integrable Functions}
 \usage{
-IntegrableFunction(fun, support = NULL, subdivisions = 1000L)
+IntegrableFunction(fun, support = NULL, subdivisions = 1000L, ...)
 }
 \arguments{
 \item{fun}{a \code{R} function taking a single numeric argument and returning
@@ -18,6 +18,9 @@ try to find bounds on the support itself if \code{NULL} is passed.}
 
 \item{subdivisions}{positive numeric scalar; the subdivisions parameter for
 the function \code{\link{integrate_primitive}}.}
+
+\item{...}{additional parameters to keep fixed during the evaluation of
+\code{fun}.}
 }
 \description{
 Many functions of the \code{KDE} package work with densities and
@@ -49,9 +52,9 @@ basic properties of integrable functions. The class is build on lists
 containing three named entries \code{fun}, \code{support} and \code{subdivisions}
 \itemize{
 \item \strong{\code{fun}} is a \code{R} function (the represented function) taking a
-single numeric argument and returning a numeric vector of the same length.
-This function should return near zero outside of the interval given in the
-\code{support} entry.
+single numeric argument (additional to the fixed arguments in \code{...})
+and returning a numeric vector of the same length. This function should
+return near zero outside of the interval given in the \code{support} entry.
 \item \strong{\code{support}} is a numeric vector of length 2 containing a lower-
 and upperbound for the support of the function stored in \code{fun} in its
 first and second entry respectively. In particular the values \code{-Inf}

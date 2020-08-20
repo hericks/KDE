@@ -4,7 +4,7 @@
 \alias{Kernel}
 \title{Kernels}
 \usage{
-Kernel(fun, support = NULL, subdivisions = 1000L)
+Kernel(fun, support = NULL, subdivisions = 1000L, ...)
 }
 \arguments{
 \item{fun}{a \code{R} function taking a single numeric argument and returning
@@ -18,6 +18,9 @@ try to find bounds on the support itself if \code{NULL} is passed.}
 
 \item{subdivisions}{positive numeric scalar; the subdivisions parameter for
 the function \code{\link{integrate_primitive}}.}
+
+\item{...}{additional parameters to keep fixed during the evaluation of
+\code{fun}.}
 }
 \description{
 The kernels are key-objects of the \code{KDE} package. The S3
