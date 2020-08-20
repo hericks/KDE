@@ -244,14 +244,15 @@ shiny_kde <- function(){
       observeEvent(input$density, {
         observeEvent(c(input_density_parameters$params(),input$num_samples, input$refresh_samples), {
           #get new samples
+
           samples <- reactive_samples$values()
               output$plot <- renderPlot({
+                par(mar=c(3, 2, 0.1, 0.1))
                 plot(
                   x_grid(),
                   reactive_density$fun(x_grid()),
                   xlim = c(input$xlim_1, input$xlim_2),
                   ylim = c(input$ylim_1, input$ylim_2),
-                  main = "graphic representation",
                   xlab = "",
                   ylab = "",
                   col = "dark red",
@@ -259,7 +260,7 @@ shiny_kde <- function(){
                   lwd = 2
 
                 )
-                legend("topleft", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
+                legend("topright", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
                 if (input$show_kernel) {
                   lines(x_grid(), reactive_kernel$fun(x_grid()))
                 }
@@ -284,7 +285,7 @@ shiny_kde <- function(){
                          pch = ".",
                          col = "blue")
 
-                  legend("topright", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
+                  legend("topleft", legend = c("PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark green","violet", "steelblue2"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
                 }
                 else {
                   points(samples,

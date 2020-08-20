@@ -1,21 +1,10 @@
 # Setup
 dev.off()
-
-# library(Cairo)
-# Cairo::CairoX11()
-
 quartz(title="Plots",
        width = 5.25,
        height= 3.75,
        dpi=120)
 options(viewer=NULL)
-
-set.seed(17)
-samples <- rnorm(10)
-par(mar=c(2.5, 0, 0, 0))
-plot(1, type="n", xlab="", ylab="", xlim=c(-3, 3), ylim=c(0, 0.7))
-points(samples, double(length(samples)), col="blue", pch=".", cex=2)
-lines(grid, dnorm(grid), col="red", lty="dashed")
 
 ### Introduction to kernel density estimation
 set.seed(17)
@@ -23,23 +12,24 @@ samples <- sort(rnorm(10))
 
 # empty plot
 par(mar=c(2.5, 0, 0, 0))
-clear_plot <- function() plot(1, type="n", xlab="", ylab="", xlim=c(-3, 3), ylim=c(0, 0.7))
+clear_plot <- function()
+  plot(1, type="n", xlab="", ylab="", xlim=c(-3, 3), ylim=c(0, 0.7))
 clear_plot()
 
 # plot samples
-plot_samples <- function() points(samples, double(length(samples)) - 0.015, col="blue", pch=".", cex=2)
+plot_samples <- function()
+  points(samples, double(length(samples)) - 0.015, col="blue", pch=".", cex=2)
 plot_samples()
 
 # plot density
 grid <- seq(-3, 3, length.out=1000L)
-
 plot_density <- function() lines(grid, dnorm(grid), col="red", lty="dashed")
 plot_density()
 
 # kernel
 kernel <- function(grid) (abs(grid) <= 1)/2
 
-# plot estimator given first sample/second sample
+# plot estimator given first sample/second sample #
 lines(grid, kernel(grid - samples[1]))
 lines(grid, kernel(grid - samples[2]))
 
@@ -79,7 +69,7 @@ plot_density()
 lines(grid, estimator_up_to(10)(grid))
 plot_samples()
 
-# example for different kernels
+# example for different kernels #
 triangular <- function(x) {
   return((1 - abs(x)) * (abs(x) <= 1))
 }
@@ -102,15 +92,17 @@ plot(grid, gaussian(grid), type="l",  yaxt = "n", xaxt = "n")
 rm(triangular, epanechnikov, gaussian)
 
 
-### Introduction to the KDE package
+### Introduction to the KDE package #
 library(KDE)
 
 ### Object Structure
 
-# integrable functions
-?IntegrableFunction
+# Kerne/Dichten zentrale Objekte. S3 Klassenstruktur um einige der
+# math./num. Anforderungen sicherstellen zu können.
 
-# numeric support
+# integrable functions
+
+# numeric compact support
 IntegrableFunction(dnorm, support=c(-Inf, Inf))
 all.equal(dnorm(-15), 0)
 
@@ -124,27 +116,26 @@ IntegrableFunction(dnorm, mean=2)
 integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 25L)
 integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 1000L)
 
-# kernels
-?Kernel
 
+
+### Kernels and densities #
+
+# kernels
 Kernel(dnorm, subdivisions = 25L)
 Kernel(dnorm, subdivisions = 1000L)
 
-Kernel(function(grid) (abs(grid) <= 1)/2,
-       support=c(-1, 1))
+Kernel(function(x) (abs(x) <= 1)/2, support=c(-1, 1))
 rectangular
 
-# plot built-in kernels
+## plot built-in kernels
 par(mfrow=c(2,2), mar=c(0, 0, 0, 0))
-
 grid <- seq(-2.5, 2.5, length.out=1000)
 plot(grid, rectangular$fun(grid), type="l",  yaxt = "n", xaxt = "n")
 plot(grid, triangular$fun(grid), type="l",  yaxt = "n", xaxt = "n")
 plot(grid, epanechnikov$fun(grid), type="l",  yaxt = "n", xaxt = "n")
 plot(grid, gaussian$fun(grid), type="l",  yaxt = "n", xaxt = "n")
 
-
-# densities
+# densities #
 Density(dnorm)
 
 
@@ -193,10 +184,13 @@ ises
 
 
 
-### Bandwidth estimation
+### Bandwidth estimation #
+# open vignette
+
 set.seed(17)
 samples <- rnorm(500)
 
+##
 clear_plot()
 plot_samples()
 plot_density()
@@ -205,14 +199,17 @@ kernel <- gaussian
 bandwidths <- logarithmic_bandwidth_set(1/500, 1, 15)
 
 cv_bandwidth <- cross_validation(kernel, samples, bandwidths)
+cv_bandwidth
 cv_estimator <- kernel_density_estimator(kernel, samples, cv_bandwidth)
 lines(grid, cv_estimator$fun(grid), col="darkorchid2")
 
 gl_bandwidth <- goldenshluger_lepski(kernel, samples, bandwidths)
+gl_bandwidth
 gl_estimator <- kernel_density_estimator(kernel, samples, gl_bandwidth)
 lines(grid, gl_estimator$fun(grid), col="chartreuse")
 
 pco_bandwidth <- pco_method(kernel, samples, bandwidths)
+pco_bandwidth
 pco_estimator <- kernel_density_estimator(kernel, samples, pco_bandwidth)
 lines(grid, pco_estimator$fun(grid), col="deepskyblue")
 
@@ -233,7 +230,13 @@ ises <- sapply(estimators, function(estimator) {
 ises
 
 
-### Hürde: numerische Integration
+
+### Shiny
+shiny_kde()
+
+
+
+### Obstacles: numeric integration
 shifted_kernel <- kernel_transform(rectangular, 10, 0.01)
 
 grid <- seq(0, 20, by=0.01)
@@ -253,19 +256,14 @@ estimator$support
 integrate_primitive(estimator$fun, estimator$support[1], estimator$support[2])$value
 
 
-### Ausblick
+### Outlook
 
-# ? Konvergenzabschätzung?
+# convergence
+integrate_primitive(dnorm, -10, 10, subdivisions = 500, check = TRUE)
+integrate_primitive(dnorm, -10, 10, subdivisions = 1000, check = TRUE)
 
-### Shiny
-
-shiny_kde()
-
-
-# Einführung
-# Paket Strukturen
-# Paket KDE
-# Paket Bandbreitenschätzer
-# Hürden
-# Ausblick
-# Shiny
+# divergence
+integrate_primitive(function(x) 1/x, 0, 1, subdivisions = 500, check = TRUE)
+integrate_primitive(function(x) 1/x, 0, 1, subdivisions = 1000, check = TRUE)
+integrate_primitive(function(x) 1/x, 0, 1, subdivisions = 5000, check = TRUE)
+integrate_primitive(function(x) 1/x, 0, 1, subdivisions = 10000, check = TRUE)
