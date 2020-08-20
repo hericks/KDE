@@ -484,12 +484,12 @@ In this simulation study we compare the three bandwidth estimation functions *cr
 vignette("vignette_KDE")
 ```
 ## overview of the parameters
-$n$, *n*, *ns*: varying, default n = 1000L
-$x_i$, *x*, varying, grid depends on the true density function, default is the interval $[0,1]$.
-true function, *density*, varying, default is a custom density, based on a sine curve.
-kernel: fixed on *epanechnikov* kernel for large sample sizes, varying for small sample sizes.
-$\kappa$, parameter for Goldenshluger-Lepski method, fixed to $\kappa = 1.2$ for comparison between estimators, varying as object of study.
-$\lambda$, parameter for Penalized Comparison to Overfitting, fixed to $\lambda = 1$ for comparison between estimators, varying as object of study.
+$n$, *n*, *ns*: varying, default n = 1000L \
+$x_i$, *x*, varying, grid depends on the true density function, default is the interval $[0,1]$. \
+true function, *density*, varying, default is a custom density, based on a sine curve. \
+kernel: fixed on *epanechnikov* kernel for large sample sizes, varying for small sample sizes. \
+$\kappa$, parameter for Goldenshluger-Lepski method, fixed to $\kappa = 1.2$ for comparison between estimators, varying as object of study. \
+$\lambda$, parameter for Penalized Comparison to Overfitting, fixed to $\lambda = 1$ for comparison between estimators, varying as object of study. \
 
 
 ## dependency of the kernel
@@ -537,15 +537,15 @@ We first choose three different kernels *rectangular*, *gaussian* and *epanechni
 (Wollen wir wirklich so viele plots?)
 ```{r}
 kernels <- list(rectangular = rectangular, gaussian = gaussian, epanechnikov = epanechnikov)
-dens_list <- list(list(dens, custom_sampler), 
-                  list(Density(dunif, c(0,1)), runif), 
-                  list(Density(dnorm, c(-15,15)), rnorm))
+dens_list <- list(list(Density(dunif, c(0,1)), runif), 
+                  list(Density(dnorm, c(-15,15)), rnorm),
+                  list(dens, custom_sampler))
 n_samples <- c(10, 50, 1000)
 bandwidth <- 0.1
 ```
 
-```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
-par(mfrow = c(1, 3))
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=3, fig.align = "center"}
+par(mfrow = c(1, 3), mar=c(0,0,2,0))
 for(j in seq_along(dens_list)) {
   d <- dens_list[[j]]
     for (i in seq_along(kernels)) {
@@ -554,18 +554,20 @@ for(j in seq_along(dens_list)) {
       name <- names(kernels)[[i]]
       k <- kernels[[i]]
         kde <- kernel_density_estimator(k, samples, bandwidth = bandwidth)
-        if(j < 3){
+        if(j != 2){
           grid <- seq(from=x_lim[1], to=x_lim[2], length.out=300)
           plot(
             grid,
             d[[1]]$fun(grid),
             xlim = x_lim,
-            ylim = c(-0.5, 2),
-            main = paste(length(samples), "samples"),
+            ylim = c(0, 2),
+            main = paste(length(samples), "samples", names(kernels)[i]),
             xlab = "",
             ylab = "",
             col = "dark red",
             type = "l",
+            xaxt='n',
+            yaxt='n',
             lwd = 2
           )
         } 
@@ -574,11 +576,13 @@ for(j in seq_along(dens_list)) {
             grid <- seq(from = -16 ,to = 16, length.out=3000),
             d[[1]]$fun(grid),
             xlim = c(-4, 4),
-            ylim = c(-0.2, 1),
-            main = paste(length(samples), "samples"),
+            ylim = c(0, 1),
+            main = paste(length(samples), "samples", names(kernels)[i]),
             xlab = "",
             ylab = "",
             col = "dark red",
+            xaxt='n',
+            yaxt='n',
             type = "l",
             lwd = 2
           )
@@ -846,21 +850,19 @@ sampler_list <- list(custom_sampler, runif, rnorm)
 kernel_list <- list(epanechnikov=epanechnikov)
 ```
 
-```r
-# TODO: {r, echo=FALSE} einsetzen
+```{r, echo=FALSE, , out.width='100%', fig.width=8, fig.height=3, fig.align = "center"}
 # plot
+par(mfrow=c(1,4), mar=c(0,0,2,0))
 ylims <- list(c(-0.1, 2.2), c(-0.1, 1.5), c(-0.1, 0.5))
 for(i in seq_along(plot_object_vec_2)){
   obj_lists <- plot_object_vec_2[[i]]
   ylims_i <- ylims[[i]]
-  par(mfrow=c(1,4))
   d <- dens_list[[i]]
   if(i == 3){
     xlim_2 <-  c(-4, 4)
 
   }else{
     xlim_2 <-  c(d$support[1] - 1, d$support[2] + 1)
-
   }
   for(obj in obj_lists){
   plot_comparison(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_2[1], xlim_upper=xlim_2[2], ylim_lower=ylims_i[1], ylim_upper=ylims_i[2], reps=reps, ns=ns, objects=obj)
