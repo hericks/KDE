@@ -15,8 +15,8 @@ shiny_kde <- function(){
       "Choose a density:",
       c(
         "Normal distribution" = "dnorm",
-        "Beta distribution" = "dbeta",
-        "Exponential distribution" = "dexp",
+        #"Beta distribution" = "dbeta",
+        #"Exponential distribution" = "dexp",
         "Uniform distribution" = "dunif",
         "Custom Density 1" = "custom_density_1",
         "Custom Density 2" = "custom_density_2"
@@ -122,10 +122,12 @@ shiny_kde <- function(){
   server <- function(input, output, session) {
     reactive_density <- reactiveValues()
     reactive_density$support <- function() {
+      f <- function(x, default) ifelse(is.na(x), default, x)
+
       switch(
         input$density,
-        "dunif" = c(input$dunif_min, input$dunif_max),
-        "dnorm" = NULL,
+        "dunif" = c(f(input$dunif_min,0), max(f(input$dunif_max, 0), f(input$dunif_min, 0) + 0.01)),
+        "dnorm" = c(f(input$dnorm_mean, 0) - 15, f(input$dnorm_mean, 0) + 15),
         "dbeta" = c(0,1),
         "dexp" = NULL,
         "custom_density_1" = c(0,1),
@@ -144,10 +146,11 @@ shiny_kde <- function(){
       ret
     }
     reactive_density$fun <- function(x) {
+      f <- function(x, default) ifelse(is.na(x), default, x)
       switch(
         input$density,
-        "dunif" = dunif(x, input$dunif_min, input$dunif_max),
-        "dnorm" = dnorm(x, input$dnorm_mean, input$dnorm_sd),
+        "dunif" = dunif(x, f(input$dunif_min,0), max(f(input$dunif_max, 0), f(input$dunif_min, 0) + 0.01)),
+        "dnorm" = dnorm(x, f(input$dnorm_mean, 0), f(input$dnorm_sd, 0.1)),
         "dbeta" = dbeta(x, max(c(0.3, input$dbeta_alpha), na.rm=TRUE), max(c(0.3, input$dbeta_beta), na.rm=TRUE)),
         "dexp" = dexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE)),
         "custom_density_1" = reactive_density$custom_density_1(x),
@@ -157,7 +160,7 @@ shiny_kde <- function(){
     }
     reactive_density$object <-
       function() {
-        Density(reactive_density$fun, reactive_density$support())
+        Density(reactive_density$fun, reactive_density$support(), subdivisions=1000)
       }
 
     reactive_samples <- reactiveValues()
@@ -167,10 +170,12 @@ shiny_kde <- function(){
         num_of_samples <- 1L
       }
       sampler_fun <- function(x) {
+        f <- function(x, default) ifelse(is.na(x), default, x)
+
         switch(
           input$density,
-          "dunif" = runif(x, input$dunif_min, input$dunif_max),
-          "dnorm" = rnorm(x, input$dnorm_mean, input$dnorm_sd),
+          "dunif" = runif(x, f(input$dunif_min,0), max(f(input$dunif_max, 0),f(input$dunif_min, 0) + 0.01)),
+          "dnorm" = rnorm(x, f(input$dnorm_mean, 0), f(input$dnorm_sd, 0.1)),
           "dbeta" = rbeta(x, max(c(0.3,input$dbeta_alpha), na.rm=TRUE), max(c(0.3,input$dbeta_beta), na.rm=TRUE)),
           "dexp" = rexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE)),
           "custom_density_1" = runif(x,min=0, max=1),
