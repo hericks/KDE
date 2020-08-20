@@ -8,6 +8,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
+library(KDE)
 library(tidyverse)
 library(rlang)
 library(microbenchmark)
@@ -484,7 +485,7 @@ In this simulation study we compare the three bandwidth estimation functions *cr
 vignette("vignette_KDE")
 ```
 ## overview of the parameters
-$n$, *n*, *ns*: varying, default n = 1000L \
+*ns*, *number of samples*: varying, default n = 1000L \
 $x_i$, *x*, varying, grid depends on the true density function, default is the interval $[0,1]$. \
 true function, *density*, varying, default is a custom density, based on a sine curve. \
 kernel: fixed on *epanechnikov* kernel for large sample sizes, varying for small sample sizes. \
@@ -499,7 +500,7 @@ In this section we want to investigate the influence of the kernel on the KDE fu
 In order to have a good balance of denseties for studying the behaviour of the KDE, we first initialize a custom density as a *Density* S3-object, from which we want to sample from, along with other built-in densities.
 
 ```{r}
-library(KDE)
+
 # custom density: constructing a Density object
 f_dens <- function(x) {
   ret <- 1 + sin(2*pi*x)
@@ -534,7 +535,6 @@ In the following two sections we carry out a visual and numerical comparison of 
 
 We first choose three different kernels *rectangular*, *gaussian* and *epanechnikov*. Then we initialize the list *dens_list* with the three different densities we like to sample from, along with their sampler functions. In addition we set the bandwith to a constant value of $0.1$.
 
-(Wollen wir wirklich so viele plots?)
 ```{r}
 kernels <- list(rectangular = rectangular, gaussian = gaussian, epanechnikov = epanechnikov)
 dens_list <- list(list(Density(dunif, c(0,1)), runif), 
@@ -561,7 +561,7 @@ for(j in seq_along(dens_list)) {
             d[[1]]$fun(grid),
             xlim = x_lim,
             ylim = c(0, 2),
-            main = paste(length(samples), "samples", names(kernels)[i]),
+            main = paste(length(samples), "samples,", names(kernels)[i]),
             xlab = "",
             ylab = "",
             col = "dark red",
@@ -577,7 +577,7 @@ for(j in seq_along(dens_list)) {
             d[[1]]$fun(grid),
             xlim = c(-4, 4),
             ylim = c(0, 1),
-            main = paste(length(samples), "samples", names(kernels)[i]),
+            main = paste(length(samples), "samples,", names(kernels)[i]),
             xlab = "",
             ylab = "",
             col = "dark red",
@@ -592,13 +592,13 @@ for(j in seq_along(dens_list)) {
   }
 }
 ```
-
+\
 These plots suggest that with an increasing number of samples, the kernel will get more and more irrelevant. Now that we can see this tendency of the plots, we want to compute the *mean integrated square error (MISE)* of the *KDE* and the density we originally sampled from, to make our observations more precise. 
 
 ### numerical comparison
 
 In the code block below we claculate the *MISE* by using $200$ repetitions (called *reps*) to sample from our given density to get a realistic result that we can rely on. 
-
+\
 ```
 mise_vec <- c()
 reps <- 200
