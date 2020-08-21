@@ -1,13 +1,25 @@
 Package: KDE
-Title: What the Package Does (One Line, Title Case)
+Title: Kernel Density Estimation
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    c(
+        person(given = "Jan",
+               family = "Boerschel",
+               email = "boerschel@stud.uni-heidelberg.de"),
+        person(given = "Mansur",
+               family = "Daschaew",
+               email = "mh224@stud.uni-heidelberg.de"),
+        person(given = "Céline",
+               family = "Fietz",
+               email = "C.Fietz@stud.uni-heidelberg.de"),
+         person(given = "Matthias",
+                family = "Hericks",
+                email = "hericks@stud.uni-heidelberg.de")
+    )
+    
+Description: The `KDE` package provides the user with basic 
+functionality for the construction of kernel density estimators,
+as well as bandwidth selection algorithms. 
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
