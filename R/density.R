@@ -37,7 +37,7 @@
 #'
 #'   The S3 class \code{Density} exists to ensure some of the most basic
 #'   properties of density functions. The class is build on
-#'   \code{\link[IntegrableFunction]{IntegrableFunctions}} and inherits its
+#'   \code{\link[KDE:IntegrableFunction]{IntegrableFunctions}} and inherits its
 #'   structure.
 #'
 #'   The constructor \code{Density} tries to construct a valid \code{Density}
@@ -133,9 +133,10 @@ new_Density <- function(fun, support, subdivisions = 1000L, subclass=NULL){
 
 #' Print objects of S3 class \code{Density}
 #'
-#' @param x object of S3 class \code{Density}; the object to print
+#' @param x object of S3 class \code{Density}; the object to print.
+#' @param ... unused argument; used for compatibility with generic print.
 #'
 #' @export
-print.Density <- function(x) {
+print.Density <- function(x, ...) {
   print.IntegrableFunction(x, "Density")
 }

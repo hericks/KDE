@@ -47,8 +47,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-Imports:
-    shiny,
-    tidyverse,
-    rlang,
-    microbenchmark
+Imports: shiny, stats, graphics, testthat, microbenchmark, rlang, tidyverse

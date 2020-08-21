@@ -4,10 +4,12 @@
 \alias{print.Kernel}
 \title{Print objects of S3 class \code{Kernel}}
 \usage{
-\method{print}{Kernel}(x)
+\method{print}{Kernel}(x, ...)
 }
 \arguments{
-\item{x}{object of S3 class \code{Kernel}; the object to print}
+\item{x}{object of S3 class \code{Kernel}; the object to print.}
+
+\item{...}{unused argument; used for compatibility with generic print.}
 }
 \description{
 Print objects of S3 class \code{Kernel}

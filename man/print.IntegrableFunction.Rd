@@ -4,13 +4,15 @@
 \alias{print.IntegrableFunction}
 \title{Print objects of S3 class \code{IntegrableFunction}}
 \usage{
-\method{print}{IntegrableFunction}(x, class_prefix = NULL)
+\method{print}{IntegrableFunction}(x, class_prefix = NULL, ...)
 }
 \arguments{
-\item{x}{object of S3 class \code{IntegrableFunction}; the object to print}
+\item{x}{object of S3 class \code{IntegrableFunction}; the object to print.}
 
 \item{class_prefix}{optional character vector of length 1; string to replace
-\code{IntegrableFunction} in formatted output}
+\code{IntegrableFunction} in formatted output.}
+
+\item{...}{unused argument; used for compatibility with generic print.}
 }
 \description{
 Print objects of S3 class \code{IntegrableFunction}

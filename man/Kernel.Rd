@@ -46,7 +46,7 @@ on the restrictiveness of compact supports.
 
 The S3 class \code{Density} exists to ensure some of the most basic
 properties of density functions. The class is build on
-\code{\link[IntegrableFunction]{IntegrableFunctions}} and inherits its
+\code{\link[KDE:IntegrableFunction]{IntegrableFunctions}} and inherits its
 structure.
 
 The constructor \code{Kernel} tries to construct a valid \code{Kernel}

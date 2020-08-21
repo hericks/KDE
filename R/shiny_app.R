@@ -1,9 +1,14 @@
 #' Shiny App for the KDE package
 #'
+#' @importFrom shiny fluidPage fluidRow column wellPanel selectInput
+#'   conditionalPanel numericInput sliderInput checkboxInput actionButton tags
+#'   tableOutput plotOutput reactiveValues reactive observeEvent renderPlot
+#'   renderTable shinyApp
+#' @importFrom stats runif dunif dnorm dbeta dexp rbeta rexp rnorm
+#' @importFrom graphics par legend lines points
 #'
 #' @export
 shiny_kde <- function(){
-  library(shiny)
   ui <- fluidPage(
     fluidRow(
       style="margin-top: 15px;",

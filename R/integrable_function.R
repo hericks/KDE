@@ -190,12 +190,13 @@ find_support <- function(fun) {
 
 #' Print objects of S3 class \code{IntegrableFunction}
 #'
-#' @param x object of S3 class \code{IntegrableFunction}; the object to print
+#' @param x object of S3 class \code{IntegrableFunction}; the object to print.
 #' @param class_prefix optional character vector of length 1; string to replace
-#'   \code{IntegrableFunction} in formatted output
+#'   \code{IntegrableFunction} in formatted output.
+#' @param ... unused argument; used for compatibility with generic print.
 #'
 #' @export
-print.IntegrableFunction <- function(x, class_prefix=NULL) {
+print.IntegrableFunction <- function(x, class_prefix=NULL, ...) {
   extra_args <- with(environment(x$fun), extra_args)
   prefixes <- sapply(names(extra_args), function(name) {if (name == "") "" else paste0(name, " = ")}, USE.NAMES = FALSE)
   parts <- sapply(seq_len(length(prefixes)), function(i) paste0(prefixes[i], extra_args[[i]]))

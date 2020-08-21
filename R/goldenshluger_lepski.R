@@ -126,6 +126,7 @@ A <- function(kernel, samples, bandwidths, h, kappa, subdivisions = 100L, square
 }
 
 # Calculate convolution of f with g, where both function have a support inside [x_min, x_max]
+#' @importFrom stats convolve
 conv <- function(f, g, x_min, x_max, N = 300) {
   x <- seq(x_min, x_max, len = N)
   s <- (x_max - x_min) / N

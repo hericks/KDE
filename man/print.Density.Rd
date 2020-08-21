@@ -4,10 +4,12 @@
 \alias{print.Density}
 \title{Print objects of S3 class \code{Density}}
 \usage{
-\method{print}{Density}(x)
+\method{print}{Density}(x, ...)
 }
 \arguments{
-\item{x}{object of S3 class \code{Density}; the object to print}
+\item{x}{object of S3 class \code{Density}; the object to print.}
+
+\item{...}{unused argument; used for compatibility with generic print.}
 }
 \description{
 Print objects of S3 class \code{Density}

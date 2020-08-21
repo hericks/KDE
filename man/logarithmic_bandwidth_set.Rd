@@ -25,7 +25,7 @@ scaled sequence of \code{length.out} elements between \code{from} and
 \code{to}.
 }
 \details{
-Numerical inputs should all be \link[BASE::is.finite]{finite} (that is,
+Numerical inputs should all be \link[base:is.finite]{finite} (that is,
 not infinite, \code{NaN} or \code{NA}).
 }
 \seealso{
