@@ -41,7 +41,6 @@ Collate:
     'pco_method.R'
     'rejection_sampling.R'
     'shiny_app.R'
-    'simulation_study.R'
 Depends:
     R (>= 3.5)
 Suggests: 

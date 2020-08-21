@@ -32,8 +32,8 @@ Rejection sampling uses \code{g} to draw samples and accepts/rejects
 these samples according to the densities \code{f_gen} and \code{g_den},
 such that the resulting samples are \code{f_den}-distributed. Many rejected
 samples result in longer runtimes. To prevent this \code{M} should be
-chosen as small as possible, satisfying \code{f(x) <= M*g(x)} for all
-numeric scalar inputs \code{x}.
+chosen as small as possible, satisfying \code{f_den$fun(x) <=
+  M*g_den$fun(x)} for all numeric scalar inputs \code{x}.
 }
 \examples{
 custom_den <- function(x) {
