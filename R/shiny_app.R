@@ -1,3 +1,6 @@
+#' Shiny App for the KDE package
+#'
+#'
 #' @export
 shiny_kde <- function(){
   library(shiny)

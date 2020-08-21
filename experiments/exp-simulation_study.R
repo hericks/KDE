@@ -361,7 +361,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
   }
 }
 
-compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
+  compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
                         dens_sampler_list = list(runif=runif),
                         bandwidth_estimators = list(cross_validation=cross_validation, goldenshluger_lepski=goldenshluger_lepski, pco_method=pco_method),
                         ns = 50,
@@ -643,7 +643,7 @@ plot_object_vec_1 <- list()
 for(i in seq_along(dens_list)){
   d <- dens_list[[i]]
   xlim_1 <-  c(d$support[1] - 1, d$support[2] + 1)
-  plot_object_vec_1 <- c(plot_object_vec_1, list(plot_comparison_objects(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns)))
+  plot_object_vec_1 <- c(plot_object_vec_1, list(plot_comparison_objects(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns, kernels=kernel_list)))
 }
 for(i in seq_along(plot_object_vec_1)){
   obj <- plot_object_vec_1[[i]]
@@ -652,7 +652,7 @@ for(i in seq_along(plot_object_vec_1)){
   xlim_1 <-  c(d$support[1] - 1, d$support[2] + 1)
   plot_comparison(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_1[1], xlim_upper=xlim_1[2], reps=reps, ns=ns, objects=obj)
 }
-ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps,ns=ns)
+ise <- compare_ise(dens_list=dens_list, kernels = kernel_list, dens_sampler_list=sampler_list, reps=reps,ns=ns)
 mise_high_ns_comp <- calculate_mise(ise)
 mise_high_ns_comp %>%
   group_by(n, bandwidth_estimators) %>%
@@ -696,8 +696,8 @@ print("lambda done")
 #TODO: n_bandwidths auf 5 und 20 setzen, times=100 hochsetzen
 library(rlang)
 library(microbenchmark)
-ns <- 1000
-n_bandwidths <- 5
+ns <- 10
+n_bandwidths <- 2
 bandwidths_1 <- logarithmic_bandwidth_set(from=1/ns, to=1, length.out=n_bandwidths)
 strings <-c()
 n_band <- c()
@@ -717,7 +717,7 @@ pco_meth <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
 bm_small_set <- microbenchmark::microbenchmark(cross_val(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
                                                goldenshluger_lep(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
                                                pco_meth(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
-                                     times=200L)
+                                     times=1L)
 
 for (expr in unique(bm_small_set$expr)) {
   strings <- c(strings, str_extract(expr, "\\w+_\\w+(?=\\()"))
@@ -726,12 +726,12 @@ for (expr in unique(bm_small_set$expr)) {
 }
 cat("performance with 5 bw")
 # now, we will work on a bandwidth set containing 20 elements, but on the same samples
-n_bandwidths <- 20
+n_bandwidths <- 2
 bandwidths_2 <- logarithmic_bandwidth_set(from=1/ns, to=1, length.out=n_bandwidths)
 bm_big_set <- microbenchmark::microbenchmark(cross_val(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
                                                goldenshluger_lep(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
                                                pco_meth(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
-                                               times=200L)
+                                               times=1L)
 cat("performance with 20 bw")
 
 for (expr in unique(bm_big_set$expr)) {
@@ -751,12 +751,12 @@ ns <- c(10, 50, 100, 1000)
 reps <- 200
 dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
 sampler_list <- list(custom_sampler, runif, rnorm)
-kernel_list <- list(epanechnikov=epanechnikov)
+kernel_list <- list(rectangular=rectangular, gaussian=gaussian, epanechnikov=epanechnikov)
 plot_object_vec_2 <- list()
 for(i in seq_along(dens_list)){
   d <- dens_list[[i]]
   xlim_2 <-  c(d$support[1] - 1, d$support[2] + 1)
-  plot_object_vec_2 <- c(plot_object_vec_2, list(plot_comparison_objects(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_2[1], xlim_upper=xlim_2[2], reps=reps, ns=ns))
+  plot_object_vec_2 <- c(plot_object_vec_2, list(plot_comparison_objects(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_2[1], xlim_upper=xlim_2[2], reps=reps, ns=ns, kernels=kernel_list))
 )
 }
 cat("ve_2 plot obj")
@@ -781,7 +781,7 @@ for(i in seq_along(plot_object_vec_2)){
 par(mfrow=c(1,1))
 
 # numerical comparison
-ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps, ns=c(10, 50, 100, 1000))
+ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels = list(rectangular=rectangular, gaussian=gaussian, epanechnikov=epanechnikov), reps=reps, ns=c(10, 50, 100, 1000))
 mise_ns_comp <- calculate_mise(ise)
 mise_ns_comp %>%
   group_by(n, bandwidth_estimators) %>%
@@ -799,7 +799,7 @@ load(file="results_sim_study.rda")
 #TODO:
 results_sim_study$plot_object_vec_1 <- plot_object_vec_1
 results_sim_study$mise_high_ns_comp <- mise_high_ns_comp
-results_sim_study$results_performance <- results_performance
+#results_sim_study$results_performance <- results_performance
 results_sim_study$plot_object_vec_2 <- plot_object_vec_2
 results_sim_study$mise_ns_comp <- mise_ns_comp
 

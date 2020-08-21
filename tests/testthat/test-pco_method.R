@@ -114,3 +114,29 @@ test_that("subdivisions must be a numeric scalar",{
                           lambda = 1,
                           subdivisions = FALSE))
 })
+
+test_that("pco should return a smaller bandwidth for bigger samplesize", {
+  set.seed(50)
+  kernel <- epanechnikov
+
+  # Custom density
+  f_den_eval <- function(x) {
+    ret <- 1 + sin(2*pi*x)
+    ret[x < 0 | 1 < x] <- 0
+    ret
+  }
+
+  f_den <- Density(f_den_eval, c(0,1))
+  g_den <- Density(dunif, c(0,1))
+
+  # Create sampler from custom density
+  custom_sampler <- rejection_sampling(f_den, g_den, runif, 2)
+
+  # Calculate goldenshluger_lepski bandwidth(kernel,
+  bandwidth_50 <- cross_validation(kernel, custom_sampler(50), subdivisions = 250L)
+  bandwidth_200 <- cross_validation(kernel, custom_sampler(200), subdivisions = 250L)
+  bandwidth_500 <- cross_validation(kernel, custom_sampler(500), subdivisions = 250L)
+  expect_false(bandwidth_500 > bandwidth_200)
+  expect_true(bandwidth_50 > bandwidth_200)
+})
+
