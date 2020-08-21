@@ -24,7 +24,6 @@ Collate:
     'cross_validation.R'
     'density.R'
     'goldenshluger_lepski.R'
-    'integrated_squared_error.R'
     'kernel_transform.R'
     'pco_method.R'
     'rejection_sampling.R'
