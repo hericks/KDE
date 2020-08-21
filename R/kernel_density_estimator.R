@@ -26,7 +26,7 @@
 #' @export
 kernel_density_estimator <- function(kernel, samples, bandwidth=1, subdivisions=1000L) {
   # Kernel conditions
-  tryCatch({validate_Kernel(kernel)}, error="the kernel has to be valid")
+  validate_Kernel(kernel)
 
   # Samples conditions
   stopifnot(is.numeric(samples))
