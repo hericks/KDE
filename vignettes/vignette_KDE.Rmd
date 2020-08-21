@@ -1,0 +1,317 @@
+---
+title: "Introduction to kernel density estimation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to kernel density estimation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Given realizations $x_1, \dots, x_n$ of $n$ independent and identically distributed (i.i.d.) random variables $X_1, \dots, X_n \sim \mathbb{P}$ with density $f$ w.r.t. the Lebesgue measure $\lambda$, a *kernel density estimator* (KDE) for the density $f$ is defined as
+
+\begin{align*}
+  \hat f_h(x) = \frac{1}{nh} \sum_{i=1}^n K\left(\frac{x - x_i}{h}\right)
+\end{align*}
+
+The estimator depends on the *kernel* $K: \mathbb{R} \rightarrow \mathbb{R}, K \in \mathscr{L}_1(\mathbb{R}, \lambda)$ with $\lambda(K) = 1$ and the *bandwidth* $h \in \mathbb{R}^+_{\setminus 0}$.
+
+This package aims to provide the necessary tools for practical kernel density estimation and bandwidth estimation. The estimator can be constructed using `kernel_density_estimator`. The bandwidth-selection algorithms are accessible through `cross_validation`, `goldenshluger_lepski` and `pco_method`.
+
+## Getting started
+We start off by loading the package
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dpi=300,fig.width=7)
+set.seed(1)
+```
+
+```{r}
+library(KDE)
+```
+
+## Base structure
+
+The main objects in the context of kernel density estimation are kernels and densities. Since many algorithms rely on the properties of these objects, `KDE` deploys the S3 classes `Density` and `Kernel` (inheriting from `IntegrableFunction`) to numerically ensure some of mathematical conditions (cf. `?IntegrableFunction`). 
+
+These objects require a numerically compact support for the represented function. This may seem like strong restriction at first, but as we'll see such a numerically compact support can be found easily (even algorithmically) in most cases.
+
+Let's consider these objects in practice. 
+
+### Densities
+One can simply construct `Density` objects from the Base-R `stats::dDISTR` functions.
+```{r}
+Density(dnorm, mean=2)
+```
+The output may seem complex at first. The underlying function is printed as well as the support (which was found numerically). In particular we'd like to draw attention to the numerically compact support
+
+```{r}
+all.equal(dnorm(-10), 0)
+```
+
+as well as the *subdivisions*.
+
+The `subdivisions` entry is a core component of the `KDE` package and you'll encounter it many times throughout this vignette, as it specifies the accuracy for many of the implemented functions.
+
+In this example the subdivisions indicate, that integrating `dnorm` using the included `integrate_primitive` with 1000 subdivisions yields a result sufficiently close to 1 to validate `dnorm` as `Density` (cf. `?integrate_primitive`).
+
+Constructing a custom density function could look like this
+```{r, error=TRUE}
+dens_fun <- function(x) {
+  (1 + sin(2*pi*x))*(0 <= x)*(x <= 1)
+}
+
+# automatic construction does not work in this case
+sin_den <- Density(dens_fun)
+
+# specifying the support by hand or increase the number of subdivisions works
+sin_den <- Density(dens_fun, subdivisions = 1500L)
+sin_den <- Density(dens_fun, support=c(0,1))
+sin_den
+```
+
+### Kernels
+In a similar manner `KDE` gives you the possibility to build `Kernel` objects
+
+```{r}
+# the sigmoid function
+sigmoid_function <- function(x) 2/pi * (1/(exp(x) + exp(-x)))
+all.equal(sigmoid_function(-20), 0)
+
+# constructing the sigmoid kernel
+sigmoid_kernel <- Kernel(sigmoid_function, support=c(-20, 20))
+```
+
+For the exact requirements for constructing a `Kernel` object and further information consult `?Kernel`.
+
+### Builtin Kernels
+This package also provides a selection of various built-in kernels known from the literature
+
+```{r}
+# using a built-in Kernel
+gaussian_kernel <- gaussian
+print(gaussian_kernel)
+```
+
+Run `?Kernel` to see the full list of the built-in kernels.
+
+### Sampling 
+In many situations it is favorable to create tests based on simulated data. With `rejection_sampling` the package provides a way to draw samples from custom densities (cf. `?rejection_sampling`). 
+
+```{r}
+# create sampler from Density object sin_den
+custom_sampler <- rejection_sampling(sin_den, Density(dunif), runif, 2)
+
+# sample from custom sampler
+set.seed(1)
+num_samples <- 100
+samples <- custom_sampler(num_samples)
+```
+
+Now that we have created a kernel and generated a set of samples, it is time to choose a suitable bandwidth for the kernel density estimator.
+
+## Bandwidth Estimation
+
+We consider a bandwidth $h$ optimal, if it minimizes the *mean integrated squared error* (MISE), 
+also called risk
+
+\begin{align*}
+  \text{MISE} = \mathbb{E}_f\left|\left|\hat f_h - f\right|\right|_2^2.
+\end{align*}
+
+Since the MISE still depends on the unknown density $f$ the general idea behind the implemented bandwidth selection methods is to estimate the MISE or an corresponding upper bound. Subsequently the bandwidth (from a finite bandwidth set $\mathcal{H}_n$) minimizing this estimation is selected.
+
+The `KDE` package is equipped with three different solutions to this task. 
+
+
+### Logarithmic Bandwidth Set
+
+Frequently the finite bandwidth collection $\mathcal{H}_n$ to choose the optimal bandwidth from is constructed as linearly or logarithmically spaced sequence. Analogous to the Base-R `seq` function for linearly spaced sequence, the package provides `logarithmic_bandwidth_set` to construct logarithmically spaced sequences.
+  
+```{r}
+# setting up bandwidth sets
+bandwidth_set <- logarithmic_bandwidth_set(from=1/length(samples), to=1, length.out=10)
+```
+
+### Cross Validation
+Selecting the bandwidth considered optimal by (leave-one-out) *cross-validation*, we run (cf. `?cross_validation`)
+
+```{r}
+# cross validation method
+bw_cv_gaussian <- cross_validation(gaussian_kernel, samples, bandwidth_set)
+bw_cv_sigmoid <- cross_validation(sigmoid_kernel, samples, bandwidth_set)
+cat("bandwidth for gaussian kernel: ", bw_cv_gaussian,"\nbandwidth for sigmoid kernel: ", bw_cv_sigmoid)
+```
+
+
+### Goldenshluger-Lepski Method
+The second implemented bandwidth selection algorithm *Goldenshluger-Lepski method* (cf. `?goldenshluger_lepski`) can be used as
+
+```{r}
+# goldenshluger-lepski method
+bw_gl_gaussian <- goldenshluger_lepski(gaussian_kernel, samples, bandwidth_set)
+bw_gl_sigmoid <- goldenshluger_lepski(sigmoid_kernel, samples, bandwidth_set)
+cat("bandwidth for gaussian kernel: ", bw_gl_gaussian, "\nbandwidth for sigmoid kernel: ", bw_gl_sigmoid)
+```
+
+In the documentation you'll notice an optional tuning parameter `kappa`. More information about this parameter can be found in the literature or the simulation study. 
+
+### Penalized Comparison to Overfitting
+*Penalized Comparison to Overfitting* (PCO) is the third and last implementation of a bandwidth selection algorithm in the `KDE` package. Again the interface looks similar (cf. `?pco_method`).
+
+```{r}
+# Penalized Comparison to Overfitting
+bw_pco_gaussian <- pco_method(gaussian_kernel, samples, bandwidth_set)
+bw_pco_sigmoid <- pco_method(sigmoid_kernel, samples, bandwidth_set)
+cat("bandwidth for gaussian kernel: ", bw_pco_gaussian, "\nbandwidth for sigmoid kernel: ", bw_pco_sigmoid)
+```
+
+Again, there exists an optional tuning parameter `lambda`. For additional information consider the simulation study and literature.
+
+## Kernel-Density-Estimation
+With these algorithmic bandwidth suggestions, we can finally estimate density $f$ using the kernel density estimator $\hat f_h$. 
+
+```{r}
+kde_cv_gaussian <- kernel_density_estimator(gaussian_kernel, samples, bw_cv_gaussian)
+kde_gl_gaussian <- kernel_density_estimator(gaussian_kernel, samples, bw_gl_gaussian)
+kde_pco_gaussian <- kernel_density_estimator(gaussian_kernel, samples, bw_pco_gaussian)
+
+kde_cv_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, bw_cv_sigmoid)
+kde_gl_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, bw_gl_sigmoid)
+kde_pco_sigmoid <- kernel_density_estimator(sigmoid_kernel, samples, bw_pco_sigmoid)
+```
+The function `kernel_density_estimator` returns an object of S3 class `IntegrableFunction`. Therefore we have to explicitly consider the underlying function for our plots.
+
+```{r, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
+support <- sin_den$support + c(-1/4, 1/4)
+grid <- seq(support[1], support[2], by=0.01)
+par(mar=c(0, 0, 0, 0))
+plot(grid, 
+     dens_fun(grid), 
+     type="l", col="dark red", 
+     lty="dashed", lwd=2,
+     xlab="", ylab="", ylim=c(0, 2.5))
+lines(grid, kde_pco_gaussian$fun(grid), type="l", col="dark green")
+legend("topright", legend = c("density", "kde"), col = c("dark red","dark green"), lty = c(2,1))
+```
+
+## Kernel and bandwidth comparison
+As numeric comparison of the selected bandwidths, we calculate the *integrated squared error* (ISE)
+
+```{r}
+# comparing the ISE
+ISE <- function(kde, den, subdivisions=100L){
+  support <- range(kde$support, den$support)
+  integrate(function(x){(kde$fun(x)-den$fun(x))^2}, 
+                   lower=support[1], upper=support[2], 
+                   subdivisions=subdivisions)$value
+}
+```
+
+```{r,echo=FALSE} 
+# ISE for the gaussian kernel
+cat("ISE for cross validation / gaussian kernel: ", ISE(kde_cv_gaussian, sin_den))
+
+cat("ISE for Goldenshluger-Lepski method / gaussian kernel: ", ISE(kde_gl_gaussian, sin_den))
+cat("ISE for PCO method / gaussian kernel: ", ISE(kde_pco_gaussian, sin_den))
+
+```
+
+Using the gaussian kernel, cross validation produced the best estimation in this example, while the Goldenshluger-Lepski method gave the worst estimation. A graphic comparison validates the numeric error evaluation. 
+
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
+# plotting KDE and functionx_lim
+x_lim_lower <- -0.5
+x_lim_upper<- 1.5
+x <- seq(from = x_lim_lower, to = x_lim_upper, length.out=1000)
+par(mar=c(0, 0, 2, 0))
+plot(x, sin_den$fun(x),
+     xlim = c(x_lim_lower, x_lim_upper),
+     ylim = c(-0.5, 2.5),
+     main = "KDE using the gaussian kernel",
+     xlab = "",
+     ylab = "",
+     col = "dark red",
+     type = "l",
+     lwd = 2,
+     lty="dashed"
+
+)
+legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(2,NA,1,1,1), lwd = c(2,1,1,1,1), cex = 0.75, pch=c(NA, ".", NA, NA, NA))
+lines(x,
+      kde_cv_gaussian$fun(x), col = "violet")
+lines(x,
+      kde_gl_gaussian$fun(x), col = "steelblue2")
+lines(x,
+      kde_pco_gaussian$fun(x), col = "dark green")
+points(samples,
+       integer(length(samples)),
+       pch = ".",
+       col = "blue")
+```
+
+```{r,echo=FALSE} 
+# ISE for the sigmoid kernel
+cat("ISE for cross validation method / sigmoid kernel: ", ISE(kde_cv_sigmoid, sin_den))
+cat("ISE for Goldenshluger-Lepski method method / sigmoid kernel: ", ISE(kde_gl_sigmoid, sin_den))
+cat("ISE for PCO method method / sigmoid kernel: ", ISE(kde_pco_sigmoid, sin_den))
+
+```
+
+In the example using the sigmoid kernel, the PCO method and Goldenshluger-Lepski return the same estimated optimal bandwidth. Again, cross validation selects a bandwidth yielding a more accurate density approximation.
+
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
+par(mar=c(0, 0, 2, 0))
+plot(x, sin_den$fun(x),
+     xlim = c(x_lim_lower, x_lim_upper),
+     ylim = c(-0.5, 2.5),
+     main = "KDE using the sigmoid kernel",
+     xlab = "",
+     ylab = "",
+     col = "dark red",
+     type = "l",
+     lwd = 2,
+     lty="dashed")
+     
+legend("topright", legend = c("density", "samples", "PCO method", "Crossvalidation", "Goldenshluger-Lepski"), col = c("dark red","royal blue", "dark green","violet", "steelblue2"), lty = c(2,NA,1,1,1), lwd = c(2,1,1,1,1), cex = 0.75, pch=c(NA, ".", NA, NA, NA))
+lines(x,
+      kde_cv_sigmoid$fun(x), col = "violet")
+lines(x,
+      kde_gl_sigmoid$fun(x), col = "steelblue2")
+lines(x,
+      kde_pco_sigmoid$fun(x), col = "dark green")
+points(samples,
+       integer(length(samples)),
+       pch = ".",
+       col = "blue")
+
+```
+
+At last, a side by side comparison of the above calculated ISE's:
+```{r, echo=FALSE}
+table <- data.frame(method=c("cross_validation", "goldenshluger_lepski", "pco_method"),
+                    gaussian=c(ISE(kde_cv_gaussian, sin_den), ISE(kde_gl_gaussian, sin_den), ISE(kde_pco_gaussian, sin_den)),
+                    sigmoid=c(ISE(kde_cv_sigmoid, sin_den), ISE(kde_gl_sigmoid, sin_den),  ISE(kde_pco_sigmoid, sin_den)))
+
+knitr::kable(table)
+```
+
+
+## Shiny App
+The `KDE` package is equipped with a small web application, built with the `shiny` package.
+Use `shiny_kde()` to open the `shiny` interface.
+
+## References
+1. Estimator selection: a new method with applications to kernel density estimation, C. Lacour, P. Massart, V. Rivoirard [2017], arxiv: <https://arxiv.org/abs/1607.05091v2>
+1. Numerical performance of Penalized Comparison to Overfitting for multivariate kernel density estimation, S. Varet, C. Lacour, P. Massart, V. Rivoirard [2019], arxiv:  <https://arxiv.org/abs/1902.01075>
+1. Nonparametric Estimation, F. Comte [2017], ISBN: 978-2-36693-030-6 
+
+
+

@@ -1,0 +1,947 @@
+---
+title: "simulation study"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{simulation_study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(KDE)
+library(tidyverse)
+library(rlang)
+library(microbenchmark)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+load(file="results_sim_study.rda")
+
+parent.env(results_sim_study) <- parent.env(environment())
+current <- environment()
+parent.env(current) <- results_sim_study
+
+compare <- function(eval_points,
+                    funs = list(runif),
+                    bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
+                    ns = 1000,
+                    kernels = list(gaussian),
+                    lambda_set = list(1),
+                    kappa_set = list(1.2),
+                    reps = 400,
+                    length.out = 10) {
+  if (!is.list(kernels))
+    kernels <- as.list(kernels)
+  if (!is.list(ns))
+    ns <- as.list(ns)
+
+  if(is.list(eval_points)){
+    if(!(length(unique(sapply(eval_points, length))) == 1)) stop("same length for all eval_points vectors are needed")
+    if(length(eval_points) != length(funs) && length(eval_points) > 1) stop("eval_point set has to be of same length as funs")
+  }
+
+  if (length(kappa_set) > 1 &&
+      length(lambda_set) > 1) {
+    stop("how is this supposed to look like?")
+  }
+  else if (length(kappa_set) > 1) {
+    bandwidth_estimators <- list(goldenshluger_lepski=goldenshluger_lepski)  }
+  else if (length(lambda_set) > 1) {
+    bandwidth_estimators <- list(pco_method=pco_method)  }
+
+
+  m <- length(funs) * length(ns) * length(kernels)
+  m <-
+    m * (any(sapply(
+      bandwidth_estimators, identical, cross_validation
+    ))
+    + length(kappa_set) * any(
+      sapply(bandwidth_estimators, identical, goldenshluger_lepski)
+    )
+    + length(lambda_set) * any(sapply(
+      bandwidth_estimators, identical, pco_method
+    )))
+  res <- array(NA, dim = c(length(eval_points[[1]]), reps, m))
+  cnt <- 1
+  subdivisions <- 1000L
+  for (i in seq_along(funs)) {
+    if(length(eval_points) > 1){x_grid <- eval_points[[i]]
+    } else{
+      if(is.list(eval_points)) {x_grid <- eval_points[[1]]
+      }else{
+        x_grid <- eval_points
+      }
+    }
+    f <- funs[[i]]
+    for (n in ns) {
+      bandwidths <-
+        logarithmic_bandwidth_set(from = 1 / n,
+                                  to = 1,
+                                  length.out = length.out)
+      for (k in kernels) {
+        for (est in bandwidth_estimators) {
+          cat("fun number:", i)
+          if (identical(est, goldenshluger_lepski)) {
+            for (kappa in kappa_set) {
+              res[, , cnt] <- replicate(reps, {
+                samples <- f(n)
+                bandwidth <-
+                  goldenshluger_lepski(k, samples, bandwidths, kappa, subdivisions)
+
+                kde <-
+                  kernel_density_estimator(k, samples, bandwidth, subdivisions)
+                if (any(kde$fun(x_grid) < 0)) {
+                  print(kde)
+                }
+                kde$fun(x_grid)
+              })
+              cnt <- cnt + 1
+            }
+          } else if (identical(est, pco_method)) {
+            for (lambda in lambda_set) {
+              res[, , cnt] <- replicate(reps, {
+                samples <- f(n)
+
+                bandwidth <-
+                  pco_method(k, samples, bandwidths, lambda, subdivisions)
+
+                kde <-
+                  kernel_density_estimator(k, samples, bandwidth, subdivisions)
+                if (any(kde$fun(x_grid) < 0)) {
+                  print(kde)
+                }
+
+                kde$fun(x_grid)
+              })
+              cnt <- cnt + 1
+            }
+          } else if (identical(est, cross_validation)) {
+            res[, , cnt] <- replicate(reps, {
+              samples <- f(n)
+
+              bandwidth <-
+                cross_validation(k, samples, bandwidths, subdivisions)
+
+              kde <-
+                kernel_density_estimator(k, samples, bandwidth, subdivisions)
+              if (any(kde$fun(x_grid) < 0)) {
+                print(kde)
+              }
+
+              kde$fun(x_grid)
+            })
+            cnt <- cnt + 1
+          }
+        }
+      }
+
+    }
+  }
+  res
+}
+
+
+plot_with_confidence_band <- function(x, Y, col) {
+  rgb <- col2rgb(col) / 255
+  col_alpha <- rgb(rgb[1], rgb[2], rgb[3], 0.2)
+  v <- apply(Y, 1, function(x)
+    c(mean(x), sd(x)))
+  lines(x, v[1, ], lwd = 2, col = col)
+  polygon(c(x, rev(x)),
+          c(v[1, ] + v[2, ], rev(v[1,] - v[2,])),
+          col = col_alpha,
+          border = NA)
+  lines(x, v[1,] + v[2,], lwd = 1, col = col)
+  lines(x, v[1,] - v[2,], lwd = 1, col = col)
+}
+
+plot_comparison_objects <- function(dens = Density(dunif, c(0, 1)),
+                                    dens_sampler = runif,
+                                    xlim_lower = -1,
+                                    xlim_upper = 2,
+                                    main = NA,
+                                    legend = NULL,
+                                    show_diff = TRUE,
+                                    split = TRUE,
+                                    bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
+                                    reps = 2,
+                                    kappa = list(1.2),
+                                    lambda = list(1),
+                                    ...) {
+  dens_fun <- dens$fun
+  x_grid <- seq(xlim_lower, xlim_upper, length.out = 300)
+
+  dens_eval <- dens_fun(x_grid)
+  eval_points <- list(x_grid)
+  if (length(kappa) > 1 &&
+      length(lambda) > 1) {
+    stop("how is this plot supposed to look like?")
+  }
+  else if (length(kappa) > 1) {
+    res <-
+      compare(
+        eval_points,
+        list(dens_sampler),
+        reps = reps,
+        bandwidth_estimators = list(goldenshluger_lepski),
+        kappa_set = kappa,
+        ...
+      )
+  }
+  else if (length(lambda) > 1) {
+    res <-
+      compare(
+        eval_points,
+        list(dens_sampler),
+        reps = reps,
+        bandwidth_estimators = list(pco_method),
+        lambda_set = lambda,
+        ...
+      )
+  } else {
+    res <-
+      compare(
+        eval_points,
+        list(dens_sampler),
+        reps = reps,
+        bandwidth_estimators = bandwidth_estimators,
+        ...
+      )
+  }
+  m <- dim(res)[3]
+  bw_len <- length(bandwidth_estimators)
+  if (isTRUE(split) && bw_len > 1 && m > 3) {
+    m_bw_len <- m / bw_len
+    ret <- list()
+    for (i in 1:m_bw_len) {
+      res_sub <- res[, , (1 + (i - 1) * bw_len):(i * bw_len)]
+      ret <- c(ret, list(list(res_sub, dens_fun, x_grid, dens_eval)))
+    }
+  }else{
+    ret <- list(res, dens_fun, x_grid, dens_eval)
+  }
+  ret
+}
+
+
+plot_comparison <- function(dens = Density(dunif, c(0, 1)),
+                            dens_sampler = runif,
+                            xlim_lower = -1,
+                            xlim_upper = 2,
+                            ylim_lower=NULL,
+                            ylim_upper=NULL,
+                            main = NA,
+                            legend = NULL,
+                            show_diff = TRUE,
+                            split = TRUE,
+                            bandwidth_estimators = list(cross_validation, goldenshluger_lepski, pco_method),
+                            reps = 4,
+                            kappa = list(1.2),
+                            lambda = list(1),
+                            objects=NULL,
+                            ...) {
+
+
+  if(!is.null(objects)){
+    res <- objects[[1]]
+    dens_fun <- objects[[2]]
+    x_grid <- objects[[3]]
+    dens_eval <- objects[[4]]
+  }else{
+    objects <- plot_comparison_objects(dens,
+                                       dens_sampler,
+                                       xlim_lower,
+                                       xlim_upper,
+                                       main,
+                                       legend,
+                                       show_diff,
+                                       split,
+                                       bandwidth_estimators,
+                                       reps,
+                                       kappa,
+                                       lambda,
+                                       ...)
+    res <- objects[[1]]
+    dens_fun <- objects[[2]]
+    x_grid <- objects[[3]]
+    dens_eval <- objects[[4]]
+  }
+
+  m <- dim(res)[3]
+  bw_len <- length(bandwidth_estimators)
+
+  if (isTRUE(split) && bw_len > 1 && m > 3) {
+    m_bw_len <- m / bw_len
+    for (i in 1:m_bw_len) {
+      res_sub <- res[, , (1 + (i - 1) * bw_len):(i * bw_len)]
+      del <- max(apply(res_sub, c(1, 3), sd))
+
+      # plot results
+      par(
+        mar = c(0, 0, 1, 0),
+        ann = FALSE,
+        xaxt = "n",
+        yaxt = "n"
+      )
+      if(is.null(ylim_lower)){
+        ylim_lower <- (range(dens_eval) + del * c(-1, 1))[1]
+      }
+      if(is.null(ylim_upper)){
+        ylim_upper <- (range(dens_eval) + del * c(-1, 1))[2]
+      }
+      ylim <- c(ylim_lower,ylim_upper)
+      plot(
+        x_grid,
+        dens_eval,
+        type = "l",
+        lwd = 2,
+        col = 1,
+        ylim = ylim
+      )
+      grid()
+      for (i in 1:bw_len) {
+        plot_with_confidence_band(x_grid, res_sub[, , i], col = i + 1)
+      }
+      title(main = main)
+      if (!is.null(legend))
+        legend(
+          "topright",
+          legend = legend,
+          lwd = 2,
+          col = 2:(bw_len + 1),
+          cex = 0.8
+        )
+
+      # second plot (difference between true f and estimation)
+      if (show_diff) {
+        diff <- res_sub - dens_eval
+        plot(
+          c(0, 1),
+          c(0, 0),
+          type = "l",
+          lwd = 2,
+          col = 1,
+          ylim = c(-del, del)
+        )
+        grid()
+        for (i in 1:bw_len)
+          plot_with_confidence_band(x_grid, diff[, , i], col = i + 1)
+      }
+    }
+  } else{
+    m <- dim(res)[3]
+    del <- max(apply(res, c(1, 3), sd))
+    # plot results
+    par(
+      mar = c(0, 0, 1, 0),
+      ann = FALSE,
+      xaxt = "n",
+      yaxt = "n"
+    )
+    if(is.null(ylim_lower)){
+      ylim_lower <- (range(dens_eval) + del * c(-1, 1))[1]
+    }
+    if(is.null(ylim_upper)){
+      ylim_upper <- (range(dens_eval) + del * c(-1, 1))[2]
+    }
+    ylim <- c(ylim_lower, ylim_upper)
+    plot(
+      x_grid,
+      dens_eval,
+      type = "l",
+      lwd = 2,
+      col = 1,
+      ylim = ylim
+    )
+    grid()
+    for (i in 1:m) {
+      plot_with_confidence_band(x_grid, res[, , i], col = i + 1)
+    }
+    title(main = main)
+    if (!is.null(legend))
+      legend("topright",
+             legend = legend,
+             lwd = 2,
+             col = 2:(m + 1))
+
+    # second plot (difference between true f and estimation)
+    if (show_diff) {
+      diff <- res - dens_eval
+      plot(
+        c(0, 1),
+        c(0, 0),
+        type = "l",
+        lwd = 2,
+        col = 1,
+        ylim = c(-del, del)
+      )
+      grid()
+      for (i in 1:m)
+        plot_with_confidence_band(x_grid, diff[, , i], col = i + 1)
+    }
+  }
+}
+
+compare_ise <- function(dens_list = list(dunif=Density(dunif, c(0, 1))),
+                        dens_sampler_list = list(runif=runif),
+                        bandwidth_estimators = list(cross_validation=cross_validation, goldenshluger_lepski=goldenshluger_lepski, pco_method=pco_method),
+                        ns = 50,
+                        kernels = list(gaussian=gaussian),
+                        lambda_set = list(1),
+                        kappa_set = list(1.2),
+                        reps = 3,
+                        num_eval_points= 300,
+                        n_bandwidths = 10){
+
+  if (length(kappa_set) > 1 &&
+      length(lambda_set) > 1) {
+    stop("how is this supposed to look like?")
+  }
+  else if (length(kappa_set) > 1) {
+    bandwidth_estimators <- list(goldenshluger_lepski=goldenshluger_lepski)  }
+  else if (length(lambda_set) > 1) {
+    bandwidth_estimators <- list(pco_method=pco_method)}
+
+  eval_points_set <- list()
+  for(d in dens_list){
+    eval_points_range <-  c(d$support[1] - 1, d$support[2] + 1)
+    eval_points <- seq(from=eval_points_range[1],to=eval_points_range[2], length.out=num_eval_points)
+    eval_points <- list(eval_points)
+    eval_points_set <- c(eval_points_set, eval_points)
+  }
+  time <-system.time(res <- compare(eval_points=eval_points_set, funs=dens_sampler_list, ns=ns, kernels=kernels,
+                                   bandwidth_estimators=bandwidth_estimators,
+                                    lambda_set=lambda_set, kappa_set=kappa_set, reps=reps, length.out=n_bandwidths))
+  print(time)
+
+  f_true <- array(NA, dim=c(length(eval_points_set[[1]]), length(dens_list)))
+  for(i in seq_along(dens_list)){
+    f <- dens_list[[i]]$fun
+    f_true[,i] <- f(eval_points_set[[i]])
+  }
+  m <- length(ns) * length(kernels)
+  m <-
+    m * (any(sapply(
+      bandwidth_estimators, identical, cross_validation
+    ))
+    + length(kappa_set) * any(
+      sapply(bandwidth_estimators, identical, goldenshluger_lepski)
+    )
+    + length(lambda_set) * any(sapply(
+      bandwidth_estimators, identical, pco_method
+    )))
+
+  f_true <- f_true[,rep(seq_along(dens_list), each=m)]
+  diff <-array(NA, dim=dim(res))
+  for(j in 1:dim(res)[3]) diff[,,j] <- res[,,j] - f_true[,j]
+  diff_sq <-apply(diff^2,c(2, 3), sum)
+  ise <- (diff_sq * (eval_points_range[2] - eval_points_range[1])) / num_eval_points
+
+  if (length(kappa_set) > 1 &&
+      length(lambda_set) > 1) {
+    stop("how is this supposed to look like?")
+  }
+  else if (length(kappa_set) > 1) {
+    opts <- as_tibble(expand.grid(kappa=kappa_set, bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, den=names(dens_list)))
+  }
+  else if (length(lambda_set) > 1) {
+    opts <-as_tibble(expand.grid(lambda=lambda_set, bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, den=names(dens_list)))
+
+  } else {
+    opts <-as_tibble(expand.grid(bandwidth_estimators=names(bandwidth_estimators), kernel=names(kernels), n=ns, den=names(dens_list)))
+  }
+  add_column(opts[rep(1:nrow(opts), each=reps), ], ise=as.vector(ise))
+}
+
+calculate_mise <- function(data_ise){
+  if("kappa" %in% names(data_ise)){
+    data_ise %>%
+      group_by(den, n, kernel, bandwidth_estimators, kappa) %>%
+      summarise(mise = mean(ise), med_ise=median(ise), sd_ise=sd(ise), reps= n()) %>%
+      ungroup() ->
+      data_mise
+
+  }else if("lambda" %in% names(data_ise)){
+    data_ise %>%
+      group_by(den, n, kernel, bandwidth_estimators, lambda) %>%
+      summarise(mise = mean(ise), med_ise=median(ise), sd_ise=sd(ise), reps= n()) %>%
+      ungroup() ->
+      data_mise
+  } else {
+    data_ise %>%
+      group_by(den, n, kernel, bandwidth_estimators) %>%
+      summarise(mise = mean(ise), med_ise=median(ise), sd_ise=sd(ise), reps= n()) %>%
+      ungroup() ->
+      data_mise
+  }
+  data_mise
+}
+
+```
+
+In this simulation study we compare the three bandwidth estimation functions *cross_validation*, *goldenshluger_lepski* and *pco_method* from the package *KDE*. For more information about the functions of the latter, you can lookup its vignette via:
+```
+vignette("vignette_KDE")
+```
+## overview of the parameters
+
+To ensure a clear overview, we list all the parameters that we vary or fix.
+*ns*: number of samples, varying, default $n = 1000$L \
+*x_grid*, *grid*: grid, varying, depends on the true density function, default is $300$ steps in the interval $[0,1]$. \
+*dens_list*, *d*, *dens*: density function for sampling, varying, default is uniform distribution.  \
+*kernel*, *kernels*, *k*: fixed on *epanechnikov* kernel for large sample sizes, in the other cases we use a list of *rectangular*, *gaussian*, and *epanechnikov*. \
+*h*: bandwidth, varies, but in the section *dependency of the kernel* it is fixed to $0.1$.
+$\kappa$, *kappa_set*: tuning parameter for *goldenshluger_lepski*, generally fixed to $\kappa = 1.2$, apart from the section *investigation of the tuning parameters*. \
+$\lambda$, *lambda_set*: tuning parameter for *pco_method*, generally fixed to $\lambda = 1.0$, apart from the section *investigation of the tuning parameters*. \
+
+
+## dependency on the kernel
+
+In this section we want to investigate the influence of the kernel on the KDE function with an increasing number of samples. 
+(Freitag: referenz auf oben, wieso kernel fest?)
+In order to have a good balance of denseties for studying the behaviour of the KDE, we first initialize a custom density as a *Density* S3-object, from which we want to sample from, along with other built-in densities.
+
+```{r}
+
+# custom density: constructing a Density object
+f_dens <- function(x) {
+  ret <- 1 + sin(2*pi*x)
+  ret[x < 0 | 1 < x] <- 0
+  ret
+}
+support_density <- c(0,1)
+dens <- Density(f_dens, support_density, subdivisions=1000L)
+
+# plotting the density
+x_lim <- c(dens$support[1] - 0.5, dens$support[2] + 0.5)
+grid <- seq(from=x_lim[1], to=x_lim[2], length.out=300)
+```
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
+plot(grid, dens$fun(grid), xlim = x_lim, ylim=c(-1,2),
+     xlab = "",
+     ylab = "",
+     col = "dark red",
+     type = "l",
+     lwd = 2)
+```
+```{r}
+
+#setting up a sampler for the density
+g_den <- Density(dunif, c(0,1))
+custom_sampler <- rejection_sampling(dens, g_den, runif, 2)
+```
+
+In the following two sections we carry out a visual and numerical comparison of the KDE with different kernels, different number of samples and as an estimation of three different density functions.
+
+### visual comparison 
+
+We first choose three different kernels *rectangular*, *gaussian* and *epanechnikov*. Then we initialize the list *dens_list* with the three different densities we like to sample from, along with their sampler functions. In addition we set the bandwith to a constant value of $0.1$.
+
+```{r}
+kernels <- list(rectangular = rectangular, gaussian = gaussian, epanechnikov = epanechnikov)
+dens_list <- list(list(Density(dunif, c(0,1)), runif), 
+                  list(Density(dnorm, c(-15,15)), rnorm),
+                  list(dens, custom_sampler))
+n_samples <- c(10, 50, 1000)
+bandwidth <- 0.1
+```
+
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=3, fig.align = "center"}
+par(mfrow = c(1, 3), mar=c(0,0,2,0))
+for(j in seq_along(dens_list)) {
+  d <- dens_list[[j]]
+    for (i in seq_along(kernels)) {
+      for(n in n_samples) {
+      samples <- d[[2]](n)
+      name <- names(kernels)[[i]]
+      k <- kernels[[i]]
+        kde <- kernel_density_estimator(k, samples, bandwidth = bandwidth)
+        if(j != 2){
+          grid <- seq(from=x_lim[1], to=x_lim[2], length.out=300)
+          plot(
+            grid,
+            d[[1]]$fun(grid),
+            xlim = x_lim,
+            ylim = c(0, 2),
+            main = paste(length(samples), "samples,", names(kernels)[i]),
+            xlab = "",
+            ylab = "",
+            col = "dark red",
+            type = "l",
+            xaxt='n',
+            yaxt='n',
+            lwd = 2
+          )
+        } 
+        else{
+          plot(
+            grid <- seq(from = -16 ,to = 16, length.out=3000),
+            d[[1]]$fun(grid),
+            xlim = c(-4, 4),
+            ylim = c(0, 1),
+            main = paste(length(samples), "samples,", names(kernels)[i]),
+            xlab = "",
+            ylab = "",
+            col = "dark red",
+            xaxt='n',
+            yaxt='n',
+            type = "l",
+            lwd = 2
+          )
+        }
+        lines(grid, kde$fun(grid), col = "orange")
+      }
+  }
+}
+```
+\
+These plots suggest that with an increasing number of samples, the kernel will get more and more irrelevant. Now that we can see this tendency of the plots, we want to compute the *mean integrated square error (MISE)* of the *KDE* and the density we originally sampled from, to make our observations more precise. 
+
+### numerical comparison
+
+In the code block below we claculate the *MISE* by using $200$ repetitions (called *reps*) to sample from our given density to get a realistic result that we can rely on. 
+\
+```
+mise_vec <- c()
+reps <- 200
+
+for(j in seq_along(dens_list)) {
+  d <- dens_list[[j]]
+  for(i in seq_along(kernels)){
+    name <- names(kernels)[[i]]
+    k <- kernels[[i]]
+    for(n in n_samples){
+      ise_vec <- c()
+      for(rep in 1:reps){
+        samples <- d[[2]](n)
+        kde <- kernel_density_estimator(k, samples, bandwidth=bandwidth)
+        ise_vec <- c(ise_vec, (sum((kde$fun(grid) - dens$fun(grid))^2) * (x_lim[2] - x_lim[1])) / length(grid))
+      }
+      mise_vec <- c(mise_vec, mean(ise_vec))
+    }
+  }
+}
+
+mise_1 <- array(mise_vec,
+              dimnames = list("n_samples" = n_samples, 
+                              "kernels" = c("rectangular","gaussian", "epanechnikov"),
+                              "density" = c("custom density", "uniform distribution", "normal   distribution")),
+              dim = c(length(n_samples),length(kernels),length(dens_list)))
+mise_1
+```
+```{r, echo=FALSE}
+load(file="sim_objects.rda")
+dimnames(mise_1) <- NULL
+table1 <- data.frame(num_samples = c(10, 50, 1000), rectangular = mise_1[,1,1], gaussian = mise_1[,2,1],
+                              epanechnikov = mise_1[,3,1])
+table2 <- data.frame(num_samples = c(10, 50, 1000), rectangular = mise_1[,1,2], gaussian = mise_1[,2,2],
+                              epanechnikov = mise_1[,3,2])
+table3 <- data.frame(num_samples = c(10, 50, 1000), rectangular = mise_1[,1,3], gaussian = mise_1[,2,3],
+                              epanechnikov = mise_1[,3,3])
+```
+\
+
+*MISE* of KDE and custom density
+```{r, echo=FALSE}
+knitr::kable(table1)
+```
+
+\
+*MISE* of KDE and uniform distribution
+```{r, echo=FALSE}
+knitr::kable(table2)
+```
+
+\
+*MISE* of KDE and normal distribution
+```{r, echo=FALSE}
+knitr::kable(table3)
+```
+
+Hier noch kurze Analyse der Werte hinschreiben!
+
+## dependency of the bandwidth 
+
+We learned in the last section that the influence of the kernel on the *KDE* gets smaller, as the number of samples increases. Thus we conclude that if we choose the quantity of samples suffiently high, the more important parameter left to study is the bandwidth.
+
+In the following plot we will set our kernel on *epanechnikov* without loss of generality, beacause we simultaneously choose a very large number of samples (here we chose $1000$ samples). We sample from our custom density from the beginning.
+
+```{r, echo=FALSE, out.width='100%', fig.width=8, fig.height=4, fig.align = "center"}
+par(mfrow = c(1,1))
+bandwidth_set <- list(list(0.3, "dark red"), list(0.01, "dark green"), list(0.001, "orange"))
+kernel <- epanechnikov
+n_samples <- 10000
+samples <- custom_sampler(n_samples)
+plot(grid, dens$fun(grid), xlim = x_lim, ylim=c(-0.1,2),
+     main="comparison of KDE with different bandwidths",
+     xlab = "",
+     ylab = "",
+     type = "l",
+     lwd = 2)
+legend("topright", title= "bandwidths", legend = c(0.3, 0.01, 0.001), col = c("dark red", "dark green", "orange"), lty = c(1,1,1), lwd = c(1,1,1), cex = 1.2)
+for(h in bandwidth_set){
+  kde <- kernel_density_estimator(kernel ,samples, bandwidth = h[[1]])
+  lines(grid, kde$fun(grid), col = h[[2]])
+}
+```
+
+Now we can see that the *KDE* depends heavily on the bandwidth. Below we calculate the *MISE* of the *KDE* with the three different bandwidths, like we did in the numerical comparison of the last chapter. In this calculation we also sampled from a uniform distribution and a normal distribution in addition to the custom density.
+```r
+ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps,ns=ns)
+mise_high_ns_comp <- calculate_mise(ise)
+mise_high_ns_comp %>%
+  group_by(n, bandwidth_estimators) %>%
+  summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise))
+```
+
+
+```{r, echo=FALSE}
+dimnames(mise_2) <- NULL
+table <- data.frame("bandwidths" = c(0.3, 0.01, 0.001), "custom" = mise_2[,1], "uniform" = mise_2[,2],                                            "normal" = mise_2[,3])
+knitr::kable(table)
+```
+
+This data shows us that $0.01$ is the optimal bandwidth for the custom density and the uniform distribution, out of the given set of bandwidths $\{0.3, 0.01, 0.001\}$. In contrast to that, $0.01$ is not the optimal bandwidth for approximating the normal distribution. 
+This behaviour shows us that the optimal bandwidth depends on the distribution of the samples. 
+
+## comparison of the bandwidth estimator functions in KDE
+
+The three bandwidth estimators we want to compare are our implementations of the *cross validation method*, *Goldenshluger-Lepski method* and *Penalized Comparison to Overfitting* (PCO). 
+
+The aim of our bandwidth estimators is to choose the *h* out of a bandwidth set *bandwidths*, such that the Mean Integrated Squared Error (MISE), also known as risk, will be minimized:
+$$\text{MISE} = \mathbb{E}_f \,||\hat f_h - f||_{2}^2$$
+
+As the MISE depends on the real density function $f$, the estimators minimize an approximation or a upper bound.\
+For more details, see ```?cross_validation```, ```?goldenshluger_lepski```, ```?pco_method``` and the references.\ 
+
+In the following plot we set the number of samples to $1000$ and try to approximate the uniform distribution, using the gaussian kernel and $200$ repetitions. \
+Note: here we would like to apply our observations from the first section and assume that with a large number of samples the choice of the kernel is almost irrelevant. Unfortunately, our computing power is limited, so we run it on $1000$ samples, even if that is not enough to ensure this effect. 
+
+```{r, echo=FALSE, out.width='100%', fig.width=6, fig.height=4, fig.align = "center"}
+plot_comparison(show_diff=FALSE, reps=200, objects=obj_simple_comp, legend= c("cross_validation", "goldenshluger_lepski", "pco_method"))
+```
+
+As we can see, the bandwidth estimators do not always choose the same bandwidth out of a given collection.
+Below we will take a closer look at how the estimators will perform on different kernels, sample sizes and densities. \
+But first we want to study the tuning parameters of *goldenschluger_lepski* and *pco_method*, to better understand the values recommended in literature.
+
+### investigation of the tuning parameters
+
+In the functions *goldenshluger_lepski* and *pco_method* it is possible to set a tuning parameter. In literature the user is advised to set $\kappa = 1.2$ for Goldenshluger-Lepski and $\lambda = 1.0$ for the PCO method.
+
+First, we take a look at $\kappa$ from the *goldenshluger_lepski* method.
+Here we set the kernel to *epanencnikov* and use the three densities in *dens_list* that we already used when we studied the influence of the kernel. We select only one kernel and set the number of samples to $1000$, for the same reason like in the section above, but the reader should keep this note in mind. 
+TODO:(LINK ZU OBEN ???)
+Our comparison will run on a small set of kappas, all of them chosen in a neigbourhood of the default value $\kappa =1.2$.
+
+```
+ns <- 1000
+reps <- 200
+kappa_set <- c(1, 1.1, 1.2, 1.3, 1.6, 2)
+dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
+sampler_list <- list(custom_sampler, runif, rnorm)
+kernel_list <- list(epanechnikov=epanechnikov)
+ise_kappa <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels=kernel_list, kappa_set=kappa_set, ns = ns, reps = reps)
+mise_kappa <- calculate_mise(ise_kappa)
+```
+
+```{r,echo=FALSE}
+knitr::kable(mise_kappa %>% 
+  select(den, kappa, mise, med_ise, sd_ise))
+```
+
+The MISEs for the approximation of the normal distribution will be noticeably smaller than for the uniform distribution, or the custom density. That's beacause we used the gaussian kernel, which is a very suitable kernel for smooth functions. In addition one can see in this example, that a sample size of $1000$ is not enough to ensure independency of the kernel. \
+
+These are the optimal kappas according to our calculations:
+
+```{r,echo=FALSE}
+knitr::kable(mise_kappa %>% 
+  select(den, kappa, mise, med_ise, sd_ise) %>%
+    group_by(den) %>%
+      filter(mise == min(mise)) %>%
+        select(den, kappa, mise))
+
+```
+
+The fact that the optimal kappa to estimate the normal distribution was so big could be related with the kernel, because the *gaussian* is not the best choice for estimating densities that aren't continuous.
+
+To derive relialbe information from this comparison we would need to use much more samples and also compare bigger sets of different densities. Nevertheless we can see a tendency for the optimal value for 
+
+But in some regards we can see, that the default, $\kappa = 1.2$ is perfectly in our range of the optimal kappas we calculated. \ 
+For our main comparison, we will use the suggested kappa given in literature.
+
+Now we will try to comprehend the tuning parameter selection for the Penalized Comparison to Overfitting method. \
+The suggestion is to set $\lambda = 1$ as default value. \
+The parameters will be the same as for the kappa.
+
+```
+ns <- 1000
+reps <- 200
+lambda_set <- c(1, 1.1, 1.2, 1.4, 1.7, 2)
+dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
+sampler_list <- list(custom_sampler, runif, rnorm)
+kernel_list <- list(epanechnikov=epanechnikov)
+ise_lambda <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, kernels=kernel_list, lambda_set=lambda_set, ns = ns, reps = reps)
+mise_lambda <- calculate_mise(ise_lambda)
+```
+```{r,echo=FALSE}
+knitr::kable(mise_lambda %>% 
+  select(den, lambda, mise, med_ise, sd_ise))
+
+```
+
+We can see a similar effect like in our kappa comparison, the smooth kernel can approximate smooth functions a little bit better. \
+The mean integrated squared error does not vary as much for a different $\lambda$ as for a varying $\kappa$.
+
+```{r,echo=FALSE}
+knitr::kable(mise_lambda %>% 
+  select(den, lambda, mise, med_ise, sd_ise) %>%
+    group_by(den) %>%
+      filter(mise == min(mise)) %>%
+        select(den, lambda, mise))
+
+```
+
+We would need to choose a different lambda for each density. But as we stated above, the MISE does not differ as much as in the comparison for the set of kappas. This similarity of the MISE for each approximated density will not lead to discarding the $\lambda = 1$, given in literature.\
+Like stated in the comparison of kappas, we would need way more variation for the parameters used in this experiment, to make a final statement about our lambda selection. 
+
+We could not completely recreate the selection for kappa and lambda. \
+But we could comprehend that the selection is in a sensible range. \
+In the following, we will set $\kappa = 1.2$ and $\lambda = 1$ as default parameters.
+
+### performance analysis
+
+We will make a small performance comparison of the three bandwidth estimators, calculating the optimal bandwidth out of a bandwidth set.
+
+
+First of all, we set up the bandwidth set, using the logarithmic_bandwidth_set function.
+
+
+
+Note that, as we wrap our functions such that they can work on different sample sets, we do not calculate the mean time solely for our bandwidth estimators.
+But as the sampler function and the number of samples are the same in every function, the mean of the runtime of the sampler can be neglected.
+Thus, we can compare the relative difference of the runtimes.
+For this comparison, the package microbenchmark will be used.
+
+```r
+# wrapping the functions
+cross_val <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
+  samples <- rnorm(ns)
+  cross_validation(epanechnikov, samples, bandwidths_1, subdivisions = 1000L)
+}
+goldenshluger_lep <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
+  samples <- rnorm(ns)
+  goldenshluger_lepski(epanechnikov, samples, bandwidths_1, subdivisions = 1000L)
+}
+pco_meth <- function(epanechnikov, ns, bandwidths_1, subdivisions = 1000L) {
+  samples <- rnorm(ns)
+  pco_method(epanechnikov, samples, bandwidths_1, subdivisions = 1000L)
+}
+```
+
+We will compare the runtime of the algorithms on two bandwidth sets.
+The first will hold 5 bandwidths.
+
+```r
+ns <- 1000
+n_bandwidths <- 5
+bandwidths_1 <- logarithmic_bandwidth_set(from=1/ns, to=1, length.out=n_bandwidths)
+# benchmarking
+bm_small_set <- microbenchmark::microbenchmark(
+  cross_val(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
+  goldenshluger_lep(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
+  pco_meth(epanechnikov, ns, bandwidths_1, subdivisions = 1000L),
+  times=200L)
+```
+
+The second will hold 20 bandwidths.
+
+```r
+# now, we will work on a bandwidth set containing 20 elements, but on the same samples
+n_bandwidths <- 20
+bandwidths_2 <- logarithmic_bandwidth_set(from=1/ns, to=1, length.out=n_bandwidths)
+bm_big_set <- microbenchmark::microbenchmark(
+  cross_val(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
+  goldenshluger_lep(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
+  pco_meth(epanechnikov, ns, bandwidths_2, subdivisions = 1000L),
+  times=200L)
+```
+This table shows the result of our comparison.
+
+```{r, echo=FALSE}
+knitr::kable(results_performance %>% arrange(n_bandwidths, method))
+```
+
+
+As we can see, the pco_method and cross_validation are performing at similar speed, but the goldenshluger_lepski method is working very slow on a increasing number of bandwidths.
+Looking at the construction of the method, this is a reasonable claim to make.
+
+### Main comparison
+We looked at high sample sizes and compared the performance of the three implementations for the bandwidth estimators.
+The last experiment will take a closer look at smaller sample sizes too, as given data sets will not always be big enough for perfect comparison.
+As we noted above, the kernel selection will be more relevant as sample sizes decrease.
+Because of that, we will run our comparison on multiple kernels and sample sizes.
+
+```r
+ns <- c(10, 50, 100, 1000)
+reps <- 5 #200
+dens_list <- list(custom_dens=dens, dunif=Density(dunif,c(0,1)), dnorm=Density(dnorm,c(-15,15)))
+sampler_list <- list(custom_sampler, runif, rnorm)
+kernel_list <- list(epanechnikov=epanechnikov)
+```
+
+```{r, echo=FALSE, , out.width='100%', fig.width=8, fig.height=3, fig.align = "center"}
+# plot
+par(mfrow=c(1,4), mar=c(0,0,2,0))
+ylims <- list(c(-0.1, 2.2), c(-0.1, 1.5), c(-0.1, 0.5))
+for(i in seq_along(plot_object_vec_2)){
+  obj_lists <- plot_object_vec_2[[i]]
+  ylims_i <- ylims[[i]]
+  d <- dens_list[[i]]
+  if(i == 3){
+    xlim_2 <-  c(-4, 4)
+
+  }else{
+    xlim_2 <-  c(d$support[1] - 1, d$support[2] + 1)
+  }
+  for(obj in obj_lists){
+  plot_comparison(show_diff=FALSE, dens=dens_list[[i]], dens_sampler=sampler_list[[i]], xlim_lower=xlim_2[1], xlim_upper=xlim_2[2], ylim_lower=ylims_i[1], ylim_upper=ylims_i[2], reps=reps, ns=ns, objects=obj)
+  }
+}
+
+```
+TODO: analysieren
+For the numerical comparison, we will compute the mean integrated squared error again.
+
+```r
+# numerical comparison
+ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps, ns=c(10, 50, 100, 1000))
+mise_ns_comp <- calculate_mise(ise)
+mise_ns_comp %>%
+  group_by(n, bandwidth_estimators) %>%
+  summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise))
+
+```
+
+
+```{r, echo=FALSE, results='hide', message=FALSE}
+mise_ns_comp_summ <- mise_ns_comp %>%
+  group_by(n, bandwidth_estimators) %>%
+  summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise)) %>% 
+  ungroup()
+```
+
+```{r, echo=FALSE}
+knitr::kable(mise_ns_comp_summ)
+```
+TODO: analysieren
+
+
+## comments on the study
+(Umformulieren, vllt noch anderen stuff hinzufügen!)\
+Because of the limitation of computing resources, this study could only perform a limited amount of comparisons on objects and mostly used only 200 repetitions.
+For more exact and meaningful results, you would need to run the experiments on more densities, kernels, and also a larger amount of parameters.\
+But this simulation showed the capability of the *KDE* package, as it can be used for such a study. Furthermore, we tried to comprehend the selection of kappa and lambda. Both default values could be found in a range, that does make sense to us.
+
+
