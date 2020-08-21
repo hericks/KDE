@@ -72,17 +72,14 @@ pass the validator \code{\link{validate_Kernel}}.
 }
 }
 \examples{
-rectangular_function <- function(u){
-  check_kernel_conditions(u)
-  return(1/2*(abs(u) <= 1))
-}
+rectangular_function <- function(u) 1/2*(abs(u) <= 1)
 rectangular_ker <- Kernel(rectangular_function, support=c(-1,1))
 x <- seq(from = -4, to = 4, length.out = 1000)
 plot(x, gaussian$fun(x),
      xlim=c(-5,5), ylim=c(0,1),
      main="Kernels", xlab="", ylab="",
      col="black", type="l")
-lines(x,triangular$fun(x), col="red")
+lines(x, triangular$fun(x), col="red")
 lines(x, rectangular_ker$fun(x), col="blue")
 legend("topright",
        legend=c("gaussian", "triangular","rectangular"),
