@@ -1217,10 +1217,14 @@ For the numerical comparison, we will compute the mean integrated squared error 
 # numerical comparison
 ise <- compare_ise(dens_list=dens_list, dens_sampler_list=sampler_list, reps=reps, ns=c(10, 50, 100, 1000))
 mise_ns_comp <- calculate_mise(ise)
-mise_ns_comp %>%
-  group_by(n, bandwidth_estimators) %>%
-  summarize(mean_mise=mean(mise), mean_sd_ise=mean(sd_ise))
 
+```
+Here are the first five rows of our table:
+
+```{r, echo=FALSE, message=FALSE}
+knitr::kable(mise_ns_comp %>% 
+  head(5)
+)
 ```
 
 \
