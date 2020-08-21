@@ -1,4 +1,6 @@
-#' Shiny App for the KDE package
+#' Visualisation Tool for Kernel Density Estimation
+#'
+#' Open the visualisation app for the kernel density estimation package.
 #'
 #' @importFrom shiny fluidPage fluidRow column wellPanel selectInput
 #'   conditionalPanel numericInput sliderInput checkboxInput actionButton tags
