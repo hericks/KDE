@@ -22,8 +22,7 @@ Authors@R:
              role = c("aut"),
              email = "hericks@stud.uni-heidelberg.de"))
 Description: The `KDE` package provides the user with basic functionality for the construction of kernel density estimators, as well as bandwidth selection algorithms.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -47,3 +46,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Imports:
+    shiny,
+    tidyverse
