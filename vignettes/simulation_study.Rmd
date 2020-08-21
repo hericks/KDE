@@ -1,8 +1,8 @@
 ---
-title: "Simulation Study"
+title: "KDE: Simulation Study"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{simulation_study}
+  %\VignetteIndexEntry{KDE: Simulation Study}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -1228,9 +1228,9 @@ knitr::kable(mise_ns_comp %>%
 )
 ```
 
-We ran the comparison on 200 repetitions on three densities, three kernels and four different sample sets.\
+We ran the comparison using 200 repetitions, three densities, three kernels and four different sample sizes.\
 \
-First, let us compare the influence of the *number of samples* on the accuracy of the three methods:\
+First, let us compare the influence of the number of samples on the accuracy of the three methods.\
 
 ```{r, echo=TRUE, results='hide', message=FALSE}
 mise_ns_comp %>%
@@ -1245,14 +1245,12 @@ knitr::kable(mise_ns_comp_ns)
 ```
 
 Every method gets more accurate results, as the number of samples increase.
-In this scenario, the `goldenshluger_lepski` method never really shines, but the `pco_method` performed best at smaller sets of samples.\
-The `cross_validation` function did get closer to the `pco_method` and finally surpasses its precision on a set of 1000 samples.\
-All in all, there is no surprising result, as the mean integrated squared errors for all of the bandwidth estimators are in a similar range.\
+The `pco_method` performed best at smaller sets of samples.\
+The `cross_validation` function did get closer to the `pco_method` and finally surpasses its precision on a set of 1000 samples. 
+For 50 samples or more, Goldenshluger Lepski yields the smallest variance for the integrated squared error, this may be important for methods, which rely on the stability of the ISE in particular. 
 
 \
-Now we will take a closer look if the *kernel* influences the performance of the bandwidth estimators.\
-We will not take the mean for the whole set of $ns = \{10, 50, 100, 1000\}$.\
-To get a more meaningful comparison of the methods, we will only look at 1000 samples, because we consider them to be a large enough sample size, such that the kernel should not have that much impact on the outcome.
+Now we will take a closer look if the kernel influences the performance of the bandwidth estimators in the case of $n = 1000$ samples. We consider them to be a large enough sample size, for the kernel to not have a noticable impact.
 
 ```{r, echo=TRUE, results='hide', message=FALSE}
 mise_ns_comp %>% 
@@ -1267,15 +1265,11 @@ mise_ns_comp_ker_high
 knitr::kable(mise_ns_comp_ker_high)
 ```
 
-Our conclusion above stated, that the `pco_method` performs worst on larger sample sizes. This is true for every kernel.\
-The influence of the kernel on the result is not very big, because the mean integrated squared errors are in a very similar range for every kernel. Only the gaussian kernel performed a little bit better than epanechnikov and rectangular.\
-The `cross_validation`  worked better on the epanechnikov kernel than `goldenshluger_lepski` and `pco_method`. \ 
-Other than that, there seems to be not that much impact of the kernel on the bandwidth estimators at 1000 samples, hence every method gets a similar MISE. 
+Our conclusion above stated, that the `pco_method` performs worst on larger sample sizes. This is true for every kernel. The influence of the kernel on the result is small, since the mean integrated squared errors are in a very similar range for every kernel. 
+However, `cross_validation`  seemed to worked better on the epanechnikov kernel than `goldenshluger_lepski` and `pco_method`.
 
-\
 Last but not least, the most important part:\
 How do the bandwidth estimators work on different *densities*?\
-Like in our experiment for the kernels, the number of samples will be 1000.
 
 ```{r, echo=TRUE, results='hide', message=FALSE}
 mise_ns_comp %>%
@@ -1293,12 +1287,18 @@ knitr::kable(mise_ns_comp_den)
 For samples from the custom density and uniformly distributed samples, the outcome is similar.\
 Surprisingly, the `cross_validation` method worked way better on normally distributed samples! \
 Goldenshluger and Lepskis method did get a low mean standard deviation, too, but `pco_method` fell off.\
-The remarkably difference of `cross_validation` could motivate a new study, that takes a closer look at the dependency of the performance for our estimatorson on the regularity of the density, that we took samples from.
+The remarkably difference of `cross_validation` could motivate a new study, that takes a closer look at the dependency of the performance of our estimators on the regularity of the underlying density. 
+
+## Conclusions And Comments On The Study
+
+In this study we could only perform a limited amount of comparisons for the different objects used within the `KDE` package, due to our limited computation resources and time. 
+
+Like we said above in most of the sections, we would need to run our experiments on much more kernels, samples and densities to get exact and meaningful results. 
+
+However, we could see definite tendencies, as in the first section of the study, where it was obvious that the relevance of the kernel decreases as the number of samples increased. Also that the `goldenshluger_lepski` is much slower on a big set of bandwidths compared to `cross_validation` and `pco_method`. With the mathematical definition and numerical implementation in mind, this seemed reasonable. 
+
+Another interesting observation was the comparison of the different values of the tuning parameters $\kappa$ and $\lambda$. Before running this simulation study we blindly copied the suggested values out of our resources. We may not be able to verify these values completely, but could see that these suggestions seem plausible. 
+
+With more time we'd prefer to work closer with the formal definitions of the implemented algorithms. In particular we'd like to study why certain mathematical restrictions exist on the bandwidth set and on the regularity of the probability density function to sample from. The last experiment motivates a study on the relationship between the performance of the cross-validation method and smooth functions, in particular. 
 
 
-
-## Comments On The Study
-(Umformulieren, vllt noch anderen stuff in Richtung vergleich zwischen eher glatten funktionen, (nur) stetigen und treppenfunktionen hinzufügen!)\
-Because of the limitation of computing resources, this study could only perform a limited amount of comparisons on objects and mostly used only 200 repetitions.
-For more exact and meaningful results, you would need to run the experiments on more densities, kernels, and also a larger amount of parameters.\
-But this simulation showed the capability of the *KDE* package, as it can be used for such a study. Furthermore, we tried to comprehend the selection of kappa and lambda. Both default values could be found in a range, that does make sense to us.
