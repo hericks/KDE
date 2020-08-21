@@ -310,7 +310,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
           legend = legend,
           lwd = 2,
           col = 2:(bw_len + 1),
-          cex = 0.8
+          cex = 0.6
         )
 
       # second plot (difference between true f and estimation)
@@ -365,7 +365,7 @@ plot_comparison <- function(dens = Density(dunif, c(0, 1)),
       legend("topright",
              legend = legend,
              lwd = 2,
-             col = 2:(m + 1))
+             col = 2:(m + 1), cex = 0.6)
 
     # second plot (difference between true f and estimation)
     if (show_diff) {
@@ -1237,6 +1237,9 @@ mise_ns_comp_ns
 ```{r, echo=FALSE}
 knitr::kable(mise_ns_comp_ns)
 ```
+
+In our observations
+
 
 \
 Now, lets see if the *kernel* influences the performance of our methods.\
