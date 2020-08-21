@@ -56,6 +56,10 @@ rejection_sampling <- function(f_den, g_den, g, M){
   stopifnot("f_den has to be a Density obj" = all.equal(validate_Density(f_den), f_den))
   stopifnot("g_den has to be a Density obj" = all.equal(validate_Density(g_den), g_den))
   stopifnot("g has to be a numerical function" = class(g) == "function")
+  # g has to be a sampler function
+  stopifnot("g has to return the correct number of samples" = length(g(1)) == 1)
+  stopifnot("g has to return the correct number of samples" = length(g(10)) == 10)
+  stopifnot("g has to return the correct number of samples" = length(g(100)) == 100)
   # relation between f_den,M and g_den that has to be satisfied
   lower <- f_den$support[1]
   upper <- f_den$support[2]
