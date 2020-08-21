@@ -1,5 +1,3 @@
-
-
 #' @export
 shiny_kde <- function(){
   library(shiny)
@@ -15,8 +13,8 @@ shiny_kde <- function(){
       "Choose a density:",
       c(
         "Normal distribution" = "dnorm",
-        #"Beta distribution" = "dbeta",
-        #"Exponential distribution" = "dexp",
+        "Beta distribution" = "dbeta",
+        "Exponential distribution" = "dexp",
         "Uniform distribution" = "dunif",
         "Custom Density 1" = "custom_density_1",
         "Custom Density 2" = "custom_density_2"
@@ -47,15 +45,15 @@ shiny_kde <- function(){
     fluidRow(
       column(
         width = 6,
-        conditionalPanel(condition = "input.density == 'dbeta'", numericInput("dbeta_alpha", "alpha", "0.5", min=1e-5))
+        conditionalPanel(condition = "input.density == 'dbeta'", sliderInput("dbeta_alpha", "alpha", 0.5, 5, 0.5, 0.1))
       ),
       column(
         width = 6,
         offset = 0,
-        conditionalPanel(condition = "input.density == 'dbeta'", numericInput("dbeta_beta", "beta", "0.5", min=1e-5))
+        conditionalPanel(condition = "input.density == 'dbeta'", sliderInput("dbeta_beta", "beta:", 0.5, 5, 0.5, 0.1))
       )
     ),
-    conditionalPanel(condition = "input.density == 'dexp'", numericInput("dexp_rate", "rate", "1")),
+    conditionalPanel(condition = "input.density == 'dexp'", sliderInput("dexp_rate", "rate:", 0.01, 10, 1, 0.1)),
     ),
 
     # Kernel selection
@@ -160,7 +158,15 @@ shiny_kde <- function(){
     }
     reactive_density$object <-
       function() {
-        Density(reactive_density$fun, reactive_density$support(), subdivisions=1000)
+        switch(
+          input$density,
+          "dunif" = Density(reactive_density$fun, reactive_density$support(), subdivisions=1000),
+          "dnorm" = Density(reactive_density$fun, reactive_density$support(), subdivisions=1000),
+          "dbeta" = Density(reactive_density$fun, reactive_density$support(), subdivisions=50000),
+          "dexp" = Density(reactive_density$fun, reactive_density$support(), subdivisions=10000),
+          "custom_density_1" = Density(reactive_density$fun, reactive_density$support(), subdivisions=1000),
+          "custom_density_2" = Density(reactive_density$fun, reactive_density$support(), subdivisions=1000)
+        )
       }
 
     reactive_samples <- reactiveValues()
