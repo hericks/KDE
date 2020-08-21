@@ -2,10 +2,10 @@
 % Please edit documentation in R/shiny_app.R
 \name{shiny_kde}
 \alias{shiny_kde}
-\title{Shiny App for the KDE package}
+\title{Visualisation Tool for Kernel Density Estimation}
 \usage{
 shiny_kde()
 }
 \description{
-Shiny App for the KDE package
+Open the visualisation app for the kernel density estimation package.
 }
