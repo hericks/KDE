@@ -16,8 +16,8 @@
 #'   these samples according to the densities \code{f_gen} and \code{g_den},
 #'   such that the resulting samples are \code{f_den}-distributed. Many rejected
 #'   samples result in longer runtimes. To prevent this \code{M} should be
-#'   chosen as small as possible, satisfying \code{f(x) <= M*g(x)} for all
-#'   numeric scalar inputs \code{x}.
+#'   chosen as small as possible, satisfying \code{f_den$fun(x) <=
+#'   M*g_den$fun(x)} for all numeric scalar inputs \code{x}.
 #'
 #' @return A function taking a single numeric scalar argument \code{n},
 #'   returning \code{n} \code{f-den} distributed random numbers.

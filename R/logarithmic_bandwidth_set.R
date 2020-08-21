@@ -10,7 +10,7 @@
 #' @param length.out non-negative numeric scalar; desired length of the sequence
 #'   (will be rounded up if fractional).
 #'
-#' @details Numerical inputs should all be \link[is.finite]{finite} (that is,
+#' @details Numerical inputs should all be \link[BASE::is.finite]{finite} (that is,
 #'   not infinite, \code{NaN} or \code{NA}).
 #'
 #' @return A logarithmically spaced sequence of \code{length.out} elements

@@ -4,6 +4,9 @@ quartz(title="Plots",
        width = 5.25,
        height= 3.75,
        dpi=120)
+
+par(mar=double(4))
+plot(1, type="n", xlab="", ylab="", yaxt="n", xaxt="n")
 options(viewer=NULL)
 
 ### Introduction to kernel density estimation
@@ -31,6 +34,7 @@ kernel <- function(grid) (abs(grid) <= 1)/2
 
 # plot estimator given first sample/second sample #
 lines(grid, kernel(grid - samples[1]))
+
 lines(grid, kernel(grid - samples[2]))
 
 ## plot mean
@@ -39,7 +43,7 @@ plot_density()
 lines(grid, (kernel(grid - samples[1]) + kernel(grid - samples[2]))/2)
 plot_samples()
 
-#
+##
 clear_plot()
 plot_density()
 plot_samples()
@@ -97,9 +101,6 @@ library(KDE)
 
 ### Object Structure
 
-# Kerne/Dichten zentrale Objekte. S3 Klassenstruktur um einige der
-# math./num. Anforderungen sicherstellen zu können.
-
 # integrable functions
 
 # numeric compact support
@@ -107,15 +108,15 @@ IntegrableFunction(dnorm, support=c(-Inf, Inf))
 all.equal(dnorm(-15), 0)
 
 f <- IntegrableFunction(dnorm, support=c(-15, 15))
+f <- IntegrableFunction(dnorm, mean=2)
 str(f)
-rm(f)
-
-IntegrableFunction(dnorm, mean=2)
 
 # subdivisions parameter
-integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 25L)
-integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 1000L)
+integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 25L)$value
+integrate_primitive(dnorm, lower=-15, upper=15, subdivisions = 1000L)$value
 
+f
+rm(f)
 
 
 ### Kernels and densities #
@@ -261,6 +262,8 @@ integrate_primitive(estimator$fun, estimator$support[1], estimator$support[2])$v
 # convergence
 integrate_primitive(dnorm, -10, 10, subdivisions = 500, check = TRUE)
 integrate_primitive(dnorm, -10, 10, subdivisions = 1000, check = TRUE)
+integrate_primitive(dnorm, -10, 10, subdivisions = 5000, check = TRUE)
+integrate_primitive(dnorm, -10, 10, subdivisions = 10000, check = TRUE)
 
 # divergence
 integrate_primitive(function(x) 1/x, 0, 1, subdivisions = 500, check = TRUE)
