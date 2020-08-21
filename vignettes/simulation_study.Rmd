@@ -485,15 +485,18 @@ In this simulation study we compare the three bandwidth estimation functions *cr
 vignette("vignette_KDE")
 ```
 ## overview of the parameters
-*ns*, *number of samples*: varying, default n = 1000L \
-$x_i$, *x*, varying, grid depends on the true density function, default is the interval $[0,1]$. \
-true function, *density*, varying, default is a custom density, based on a sine curve. \
-kernel: fixed on *epanechnikov* kernel for large sample sizes, varying for small sample sizes. \
-$\kappa$, parameter for Goldenshluger-Lepski method, fixed to $\kappa = 1.2$ for comparison between estimators, varying as object of study. \
-$\lambda$, parameter for Penalized Comparison to Overfitting, fixed to $\lambda = 1$ for comparison between estimators, varying as object of study. \
+
+To ensure a clear overview, we list all the parameters that we vary or fix.
+*ns*: number of samples, varying, default $n = 1000$L \
+*x_grid*, *grid*: grid, varying, depends on the true density function, default is $300$ steps in the interval $[0,1]$. \
+*dens_list*, *d*, *dens*: density function for sampling, varying, default is uniform distribution.  \
+*kernel*, *kernels*, *k*: fixed on *epanechnikov* kernel for large sample sizes, in the other cases we use a list of *rectangular*, *gaussian*, and *epanechnikov*. \
+*h*: bandwidth, varies, but in the section *dependency of the kernel* it is fixed to $0.1$.
+$\kappa$, *kappa_set*: tuning parameter for *goldenshluger_lepski*, generally fixed to $\kappa = 1.2$, apart from the section *investigation of the tuning parameters*. \
+$\lambda$, *lambda_set*: tuning parameter for *pco_method*, generally fixed to $\lambda = 1.0$, apart from the section *investigation of the tuning parameters*. \
 
 
-## dependency of the kernel
+## dependency on the kernel
 
 In this section we want to investigate the influence of the kernel on the KDE function with an increasing number of samples. 
 (Freitag: referenz auf oben, wieso kernel fest?)
@@ -703,19 +706,34 @@ This data shows us that $0.01$ is the optimal bandwidth for the custom density a
 This behaviour shows us that the optimal bandwidth depends on the distribution of the samples. 
 
 ## comparison of the bandwidth estimator functions in KDE
-(Ist es sinnvoll, die parameter hier erst zu erklären?)
 
+The three bandwidth estimators we want to compare are our implementations of the *cross validation method*, *Goldenshluger-Lepski method* and *Penalized Comparison to Overfitting* (PCO). 
 
+The aim of our bandwidth estimators is to choose the *h* out of a bandwidth set *bandwidths*, such that the Mean Integrated Squared Error (MISE), also known as risk, will be minimized:
+$$\text{MISE} = \mathbb{E}_f \,||\hat f_h - f||_{2}^2$$
+
+As the MISE depends on the real density function $f$, the estimators minimize an approximation or a upper bound.\
+For more details, see ```?cross_validation```, ```?goldenshluger_lepski```, ```?pco_method``` and the references.\ 
+
+In the following plot we set the number of samples to $1000$ and try to approximate the uniform distribution, using the gaussian kernel and $200$ repetitions. \
+Note: here we would like to apply our observations from the first section and assume that with a large number of samples the choice of the kernel is almost irrelevant. Unfortunately, our computing power is limited, so we run it on $1000$ samples, even if that is not enough to ensure this effect. 
 
 ```{r, echo=FALSE, out.width='100%', fig.width=6, fig.height=4, fig.align = "center"}
 plot_comparison(show_diff=FALSE, reps=200, objects=obj_simple_comp, legend= c("cross_validation", "goldenshluger_lepski", "pco_method"))
 ```
 
+As we can see, the bandwidth estimators do not always choose the same bandwidth out of a given collection.
+Below we will take a closer look at how the estimators will perform on different kernels, sample sizes and densities. \
+But first we want to study the tuning parameters of *goldenschluger_lepski* and *pco_method*, to better understand the values recommended in literature.
+
 ### investigation of the tuning parameters
 
-In the functions *goldenshluger_lepski* and *pco_method* it is possible to set a tuning parameter. In literature the user is advised to set $\kappa = 1.2$ for Goldenshluger-Lepski and $\lambda = 1$ for the PCO method.
+In the functions *goldenshluger_lepski* and *pco_method* it is possible to set a tuning parameter. In literature the user is advised to set $\kappa = 1.2$ for Goldenshluger-Lepski and $\lambda = 1.0$ for the PCO method.
 
-In our following calculations we want to comprehend 
+First, we take a look at $\kappa$ from the *goldenshluger_lepski* method.
+Here we set the kernel to *epanencnikov* and use the three densities in *dens_list* that we already used when we studied the influence of the kernel. We select only one kernel and set the number of samples to $1000$, for the same reason like in the section above, but the reader should keep this note in mind. 
+TODO:(LINK ZU OBEN ???)
+Our comparison will run on a small set of kappas, all of them chosen in a neigbourhood of the default value $\kappa =1.2$.
 
 ```
 ns <- 1000
@@ -733,6 +751,10 @@ knitr::kable(mise_kappa %>%
   select(den, kappa, mise, med_ise, sd_ise))
 ```
 
+The MISEs for the approximation of the normal distribution will be noticeably smaller than for the uniform distribution, or the custom density. That's beacause we used the gaussian kernel, which is a very suitable kernel for smooth functions. In addition one can see in this example, that a sample size of $1000$ is not enough to ensure independency of the kernel. \
+
+These are the optimal kappas according to our calculations:
+
 ```{r,echo=FALSE}
 knitr::kable(mise_kappa %>% 
   select(den, kappa, mise, med_ise, sd_ise) %>%
@@ -741,6 +763,17 @@ knitr::kable(mise_kappa %>%
         select(den, kappa, mise))
 
 ```
+
+The fact that the optimal kappa to estimate the normal distribution was so big could be related with the kernel, because the *gaussian* is not the best choice for estimating densities that aren't continuous.
+
+To derive relialbe information from this comparison we would need to use much more samples and also compare bigger sets of different densities. Nevertheless we can see a tendency for the optimal value for 
+
+But in some regards we can see, that the default, $\kappa = 1.2$ is perfectly in our range of the optimal kappas we calculated. \ 
+For our main comparison, we will use the suggested kappa given in literature.
+
+Now we will try to comprehend the tuning parameter selection for the Penalized Comparison to Overfitting method. \
+The suggestion is to set $\lambda = 1$ as default value. \
+The parameters will be the same as for the kappa.
 
 ```
 ns <- 1000
@@ -758,6 +791,9 @@ knitr::kable(mise_lambda %>%
 
 ```
 
+We can see a similar effect like in our kappa comparison, the smooth kernel can approximate smooth functions a little bit better. \
+The mean integrated squared error does not vary as much for a different $\lambda$ as for a varying $\kappa$.
+
 ```{r,echo=FALSE}
 knitr::kable(mise_lambda %>% 
   select(den, lambda, mise, med_ise, sd_ise) %>%
@@ -766,7 +802,13 @@ knitr::kable(mise_lambda %>%
         select(den, lambda, mise))
 
 ```
-TODO: analysieren
+
+We would need to choose a different lambda for each density. But as we stated above, the MISE does not differ as much as in the comparison for the set of kappas. This similarity of the MISE for each approximated density will not lead to discarding the $\lambda = 1$, given in literature.\
+Like stated in the comparison of kappas, we would need way more variation for the parameters used in this experiment, to make a final statement about our lambda selection. 
+
+We could not completely recreate the selection for kappa and lambda. \
+But we could comprehend that the selection is in a sensible range. \
+In the following, we will set $\kappa = 1.2$ and $\lambda = 1$ as default parameters.
 
 ### performance analysis
 
@@ -826,10 +868,9 @@ bm_big_set <- microbenchmark::microbenchmark(
   times=200L)
 ```
 This table shows the result of our comparison.
-TODO: Kommentar entfernen
 
 ```{r, echo=FALSE}
-#knitr::kable(results_performance %>% arrange(n_bandwidths, method))
+knitr::kable(results_performance %>% arrange(n_bandwidths, method))
 ```
 
 
