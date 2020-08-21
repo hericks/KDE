@@ -40,6 +40,8 @@
 #' @include kernel_density_estimator.R
 #' @include logarithmic_bandwidth_set.R
 #'
+#' @importFrom stats approxfun
+#'
 #' @export
 goldenshluger_lepski <- function(kernel, samples, bandwidths = logarithmic_bandwidth_set(1/length(samples), 1, 10), kappa = 1.2, subdivisions = 1000L) {
   # conditions for kernel

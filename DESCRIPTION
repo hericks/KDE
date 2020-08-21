@@ -42,10 +42,14 @@ Collate:
     'rejection_sampling.R'
     'shiny_app.R'
     'simulation_study.R'
+Depends:
+    R (>= 3.5)
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
 Imports:
     shiny,
-    tidyverse
+    tidyverse,
+    rlang,
+    microbenchmark
