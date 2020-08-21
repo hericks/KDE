@@ -28,7 +28,7 @@ shiny_kde <- function(){
       column(
         width = 6,
         offset = 0,
-        conditionalPanel(condition = "input.density == 'dunif'", numericInput("dunif_max", "Max", "1"))
+        conditionalPanel(condition = "input.density == 'dunif'", numericInput("dunif_max", "Max", "1", min = 1e-3))
       )
     ),
     fluidRow(
@@ -39,7 +39,7 @@ shiny_kde <- function(){
       column(
         width = 6,
         offset = 0,
-        conditionalPanel(condition = "input.density == 'dnorm'", numericInput("dnorm_sd", "sd", "1"))
+        conditionalPanel(condition = "input.density == 'dnorm'", sliderInput("dnorm_sd", "sd", 0.5, 2, 0.5, 0.1))
       )
     ),
     fluidRow(
@@ -148,7 +148,7 @@ shiny_kde <- function(){
       switch(
         input$density,
         "dunif" = dunif(x, f(input$dunif_min,0), max(f(input$dunif_max, 0), f(input$dunif_min, 0) + 0.01)),
-        "dnorm" = dnorm(x, f(input$dnorm_mean, 0), f(input$dnorm_sd, 0.1)),
+        "dnorm" = dnorm(x, f(input$dnorm_mean, 0), max(f(input$dnorm_sd, 0.1), 0.5)),
         "dbeta" = dbeta(x, max(c(0.3, input$dbeta_alpha), na.rm=TRUE), max(c(0.3, input$dbeta_beta), na.rm=TRUE)),
         "dexp" = dexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE)),
         "custom_density_1" = reactive_density$custom_density_1(x),
@@ -181,7 +181,7 @@ shiny_kde <- function(){
         switch(
           input$density,
           "dunif" = runif(x, f(input$dunif_min,0), max(f(input$dunif_max, 0),f(input$dunif_min, 0) + 0.01)),
-          "dnorm" = rnorm(x, f(input$dnorm_mean, 0), f(input$dnorm_sd, 0.1)),
+          "dnorm" = rnorm(x, f(input$dnorm_mean, 0),  max(f(input$dnorm_sd, 0.1), 0.5)),
           "dbeta" = rbeta(x, max(c(0.3,input$dbeta_alpha), na.rm=TRUE), max(c(0.3,input$dbeta_beta), na.rm=TRUE)),
           "dexp" = rexp(x, max(c(0.1,input$dexp_rate), na.rm=TRUE)),
           "custom_density_1" = runif(x,min=0, max=1),
@@ -271,7 +271,7 @@ shiny_kde <- function(){
                   lwd = 2
 
                 )
-                legend("topright", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,1), lwd = c(2,1,1), cex = 1.2)
+                legend("topright", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,NA),pch=c(NA,NA,"."), lwd = c(2,1,1), cex = 1.2)
                 if (input$show_kernel) {
                   lines(x_grid(), reactive_kernel$fun(x_grid()))
                 }
