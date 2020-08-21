@@ -271,7 +271,7 @@ shiny_kde <- function(){
                   lwd = 2
 
                 )
-                legend("topright", legend = c("density", "KDE", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,NA),pch=c(NA,NA,"."), lwd = c(2,1,1), cex = 1.2)
+                legend("topright", legend = c("density", "estimator", "samples"), col = c("dark red","black", "royal blue"), lty = c(1,1,NA),pch=c(NA,NA,"."), lwd = c(2,1,1), cex = 1.2)
                 if (input$show_kernel) {
                   lines(x_grid(), reactive_kernel$fun(x_grid()))
                 }
